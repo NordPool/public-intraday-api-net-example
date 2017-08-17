@@ -1,0 +1,24 @@
+﻿{
+  "requestId": "7a65deac-d23c-4e6c-afe9-86c3cddf5126",
+  "rejectPartially": false,
+  "orders": [
+    {
+      "portfolioId": "Z00001-2",
+      "contractIds": [
+        "NI_165"
+      ],
+      "deliveryAreaId": 1,
+      "side": "BUY",
+      "clipSize": null,
+      "clipPriceChange": null,
+      "orderType": "LIMIT",
+      "unitPrice": 200,
+      "quantity": 2000,
+      "timeInForce": "GFS",
+      "executionRestriction": "NON",
+      "expireTime": null,
+      "state": "ACTI",
+      "clientOrderId": "e9fa854d-4ead-4cba-81d9-4548d18e3b28"
+    }
+  ]
+}
