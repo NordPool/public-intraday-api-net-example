@@ -30,6 +30,7 @@ The sequence of actions are located in **Program.cs** source code.
 #Important considerations#
 
 The current program is using the WebSocket4Net and Stomp.Net library to create a StompConnector that can operate through web sockets and handle all SockJS related details. That connector can be found from **Service/Connection/StompConnector.cs**.
+
 The example uses port 8083 for establishing the web socket connection. For some organizations, it maybe so that only ports (80,443) used for HTTP and HTTPS protocols are opened by default. If the example doesn't connect to the API, check that the port 8083 has been opened from your firewall.
 
 ## Questions, comments and error reporting ##
