@@ -1,0 +1,207 @@
+{
+  "title": "ConfigurationRow",
+  "description": "Configuration row. See documentation from: https://developers.nordpoolgroup.com/docs/configuration",
+  "definitions": {
+    "DeliveryAreaPortfolio": {
+      "description": "Delivery area portfolio",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "areaId": {
+          "description": "Area's unique identifier;",
+          "type": "integer"
+        },
+        "validFrom": {
+          "description": "Start of portfolio validity period for said area.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "validTo": {
+          "description": "End of portfolio validity period for said area.",
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "areaId",
+        "validFrom",
+        "validTo"
+      ]
+    },
+    "MarketPortfolio": {
+      "description": "Market portfolio",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "marketId": {
+          "description": "Market unique identifier",
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 10
+        }
+      },
+      "required": [
+        "marketId"
+      ]
+    },
+    "Portfolio": {
+      "description": "TODO: Description for Portfolio",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "id": {
+          "title": "Portfolio Id",
+          "description": "Portfolio unique identifier created by the trading platform.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 10
+        },
+        "tenantId": {
+          "title": "Tenant Id",
+          "description": "[TODO TenantId description]",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "title": "Name",
+          "description": "Portfolio name in a human readable format.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 30
+        },
+        "shortName": {
+          "title": "Short name",
+          "description": "Portfolio short name",
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 15
+        },
+        "companyId": {
+          "title": "Company Id",
+          "description": "Company unique identifier that portfolios are assigned to.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 6
+        },
+        "validFrom": {
+          "title": "Valid from",
+          "description": "Start of portfolio validity period.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "validTo": {
+          "title": "Valid to",
+          "description": "End of portfolio validity period.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted": {
+          "title": "Deleted",
+          "description": "If false: update information with the contents received. If true: delete entity indicated in the message",
+          "type": "boolean"
+        },
+        "state": {
+          "title": "State",
+          "description": "ACTI: Active, IACT: Expired(will never be reopened), HIBE: Closed(can be reopened)",
+          "type": "string",
+          "enum": [
+            "HIBE",
+            "IACT",
+            "ACTI"
+          ]
+        },
+        "currency": {
+          "title": "Currency",
+          "description": "Currency used for the portfolio",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "areas": {
+          "title": "Areas",
+          "description": "List of areas in which the portfolio is valid",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/DeliveryAreaPortfolio"
+          }
+        },
+        "markets": {
+          "title": "Markets",
+          "description": "List of markets where given portfolio can trade",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/MarketPortfolio"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "tenantId",
+        "name",
+        "shortName",
+        "companyId",
+        "validFrom",
+        "validTo",
+        "deleted",
+        "state",
+        "currency",
+        "areas",
+        "markets"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "throttlingLimit": {
+      "title": "Throttling limits",
+      "description": "An array of throttling limits",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "portfolios": {
+      "title": "Portfolios",
+      "description": "An array of portfolios which are accessible for the logged in user.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Portfolio"
+      }
+    }
+  },
+  "required": [
+    "throttlingLimit",
+    "portfolios"
+  ]
+}

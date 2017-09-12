@@ -1,0 +1,123 @@
+{
+  "title": "PublicTradeRow",
+  "description": "TODO: Description",
+  "definitions": {
+    "PublicTradeLeg": {
+      "description": "TODO: Description",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "ownership": {
+          "type": "string",
+          "enum": [
+            "OWN_BUY",
+            "OWN_SELL",
+            "COMPANY_BUY",
+            "COMPANY_SELL",
+            "OTHER"
+          ]
+        },
+        "contractId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "BUY",
+            "SELL"
+          ]
+        },
+        "unitPrice": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "deliveryAreaId": {
+          "type": "integer"
+        },
+        "aggressor": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ownership",
+        "contractId",
+        "side",
+        "unitPrice",
+        "quantity",
+        "deliveryAreaId",
+        "aggressor"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tradeId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tradeTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "COMPLETED",
+        "DISPUTED",
+        "NOT_CANCELLED",
+        "CANCELLED"
+      ]
+    },
+    "legs": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/PublicTradeLeg"
+      }
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "eventSequenceNo": {
+      "type": "integer"
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "mediumDisplayName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "updatedAt",
+    "tradeId",
+    "tradeTime",
+    "state",
+    "legs",
+    "currency",
+    "eventSequenceNo",
+    "deleted",
+    "mediumDisplayName"
+  ]
+}

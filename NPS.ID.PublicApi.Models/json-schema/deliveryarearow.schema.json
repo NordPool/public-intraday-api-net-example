@@ -1,0 +1,70 @@
+{
+  "title": "DeliveryAreaRow",
+  "description": "TODO: Description",
+  "type": "object",
+  "properties": {
+    "deliveryAreaId": {
+      "type": "integer"
+    },
+    "eicCode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "currentyCode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "areaCode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "timeZone": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "countryIsoCode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "productTypes": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "deliveryAreaId",
+    "eicCode",
+    "currentyCode",
+    "areaCode",
+    "timeZone",
+    "countryIsoCode",
+    "productTypes",
+    "deleted",
+    "updatedAt"
+  ]
+}

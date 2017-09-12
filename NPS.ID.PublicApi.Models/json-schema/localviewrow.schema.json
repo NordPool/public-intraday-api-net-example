@@ -1,0 +1,84 @@
+{
+  "title": "LocalViewRow",
+  "description": "TODO: Description",
+  "definitions": {
+    "Order": {
+      "description": "TODO: Description",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "orderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "deliveryAreaId": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "qty": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "orderId",
+        "deliveryAreaId",
+        "price",
+        "qty"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "buyOrders": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Order"
+      }
+    },
+    "sellOrders": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Order"
+      }
+    },
+    "contractId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deliveryAreaId": {
+      "type": "integer"
+    },
+    "orderExecutionRestriction": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "buyOrders",
+    "sellOrders",
+    "contractId",
+    "deliveryAreaId",
+    "orderExecutionRestriction",
+    "updatedAt"
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "title": "OrderEntryRequest",
+  "description": "TODO: Description",
+  "definitions": {
+    "OrderEntry": {
+      "description": "TODO: Description",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "portfolioId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contractIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "deliveryAreaId": {
+          "type": "integer"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "BUY",
+            "SELL"
+          ]
+        },
+        "clipSize": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clipPriceChange": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "orderType": {
+          "type": "string",
+          "enum": [
+            "LIMIT",
+            "ICEBERG",
+            "USER_DEFINED_BLOCK"
+          ]
+        },
+        "unitPrice": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "timeInForce": {
+          "type": "string",
+          "enum": [
+            "IOC",
+            "FOK",
+            "NON",
+            "GTD",
+            "GFS"
+          ]
+        },
+        "executionRestriction": {
+          "type": "string",
+          "enum": [
+            "AON",
+            "NON"
+          ]
+        },
+        "expireTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ACTI",
+            "HIBE",
+            "IACT",
+            "REJECTED"
+          ]
+        },
+        "clientOrderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "portfolioId",
+        "contractIds",
+        "deliveryAreaId",
+        "side",
+        "clipSize",
+        "clipPriceChange",
+        "orderType",
+        "unitPrice",
+        "quantity",
+        "timeInForce",
+        "executionRestriction",
+        "expireTime",
+        "state",
+        "clientOrderId"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "requestId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rejectPartially": {
+      "type": "boolean"
+    },
+    "orders": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/OrderEntry"
+      }
+    }
+  },
+  "required": [
+    "requestId",
+    "rejectPartially",
+    "orders"
+  ]
+}

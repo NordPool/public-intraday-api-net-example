@@ -1,0 +1,156 @@
+{
+  "title": "ContractRow",
+  "description": "TODO: Description",
+  "definitions": {
+    "DeliveryAreaState": {
+      "description": "TODO: Description",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "dlvryAreaId": {
+          "type": "integer"
+        },
+        "state": {
+          "description": "ACTI: Active\r\n                   IACT: Expired(will never be reopened)\r\n                   HIBE: Closed(can be reopened)",
+          "type": "string",
+          "enum": [
+            "HIBE",
+            "IACT",
+            "ACTI"
+          ]
+        },
+        "openAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "dlvryAreaId",
+        "state",
+        "openAt",
+        "closedAt"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "contractId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "contractName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "description": "ACTI: Active\r\n                   IACT: Expired(will never be reopened)\r\n                   HIBE: Closed(can be reopened)",
+      "type": "string",
+      "enum": [
+        "HIBE",
+        "IACT",
+        "ACTI"
+      ]
+    },
+    "durationSeconds": {
+      "type": "integer"
+    },
+    "resolutionSeconds": {
+      "type": "integer"
+    },
+    "predefined": {
+      "type": "boolean"
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "dlvryStart": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dlvryEnd": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dlvryAreaState": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/DeliveryAreaState"
+      }
+    },
+    "marketId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "shortDisplayName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mediumDisplayName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "productType": {
+      "type": "string",
+      "enum": [
+        "P15MIN",
+        "P30MIN",
+        "P60MIN",
+        "BLOCK_2H",
+        "BLOCK_4H",
+        "DON",
+        "DB34",
+        "DP",
+        "DEP",
+        "DB",
+        "CUSTOM_BLOCK"
+      ]
+    },
+    "productId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "contractId",
+    "contractName",
+    "state",
+    "durationSeconds",
+    "resolutionSeconds",
+    "predefined",
+    "deleted",
+    "dlvryStart",
+    "dlvryEnd",
+    "dlvryAreaState",
+    "marketId",
+    "shortDisplayName",
+    "mediumDisplayName",
+    "productType",
+    "productId",
+    "updatedAt"
+  ]
+}

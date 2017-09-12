@@ -1,0 +1,51 @@
+{
+  "title": "CapacityRow",
+  "description": "TODO: Description",
+  "type": "object",
+  "properties": {
+    "eventSequenceNo": {
+      "type": "integer"
+    },
+    "internal": {
+      "type": "boolean"
+    },
+    "publicationTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deliveryAreaFrom": {
+      "type": "integer"
+    },
+    "deliveryAreaTo": {
+      "type": "integer"
+    },
+    "deliveryAreaStart": {
+      "type": "integer"
+    },
+    "deliveryAreaEnd": {
+      "type": "integer"
+    },
+    "inCapacity": {
+      "type": "integer"
+    },
+    "outCapacity": {
+      "type": "integer"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "eventSequenceNo",
+    "internal",
+    "publicationTime",
+    "deliveryAreaFrom",
+    "deliveryAreaTo",
+    "deliveryAreaStart",
+    "deliveryAreaEnd",
+    "inCapacity",
+    "outCapacity",
+    "updatedAt"
+  ]
+}

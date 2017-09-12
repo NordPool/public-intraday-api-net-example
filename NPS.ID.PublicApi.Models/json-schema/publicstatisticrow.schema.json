@@ -1,0 +1,51 @@
+{
+  "title": "PublicStatisticRow",
+  "description": "TODO: Description",
+  "type": "object",
+  "properties": {
+    "lastPrice": {
+      "type": "integer"
+    },
+    "lastQuantity": {
+      "type": "integer"
+    },
+    "lastTradeTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "highestPrice": {
+      "type": "integer"
+    },
+    "lowestPrice": {
+      "type": "integer"
+    },
+    "vwap": {
+      "type": "integer"
+    },
+    "turnover": {
+      "type": "integer"
+    },
+    "dayAheadPrice": {
+      "type": "integer"
+    },
+    "tendency": {
+      "type": "string",
+      "enum": [
+        "UP",
+        "DOWN",
+        "EQUAL"
+      ]
+    }
+  },
+  "required": [
+    "lastPrice",
+    "lastQuantity",
+    "lastTradeTime",
+    "highestPrice",
+    "lowestPrice",
+    "vwap",
+    "turnover",
+    "dayAheadPrice",
+    "tendency"
+  ]
+}

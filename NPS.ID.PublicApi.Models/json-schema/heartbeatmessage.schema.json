@@ -1,0 +1,47 @@
+{
+  "title": "HeartbeatMessage",
+  "description": "TODO: Description",
+  "definitions": {
+    "HeartBeatItem": {
+      "description": "TODO: Description",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "topic": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastSequenceNumber": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "topic",
+        "lastSequenceNumber"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "type": "integer"
+    },
+    "heartBeats": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/HeartBeatItem"
+      }
+    }
+  },
+  "required": [
+    "timestamp",
+    "heartBeats"
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "title": "PrivateTradeRow",
+  "description": "TODO: Description",
+  "definitions": {
+    "PrivateTradeLeg": {
+      "description": "TODO: Description",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "portfolioId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refOrderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "userId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "deliveryStart": {
+          "type": "integer"
+        },
+        "deliveryEnd": {
+          "type": "integer"
+        },
+        "orderState": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ACTI",
+            "HIBE",
+            "IACT",
+            "REJECTED"
+          ]
+        },
+        "orderType": {
+          "type": "string",
+          "enum": [
+            "LIMIT",
+            "ICEBERG",
+            "USER_DEFINED_BLOCK"
+          ]
+        },
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "orderAction": {
+          "type": "string",
+          "enum": [
+            "USER_ADDED",
+            "USER_HIBERNATED",
+            "USER_MODIFIED",
+            "USER_DELETED",
+            "SYSTEM_HIBERNATED",
+            "SYSTEM_MODIFIED",
+            "SYSTEM_DELETED",
+            "PARTIAL_EXECUTION",
+            "FULL_EXECUTION",
+            "ICEBERG_SLICE_ADDED"
+          ]
+        },
+        "timeInForce": {
+          "type": "string",
+          "enum": [
+            "IOC",
+            "FOK",
+            "NON",
+            "GTD",
+            "GFS"
+          ]
+        },
+        "contractId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "BUY",
+            "SELL"
+          ]
+        },
+        "unitPrice": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "deliveryAreaId": {
+          "type": "integer"
+        },
+        "aggressor": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "portfolioId",
+        "refOrderId",
+        "userId",
+        "deliveryStart",
+        "deliveryEnd",
+        "orderState",
+        "orderType",
+        "text",
+        "orderAction",
+        "timeInForce",
+        "contractId",
+        "side",
+        "unitPrice",
+        "quantity",
+        "deliveryAreaId",
+        "aggressor"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "cancellationFee": {
+      "type": "integer"
+    },
+    "cancellationDeadLine": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "revisionNo": {
+      "type": "integer"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tradeId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tradeTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "COMPLETED",
+        "DISPUTED",
+        "NOT_CANCELLED",
+        "CANCELLED"
+      ]
+    },
+    "legs": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/PrivateTradeLeg"
+      }
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "eventSequenceNo": {
+      "type": "integer"
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "mediumDisplayName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "cancellationFee",
+    "cancellationDeadLine",
+    "revisionNo",
+    "updatedAt",
+    "tradeId",
+    "tradeTime",
+    "state",
+    "legs",
+    "currency",
+    "eventSequenceNo",
+    "deleted",
+    "mediumDisplayName"
+  ]
+}
