@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Models
 {
-    [Description("TODO: Description")]
     public class Error
     {
-        [EnumDataType(typeof(ErrorCodeEnum))]
-
+        
         public ErrorCodeEnum ErrorCode { get; set; }
         public string ErrorMessage { get; set; }
     }

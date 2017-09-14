@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Models
 {
-    [Description("TODO: Description")]
     public class PrivateTradeLeg : BaseTradeLeg
     {
         public string PortfolioId { get; set; }

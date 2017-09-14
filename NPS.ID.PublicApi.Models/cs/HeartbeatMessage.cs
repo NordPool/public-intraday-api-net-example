@@ -8,13 +8,14 @@ namespace NPS.ID.PublicApi.Models.Generated
 {
     #pragma warning disable // Disable all warnings
 
-    /// <summary>TODO: Description</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class HeartBeatItem 
     {
+        /// <summary>A topic that the current user is subscribed to</summary>
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Topic { get; set; }
     
+        /// <summary>Last x-nps-sequenceNo value for packets sent to the topic (see Message sequencing)</summary>
         [Newtonsoft.Json.JsonProperty("lastSequenceNumber", Required = Newtonsoft.Json.Required.Always)]
         public int LastSequenceNumber { get; set; }
     
@@ -29,10 +30,11 @@ namespace NPS.ID.PublicApi.Models.Generated
         }
     }
     
-    /// <summary>TODO: Description</summary>
+    /// <summary>The Intraday Platform uses Heartbeat Ping messages to inform a client that the server is alive and to let the client perform consistency checking of the data received.</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class HeartbeatMessage 
     {
+        /// <summary>Timestamp of the Heartbeat generation in Unix Epoch Milliseconds format.</summary>
         [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.Always)]
         public int Timestamp { get; set; }
     

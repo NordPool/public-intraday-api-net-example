@@ -30,7 +30,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             LogManager.GetLogger(
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const int DemoArea = 7;
+        private const int DemoArea = 2;
 
 
         public Form1()
@@ -220,11 +220,13 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         private void CapacitiesCallBack(string messagecontent)
         {
             ShowMessage(messagecontent, "Capacities");
+
         }
 
-        private void PublicStatisticsCallBack(string messagecontent)
+        private void PublicStatisticsCallBack(string messageContent)
         {
-            ShowMessage(messagecontent, "Public Statistics");
+            ShowMessage(messageContent, "Public Statistics");
+            var publicStatistics = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
         }
 
         private void PrivateTradeCallBack(string messageContent)
@@ -235,6 +237,11 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         private void LocalViewCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Local View", true);
+            var localViewData= JsonHelper.DeserializeData<List<LocalViewRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(localViewData));
+
+            var genLocalViewData = JsonHelper.DeserializeData<List<Models.Generated.LocalViewRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(genLocalViewData));
         }
 
         private void ConfigurationCallBack(string messageContent)
@@ -401,6 +408,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                     typeof(PublicTradeRow),
                     typeof(CapacityRow),
                     typeof(OrderEntryRequest),
+                    typeof(OrderModificationRequest),
                     typeof(OrderExecutionReport),
                     typeof(PrivateTradeRow)
                 };
@@ -416,7 +424,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                     jsonSchemaGenerator.GenerationProviders.Add(new StringEnumGenerationProvider());
                     jsonSchemaGenerator.SchemaLocationHandling = SchemaLocationHandling.Definitions;
                     jsonSchemaGenerator.SchemaPropertyOrderHandling = SchemaPropertyOrderHandling.Default;
-
+                    jsonSchemaGenerator.SchemaReferenceHandling = SchemaReferenceHandling.Objects;
 
                     var myType = jsonType;
                     var schema = jsonSchemaGenerator.Generate(myType);
@@ -427,7 +435,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                     schema.WriteTo(jsonTextWriter);
                     dynamic parsedJson = JsonConvert.DeserializeObject(writer.ToString());
                     var prettyString = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-                    File.WriteAllText(Path.Combine(path, $"{jsonType.Name.ToLower()}.schema.json"), prettyString);
+                    File.WriteAllText(Path.Combine(path, $"{jsonType.Name}.json"), prettyString);
                     this.textBoxLog.Text += prettyString + Environment.NewLine;
                 }
 

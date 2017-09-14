@@ -1,42 +1,48 @@
 {
   "title": "DeliveryAreaRow",
-  "description": "TODO: Description",
   "type": "object",
   "properties": {
     "deliveryAreaId": {
+      "description": "Delivery Area ID",
       "type": "integer"
     },
     "eicCode": {
+      "description": "Delivery area EIC (Energy Identification Code)",
       "type": [
         "string",
         "null"
       ]
     },
     "currentyCode": {
+      "description": "Currency code used in the area",
       "type": [
         "string",
         "null"
       ]
     },
     "areaCode": {
+      "description": "Delivery area code",
       "type": [
         "string",
         "null"
       ]
     },
     "timeZone": {
+      "description": "Time zone used in the area",
       "type": [
         "string",
         "null"
       ]
     },
     "countryIsoCode": {
+      "description": "Country ISO code",
       "type": [
         "string",
         "null"
       ]
     },
     "productTypes": {
+      "description": "Product types available in the area",
       "type": [
         "array",
         "null"
@@ -49,9 +55,11 @@
       }
     },
     "deleted": {
+      "description": "If false: update information with the contents received, If true: delete entity indicated in the message",
       "type": "boolean"
     },
     "updatedAt": {
+      "description": "Last modification time (status change) of data",
       "type": "string",
       "format": "date-time"
     }

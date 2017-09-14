@@ -8,7 +8,6 @@ namespace NPS.ID.PublicApi.Models.Generated
 {
     #pragma warning disable // Disable all warnings
 
-    /// <summary>TODO: Description</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class Order 
     {
@@ -35,25 +34,35 @@ namespace NPS.ID.PublicApi.Models.Generated
         }
     }
     
-    /// <summary>TODO: Description</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class LocalViewRow 
     {
+        /// <summary>Basic data for BUY orders</summary>
         [Newtonsoft.Json.JsonProperty("buyOrders", Required = Newtonsoft.Json.Required.AllowNull)]
         public System.Collections.Generic.List<Order> BuyOrders { get; set; }
     
+        /// <summary>Basic data for SELL orders</summary>
         [Newtonsoft.Json.JsonProperty("sellOrders", Required = Newtonsoft.Json.Required.AllowNull)]
         public System.Collections.Generic.List<Order> SellOrders { get; set; }
     
+        /// <summary>ID of the contract that this order belongs to</summary>
         [Newtonsoft.Json.JsonProperty("contractId", Required = Newtonsoft.Json.Required.AllowNull)]
         public string ContractId { get; set; }
     
+        /// <summary>The timestamp at which this order was received by the system</summary>
+        [Newtonsoft.Json.JsonProperty("createdAt", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset CreatedAt { get; set; }
+    
+        /// <summary>ID of the delivery area that this local view represents</summary>
         [Newtonsoft.Json.JsonProperty("deliveryAreaId", Required = Newtonsoft.Json.Required.Always)]
         public int DeliveryAreaId { get; set; }
     
+        /// <summary>FOK — Fill or Kill, IOC — Immediate or Cancel, NON — No specific restriction, AON — All or none</summary>
         [Newtonsoft.Json.JsonProperty("orderExecutionRestriction", Required = Newtonsoft.Json.Required.AllowNull)]
         public string OrderExecutionRestriction { get; set; }
     
+        /// <summary>Last modification time (status change) of data</summary>
         [Newtonsoft.Json.JsonProperty("updatedAt", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset UpdatedAt { get; set; }

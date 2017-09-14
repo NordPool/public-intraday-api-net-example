@@ -8,38 +8,48 @@ namespace NPS.ID.PublicApi.Models.Generated
 {
     #pragma warning disable // Disable all warnings
 
-    /// <summary>TODO: Description</summary>
+    /// <summary>Capacity information between areas</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class CapacityRow 
     {
+        /// <summary>An event counter that increments as list of capacities gets updated</summary>
         [Newtonsoft.Json.JsonProperty("eventSequenceNo", Required = Newtonsoft.Json.Required.Always)]
         public int EventSequenceNo { get; set; }
     
+        /// <summary>true - capacity data produced by internal Nord Pool Matcher. false - capacity data came</summary>
         [Newtonsoft.Json.JsonProperty("internal", Required = Newtonsoft.Json.Required.Always)]
         public bool Internal { get; set; }
     
+        /// <summary>When the ATC data was received from the Capacity system</summary>
         [Newtonsoft.Json.JsonProperty("publicationTime", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset PublicationTime { get; set; }
     
+        /// <summary>The outgoing Market Area Code</summary>
         [Newtonsoft.Json.JsonProperty("deliveryAreaFrom", Required = Newtonsoft.Json.Required.Always)]
         public int DeliveryAreaFrom { get; set; }
     
+        /// <summary>The incoming Market Area Code</summary>
         [Newtonsoft.Json.JsonProperty("deliveryAreaTo", Required = Newtonsoft.Json.Required.Always)]
         public int DeliveryAreaTo { get; set; }
     
+        /// <summary>Delivery start date, expressed as Long for performance reasons</summary>
         [Newtonsoft.Json.JsonProperty("deliveryAreaStart", Required = Newtonsoft.Json.Required.Always)]
         public int DeliveryAreaStart { get; set; }
     
+        /// <summary>Delivery end date, expressed as Long for performance reasons</summary>
         [Newtonsoft.Json.JsonProperty("deliveryAreaEnd", Required = Newtonsoft.Json.Required.Always)]
         public int DeliveryAreaEnd { get; set; }
     
+        /// <summary>Available capacity incomingMarketArea -> outgoingMarketArea</summary>
         [Newtonsoft.Json.JsonProperty("inCapacity", Required = Newtonsoft.Json.Required.Always)]
         public int InCapacity { get; set; }
     
+        /// <summary>Available capacity ougoingMarketArea -> incomingMarketArea</summary>
         [Newtonsoft.Json.JsonProperty("outCapacity", Required = Newtonsoft.Json.Required.Always)]
         public int OutCapacity { get; set; }
     
+        /// <summary>Last modification time (status change) of data</summary>
         [Newtonsoft.Json.JsonProperty("updatedAt", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset UpdatedAt { get; set; }

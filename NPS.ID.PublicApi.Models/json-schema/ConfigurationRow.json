@@ -51,7 +51,6 @@
       ]
     },
     "Portfolio": {
-      "description": "TODO: Description for Portfolio",
       "type": [
         "object",
         "null"

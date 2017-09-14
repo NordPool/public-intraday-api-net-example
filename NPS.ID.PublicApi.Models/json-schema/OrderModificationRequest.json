@@ -1,14 +1,28 @@
 {
-  "title": "OrderEntryRequest",
-  "description": "TODO: Description",
+  "title": "OrderModificationRequest",
   "definitions": {
-    "OrderEntry": {
-      "description": "TODO: Description",
+    "OrderModification": {
+      "description": "",
       "type": [
         "object",
         "null"
       ],
       "properties": {
+        "revisionNo": {
+          "type": "integer"
+        },
+        "clientOrderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "orderId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "portfolioId": {
           "type": [
             "string",
@@ -26,28 +40,6 @@
               "null"
             ]
           }
-        },
-        "deliveryAreaId": {
-          "type": "integer"
-        },
-        "side": {
-          "type": "string",
-          "enum": [
-            "BUY",
-            "SELL"
-          ]
-        },
-        "clipSize": {
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "clipPriceChange": {
-          "type": [
-            "integer",
-            "null"
-          ]
         },
         "orderType": {
           "type": "string",
@@ -84,51 +76,60 @@
           "type": "string",
           "format": "date-time"
         },
-        "state": {
-          "type": "string",
-          "enum": [
-            "PENDING",
-            "ACTI",
-            "HIBE",
-            "IACT",
-            "REJECTED"
-          ]
-        },
-        "clientOrderId": {
+        "text": {
           "type": [
             "string",
             "null"
           ]
+        },
+        "clipSize": {
+          "type": "integer"
+        },
+        "clipPriceChange": {
+          "type": "integer"
         }
       },
       "required": [
+        "revisionNo",
+        "clientOrderId",
+        "orderId",
         "portfolioId",
         "contractIds",
-        "deliveryAreaId",
-        "side",
-        "clipSize",
-        "clipPriceChange",
         "orderType",
         "unitPrice",
         "quantity",
         "timeInForce",
         "executionRestriction",
         "expireTime",
-        "state",
-        "clientOrderId"
+        "text",
+        "clipSize",
+        "clipPriceChange"
       ]
     }
   },
   "type": "object",
   "properties": {
     "requestId": {
+      "description": "Unique identifier for this request, provided by the client to track their own requests",
       "type": [
         "string",
         "null"
       ]
     },
-    "rejectPartially": {
-      "type": "boolean"
+    "orderModificationType": {
+      "type": "string",
+      "enum": [
+        "ACTI",
+        "DEAC",
+        "MODI",
+        "DELE"
+      ]
+    },
+    "userId": {
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "orders": {
       "type": [
@@ -136,13 +137,14 @@
         "null"
       ],
       "items": {
-        "$ref": "#/definitions/OrderEntry"
+        "$ref": "#/definitions/OrderModification"
       }
     }
   },
   "required": [
     "requestId",
-    "rejectPartially",
+    "orderModificationType",
+    "userId",
     "orders"
   ]
 }

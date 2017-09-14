@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 namespace NPS.ID.PublicApi.Models
 {
 
-    [Description("TODO: Description for Portfolio")]
     public class Portfolio
     {
         [DisplayName("Portfolio Id")]

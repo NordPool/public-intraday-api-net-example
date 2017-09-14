@@ -1,34 +1,43 @@
 {
   "title": "PublicStatisticRow",
-  "description": "TODO: Description",
+  "description": "Provides a list of contracts available in the area with id <deliveryAreaId> and aggregated statistical data for each contract.",
   "type": "object",
   "properties": {
     "lastPrice": {
+      "description": "Last traded price",
       "type": "integer"
     },
     "lastQuantity": {
+      "description": "Last traded quantity",
       "type": "integer"
     },
     "lastTradeTime": {
+      "description": "Time of the last trade",
       "type": "string",
       "format": "date-time"
     },
     "highestPrice": {
+      "description": "Highest traded price",
       "type": "integer"
     },
     "lowestPrice": {
+      "description": "Lowest traded price",
       "type": "integer"
     },
     "vwap": {
+      "description": "Volume Weighted Average Price for this contract",
       "type": "integer"
     },
     "turnover": {
+      "description": "Total Contract turnover",
       "type": "integer"
     },
     "dayAheadPrice": {
+      "description": "Day Ahead Price for this contract",
       "type": "integer"
     },
     "tendency": {
+      "description": "UP - Last price is higher than a previous price, DOWN - Last price is lower than a previous price, EQUAL - Last price is equal to a previous price",
       "type": "string",
       "enum": [
         "UP",

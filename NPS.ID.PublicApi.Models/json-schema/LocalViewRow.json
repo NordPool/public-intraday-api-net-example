@@ -1,9 +1,7 @@
 {
   "title": "LocalViewRow",
-  "description": "TODO: Description",
   "definitions": {
     "Order": {
-      "description": "TODO: Description",
       "type": [
         "object",
         "null"
@@ -36,6 +34,7 @@
   "type": "object",
   "properties": {
     "buyOrders": {
+      "description": "Basic data for BUY orders",
       "type": [
         "array",
         "null"
@@ -45,6 +44,7 @@
       }
     },
     "sellOrders": {
+      "description": "Basic data for SELL orders",
       "type": [
         "array",
         "null"
@@ -54,21 +54,30 @@
       }
     },
     "contractId": {
+      "description": "ID of the contract that this order belongs to",
       "type": [
         "string",
         "null"
       ]
     },
+    "createdAt": {
+      "description": "The timestamp at which this order was received by the system",
+      "type": "string",
+      "format": "date-time"
+    },
     "deliveryAreaId": {
+      "description": "ID of the delivery area that this local view represents",
       "type": "integer"
     },
     "orderExecutionRestriction": {
+      "description": "FOK — Fill or Kill, IOC — Immediate or Cancel, NON — No specific restriction, AON — All or none",
       "type": [
         "string",
         "null"
       ]
     },
     "updatedAt": {
+      "description": "Last modification time (status change) of data",
       "type": "string",
       "format": "date-time"
     }
@@ -77,6 +86,7 @@
     "buyOrders",
     "sellOrders",
     "contractId",
+    "createdAt",
     "deliveryAreaId",
     "orderExecutionRestriction",
     "updatedAt"

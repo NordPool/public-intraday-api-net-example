@@ -9,7 +9,6 @@ namespace NPS.ID.PublicApi.Models
 {
 
 
-    [Description("TODO: Description")]
     public class PublicTradeRow : BaseTradeRow<PublicTradeLeg>
     {
     }

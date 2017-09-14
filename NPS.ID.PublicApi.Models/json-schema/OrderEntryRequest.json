@@ -1,0 +1,163 @@
+{
+  "title": "OrderEntryRequest",
+  "definitions": {
+    "OrderEntry": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "portfolioId": {
+          "description": "The portfolio id of the current order",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contractIds": {
+          "description": "The contract ids that the current order should be placed on. For limit orders, only one value is allowed, for custom block orders all the contracts that the block spans should be included",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "deliveryAreaId": {
+          "description": "The delivery area id of the current order.",
+          "type": "integer"
+        },
+        "side": {
+          "description": "BUY/SELL",
+          "type": "string",
+          "enum": [
+            "BUY",
+            "SELL"
+          ]
+        },
+        "clipSize": {
+          "description": "For iceberg orders only; the size of one clip",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clipPriceChange": {
+          "description": "For iceberg orders only; the price change after each clip is consumed",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "orderType": {
+          "description": "LIMIT, ICEBERG, USER_DEFINED_BLOCK",
+          "type": "string",
+          "enum": [
+            "LIMIT",
+            "ICEBERG",
+            "USER_DEFINED_BLOCK"
+          ]
+        },
+        "unitPrice": {
+          "description": "Price in Euro cents or pence (based on currency for the area)",
+          "type": "integer"
+        },
+        "quantity": {
+          "description": "Quantity in kW",
+          "type": "integer"
+        },
+        "timeInForce": {
+          "description": "IOC, FOK, AON, NON, GTD, GFS",
+          "type": "string",
+          "enum": [
+            "IOC",
+            "FOK",
+            "NON",
+            "GTD",
+            "GFS"
+          ]
+        },
+        "executionRestriction": {
+          "description": "“AON” (All or None): The order must be filled completely or not at all. The order stays in the order book until it is executed or removed by the system or user. This execution restriction can be used only in combination with User Defined Block Orders. “NON”: No restrictions.",
+          "type": "string",
+          "enum": [
+            "AON",
+            "NON"
+          ]
+        },
+        "expireTime": {
+          "description": "If timeInForce is set to GTD (Good Till Date), the expireTime will determine when the order expires",
+          "type": "string",
+          "format": "date-time"
+        },
+        "state": {
+          "description": "ACTI — Active, IACT — Closed, matched(will never be reopened), HIBE — Deactivated(can be reopened)",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ACTI",
+            "HIBE",
+            "IACT",
+            "REJECTED"
+          ]
+        },
+        "clientOrderId": {
+          "description": "UUID for the order, provided by the client to track their own orders",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "portfolioId",
+        "contractIds",
+        "deliveryAreaId",
+        "side",
+        "clipSize",
+        "clipPriceChange",
+        "orderType",
+        "unitPrice",
+        "quantity",
+        "timeInForce",
+        "executionRestriction",
+        "expireTime",
+        "state",
+        "clientOrderId"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "requestId": {
+      "description": "Unique identifier for this request, provided by the client to track their own requests",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rejectPartially": {
+      "description": "Should the message be completely rejected if only some of the entered orders cause errors.",
+      "type": "boolean"
+    },
+    "orders": {
+      "description": "List of orders",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/OrderEntry"
+      }
+    }
+  },
+  "required": [
+    "requestId",
+    "rejectPartially",
+    "orders"
+  ]
+}

@@ -10,10 +10,9 @@ using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Models
 {
-    [Description("TODO: Description")]
     public class BaseRow
     {
-        
+        [Description("Last modification time (status change) of data")]
         public DateTimeOffset UpdatedAt { get; set; }
 
     }

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Models
 {
-    [Description("TODO: Description")]
     public class TradeRecallRequest
     {
         public string TradeId { get; set; }

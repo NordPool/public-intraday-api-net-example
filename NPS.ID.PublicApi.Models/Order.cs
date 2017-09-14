@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Models
 {
-    [Description("TODO: Description")]
     public class Order
     {
         public string OrderId { get; set; }

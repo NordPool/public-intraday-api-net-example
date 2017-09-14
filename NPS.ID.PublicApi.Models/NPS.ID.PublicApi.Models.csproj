@@ -64,6 +64,7 @@
     <Compile Include="cs\LocalViewRow.cs" />
     <Compile Include="cs\OrderEntryRequest.cs" />
     <Compile Include="cs\OrderExecutionReport.cs" />
+    <Compile Include="cs\OrderModificationRequest.cs" />
     <Compile Include="cs\PrivateTradeRow.cs" />
     <Compile Include="cs\PublicStatisticRow.cs" />
     <Compile Include="cs\PublicTradeRow.cs" />
@@ -83,6 +84,8 @@
     <Compile Include="MarketPortfolio.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="OrderEntry.cs" />
+    <Compile Include="OrderModification.cs" />
+    <Compile Include="OrderModificationRequest.cs" />
     <Compile Include="OrderEntryRequest.cs" />
     <Compile Include="OrderExecutionEntry.cs" />
     <Compile Include="OrderExecutionReport.cs" />
@@ -100,17 +103,18 @@
     <None Include="json-sample\configurationrow-sample.json" />
     <None Include="json-sample\orderentryrequest-sample.json" />
     <None Include="json-sample\orderexecutionreport-sample.json" />
-    <None Include="json-schema\capacityrow.schema.json" />
-    <None Include="json-schema\configurationrow.schema.json" />
-    <None Include="json-schema\contractrow.schema.json" />
-    <None Include="json-schema\deliveryarearow.schema.json" />
-    <None Include="json-schema\heartbeatmessage.schema.json" />
-    <None Include="json-schema\localviewrow.schema.json" />
-    <None Include="json-schema\orderentryrequest.schema.json" />
-    <None Include="json-schema\orderexecutionreport.schema.json" />
-    <None Include="json-schema\privatetraderow.schema.json" />
-    <None Include="json-schema\publicstatisticrow.schema.json" />
-    <None Include="json-schema\publictraderow.schema.json" />
+    <None Include="json-schema\CapacityRow.json" />
+    <None Include="json-schema\ConfigurationRow.json" />
+    <None Include="json-schema\ContractRow.json" />
+    <None Include="json-schema\DeliveryAreaRow.json" />
+    <None Include="json-schema\HeartbeatMessage.json" />
+    <None Include="json-schema\LocalViewRow.json" />
+    <None Include="json-schema\OrderEntryRequest.json" />
+    <None Include="json-schema\OrderExecutionReport.json" />
+    <None Include="json-schema\OrderModificationRequest.json" />
+    <None Include="json-schema\PrivateTradeRow.json" />
+    <None Include="json-schema\PublicStatisticRow.json" />
+    <None Include="json-schema\PublicTradeRow.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

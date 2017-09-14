@@ -57,7 +57,6 @@ namespace NPS.ID.PublicApi.Models.Generated
         }
     }
     
-    /// <summary>TODO: Description for Portfolio</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class Portfolio 
     {

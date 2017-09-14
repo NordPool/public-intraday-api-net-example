@@ -114,8 +114,15 @@ namespace NPS.ID.PublicApi.Client.Subscription
                     //Find related subscription
                     var subscriptionHandlePair =
                         _subscriptionHandles.First(x => x.Key.Id == frame.Properties["subscription"]);
-
-                    subscriptionHandlePair.Value?.Invoke(Encoding.UTF8.GetString(frame.Content));
+                    var content = frame.Content;
+                    var gzipped = false;
+                    if (frame.Properties.Any(r => r.Key == "Content-Encoding"))
+                        gzipped = frame.Properties.First(r => r.Key == "Content-Encoding").Value == "GZIP";
+                    if (gzipped)
+                    {
+                        content = GzipCompressor.Decompress(frame.Content);
+                    }
+                    subscriptionHandlePair.Value?.Invoke(Encoding.UTF8.GetString(content));
 
                 }
             }
@@ -151,19 +158,19 @@ namespace NPS.ID.PublicApi.Client.Subscription
 
         private void StompConnectorOnStompConnectionClosed(object sender, EventArgs eventArgs)
         {
-            
+
         }
 
         private void StompConnectorOnStompConnectionEstablished(object sender, EventArgs eventArgs)
         {
-            
+
             _stompConnected.Set();
         }
 
         public void SendEntryOrderRequest(OrderEntryRequest request)
         {
             var orderJson = JsonConvert.SerializeObject(request);
-            var orderFrame =  StompMessageFactory.SendFrame(orderJson, "/v1/orderEntryRequest");
+            var orderFrame = StompMessageFactory.SendFrame(orderJson, "/v1/orderEntryRequest");
             SendMessage(orderFrame);
         }
 
@@ -173,7 +180,7 @@ namespace NPS.ID.PublicApi.Client.Subscription
 
         public void SendLogoutCommand()
         {
-            var logoutFrame = StompMessageFactory.SendFrame(@"{""type"":""LOGOUT""}", "/v1/command"); 
+            var logoutFrame = StompMessageFactory.SendFrame(@"{""type"":""LOGOUT""}", "/v1/command");
             SendMessage(logoutFrame);
         }
 

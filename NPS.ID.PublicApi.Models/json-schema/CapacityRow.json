@@ -1,37 +1,47 @@
 {
   "title": "CapacityRow",
-  "description": "TODO: Description",
+  "description": "Capacity information between areas",
   "type": "object",
   "properties": {
     "eventSequenceNo": {
+      "description": "An event counter that increments as list of capacities gets updated",
       "type": "integer"
     },
     "internal": {
+      "description": "true - capacity data produced by internal Nord Pool Matcher. false - capacity data came",
       "type": "boolean"
     },
     "publicationTime": {
+      "description": "When the ATC data was received from the Capacity system",
       "type": "string",
       "format": "date-time"
     },
     "deliveryAreaFrom": {
+      "description": "The outgoing Market Area Code",
       "type": "integer"
     },
     "deliveryAreaTo": {
+      "description": "The incoming Market Area Code",
       "type": "integer"
     },
     "deliveryAreaStart": {
+      "description": "Delivery start date, expressed as Long for performance reasons",
       "type": "integer"
     },
     "deliveryAreaEnd": {
+      "description": "Delivery end date, expressed as Long for performance reasons",
       "type": "integer"
     },
     "inCapacity": {
+      "description": "Available capacity incomingMarketArea -> outgoingMarketArea",
       "type": "integer"
     },
     "outCapacity": {
+      "description": "Available capacity ougoingMarketArea -> incomingMarketArea",
       "type": "integer"
     },
     "updatedAt": {
+      "description": "Last modification time (status change) of data",
       "type": "string",
       "format": "date-time"
     }

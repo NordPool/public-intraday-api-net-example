@@ -8,7 +8,6 @@ namespace NPS.ID.PublicApi.Models.Generated
 {
     #pragma warning disable // Disable all warnings
 
-    /// <summary>TODO: Description</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class Error 
     {
@@ -31,7 +30,6 @@ namespace NPS.ID.PublicApi.Models.Generated
         }
     }
     
-    /// <summary>TODO: Description</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class OrderExecutionEntry 
     {
@@ -53,9 +51,11 @@ namespace NPS.ID.PublicApi.Models.Generated
         [Newtonsoft.Json.JsonProperty("revisionNo", Required = Newtonsoft.Json.Required.Always)]
         public int RevisionNo { get; set; }
     
+        /// <summary>Id of the previous order in this modification chain. When an order is modified and its priority changes, or partially matched, a new order Id is assigned.</summary>
         [Newtonsoft.Json.JsonProperty("previousOrderId", Required = Newtonsoft.Json.Required.AllowNull)]
         public string PreviousOrderId { get; set; }
     
+        /// <summary>The original order id in this modification chain.</summary>
         [Newtonsoft.Json.JsonProperty("originalOrderId", Required = Newtonsoft.Json.Required.AllowNull)]
         public string OriginalOrderId { get; set; }
     
@@ -63,46 +63,57 @@ namespace NPS.ID.PublicApi.Models.Generated
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset UpdatedAt { get; set; }
     
+        /// <summary>UUID for the order, provided by the client to track their own orders</summary>
         [Newtonsoft.Json.JsonProperty("clientOrderId", Required = Newtonsoft.Json.Required.AllowNull)]
         public string ClientOrderId { get; set; }
     
+        /// <summary>The portfolio id of the current order</summary>
         [Newtonsoft.Json.JsonProperty("portfolioId", Required = Newtonsoft.Json.Required.AllowNull)]
         public string PortfolioId { get; set; }
     
+        /// <summary>The contract ids for current order</summary>
         [Newtonsoft.Json.JsonProperty("contractIds", Required = Newtonsoft.Json.Required.AllowNull)]
         public System.Collections.Generic.List<string> ContractIds { get; set; }
     
+        /// <summary>The delivery area id of the current order.</summary>
         [Newtonsoft.Json.JsonProperty("deliveryAreaId", Required = Newtonsoft.Json.Required.Always)]
         public int DeliveryAreaId { get; set; }
     
+        /// <summary>BUY/SELL</summary>
         [Newtonsoft.Json.JsonProperty("side", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public OrderExecutionEntrySide Side { get; set; }
     
+        /// <summary>LIMIT, ICEBERG, USER_DEFINED_BLOCK</summary>
         [Newtonsoft.Json.JsonProperty("orderType", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public OrderExecutionEntryOrderType OrderType { get; set; }
     
+        /// <summary>Price in Euro cents or pence (based on currency for the area)</summary>
         [Newtonsoft.Json.JsonProperty("unitPrice", Required = Newtonsoft.Json.Required.Always)]
         public int UnitPrice { get; set; }
     
+        /// <summary>Quantity in kW</summary>
         [Newtonsoft.Json.JsonProperty("quantity", Required = Newtonsoft.Json.Required.Always)]
         public int Quantity { get; set; }
     
+        /// <summary>IOC, FOK, AON, NON, GTD, GFS</summary>
         [Newtonsoft.Json.JsonProperty("timeInForce", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public OrderExecutionEntryTimeInForce TimeInForce { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("sxpireTime", Required = Newtonsoft.Json.Required.Always)]
+        /// <summary>If timeInForce is set to GTD (Good Till Date), the expireTime will determine when the order expires</summary>
+        [Newtonsoft.Json.JsonProperty("expireTime", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.DateTimeOffset SxpireTime { get; set; }
+        public System.DateTimeOffset ExpireTime { get; set; }
     
         [Newtonsoft.Json.JsonProperty("text", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Text { get; set; }
     
+        /// <summary>ACTI — Active, IACT — Closed, matched(will never be reopened), HIBE — Deactivated(can be reopened)</summary>
         [Newtonsoft.Json.JsonProperty("state", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
@@ -113,9 +124,11 @@ namespace NPS.ID.PublicApi.Models.Generated
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public OrderExecutionEntryAction Action { get; set; }
     
+        /// <summary>For iceberg orders only; the size of one clip</summary>
         [Newtonsoft.Json.JsonProperty("clipSize", Required = Newtonsoft.Json.Required.Always)]
         public int ClipSize { get; set; }
     
+        /// <summary>For iceberg orders only; the price change after each clip is consumed</summary>
         [Newtonsoft.Json.JsonProperty("clipPriceChange", Required = Newtonsoft.Json.Required.Always)]
         public int ClipPriceChange { get; set; }
     
@@ -136,27 +149,33 @@ namespace NPS.ID.PublicApi.Models.Generated
         }
     }
     
-    /// <summary>TODO: Description</summary>
+    /// <summary>In response to an order creation or modification request described in Creating and modifying orders and for any order updates, the Intraday Platform will send an Order Execution Report message.</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class OrderExecutionReport 
     {
+        /// <summary>Unique identifier for this request, provided by the client to track their own requests</summary>
         [Newtonsoft.Json.JsonProperty("requestId", Required = Newtonsoft.Json.Required.AllowNull)]
         public string RequestId { get; set; }
     
+        /// <summary>Member ID</summary>
         [Newtonsoft.Json.JsonProperty("memberId", Required = Newtonsoft.Json.Required.AllowNull)]
         public string MemberId { get; set; }
     
+        /// <summary>Technical field about message originator.</summary>
         [Newtonsoft.Json.JsonProperty("errorType", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public OrderExecutionReportErrorType ErrorType { get; set; }
     
+        /// <summary>An array of objects that contain fields errorCode and errorMessage.</summary>
         [Newtonsoft.Json.JsonProperty("errors", Required = Newtonsoft.Json.Required.AllowNull)]
         public System.Collections.Generic.List<Error> Errors { get; set; }
     
+        /// <summary>Order execution entries</summary>
         [Newtonsoft.Json.JsonProperty("orders", Required = Newtonsoft.Json.Required.AllowNull)]
         public System.Collections.Generic.List<OrderExecutionEntry> Orders { get; set; }
     
+        /// <summary>Last modification time (status change) of data</summary>
         [Newtonsoft.Json.JsonProperty("updatedAt", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset UpdatedAt { get; set; }

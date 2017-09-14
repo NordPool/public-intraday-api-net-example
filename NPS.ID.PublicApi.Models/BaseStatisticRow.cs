@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Models
 {
-    [Description("TODO: Description")]
-    public class BaseStatisticRow
+    public class BaseStatisticRow  :BaseRow
     {
+        [Description("Delivery area ID")]
         public long DeliveryAreaId { get; set; }
+
+        [Description("Identifier for a contract")]
         public string ContractId { get; set; }
     }
 }

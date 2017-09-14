@@ -8,35 +8,44 @@ namespace NPS.ID.PublicApi.Models.Generated
 {
     #pragma warning disable // Disable all warnings
 
-    /// <summary>TODO: Description</summary>
+    /// <summary>Provides a list of contracts available in the area with id <deliveryAreaId> and aggregated statistical data for each contract.</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.5.4.0")]
     public partial class PublicStatisticRow 
     {
+        /// <summary>Last traded price</summary>
         [Newtonsoft.Json.JsonProperty("lastPrice", Required = Newtonsoft.Json.Required.Always)]
         public int LastPrice { get; set; }
     
+        /// <summary>Last traded quantity</summary>
         [Newtonsoft.Json.JsonProperty("lastQuantity", Required = Newtonsoft.Json.Required.Always)]
         public int LastQuantity { get; set; }
     
+        /// <summary>Time of the last trade</summary>
         [Newtonsoft.Json.JsonProperty("lastTradeTime", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastTradeTime { get; set; }
     
+        /// <summary>Highest traded price</summary>
         [Newtonsoft.Json.JsonProperty("highestPrice", Required = Newtonsoft.Json.Required.Always)]
         public int HighestPrice { get; set; }
     
+        /// <summary>Lowest traded price</summary>
         [Newtonsoft.Json.JsonProperty("lowestPrice", Required = Newtonsoft.Json.Required.Always)]
         public int LowestPrice { get; set; }
     
+        /// <summary>Volume Weighted Average Price for this contract</summary>
         [Newtonsoft.Json.JsonProperty("vwap", Required = Newtonsoft.Json.Required.Always)]
         public int Vwap { get; set; }
     
+        /// <summary>Total Contract turnover</summary>
         [Newtonsoft.Json.JsonProperty("turnover", Required = Newtonsoft.Json.Required.Always)]
         public int Turnover { get; set; }
     
+        /// <summary>Day Ahead Price for this contract</summary>
         [Newtonsoft.Json.JsonProperty("dayAheadPrice", Required = Newtonsoft.Json.Required.Always)]
         public int DayAheadPrice { get; set; }
     
+        /// <summary>UP - Last price is higher than a previous price, DOWN - Last price is lower than a previous price, EQUAL - Last price is equal to a previous price</summary>
         [Newtonsoft.Json.JsonProperty("tendency", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
