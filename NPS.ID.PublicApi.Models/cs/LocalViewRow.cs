@@ -50,9 +50,8 @@ namespace NPS.ID.PublicApi.Models.Generated
         public string ContractId { get; set; }
     
         /// <summary>The timestamp at which this order was received by the system</summary>
-        [Newtonsoft.Json.JsonProperty("createdAt", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public System.DateTimeOffset CreatedAt { get; set; }
+        [Newtonsoft.Json.JsonProperty("createdAt", Required = Newtonsoft.Json.Required.AllowNull)]
+        public System.DateTimeOffset? CreatedAt { get; set; }
     
         /// <summary>ID of the delivery area that this local view represents</summary>
         [Newtonsoft.Json.JsonProperty("deliveryAreaId", Required = Newtonsoft.Json.Required.Always)]

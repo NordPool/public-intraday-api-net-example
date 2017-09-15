@@ -103,18 +103,6 @@
     <None Include="json-sample\configurationrow-sample.json" />
     <None Include="json-sample\orderentryrequest-sample.json" />
     <None Include="json-sample\orderexecutionreport-sample.json" />
-    <None Include="json-schema\CapacityRow.json" />
-    <None Include="json-schema\ConfigurationRow.json" />
-    <None Include="json-schema\ContractRow.json" />
-    <None Include="json-schema\DeliveryAreaRow.json" />
-    <None Include="json-schema\HeartbeatMessage.json" />
-    <None Include="json-schema\LocalViewRow.json" />
-    <None Include="json-schema\OrderEntryRequest.json" />
-    <None Include="json-schema\OrderExecutionReport.json" />
-    <None Include="json-schema\OrderModificationRequest.json" />
-    <None Include="json-schema\PrivateTradeRow.json" />
-    <None Include="json-schema\PublicStatisticRow.json" />
-    <None Include="json-schema\PublicTradeRow.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

@@ -415,7 +415,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
                 this.textBoxLog.Text = "";
 
-                var path = @"C:\NordPool\public-intraday-api-net-example\NPS.ID.PublicApi.Models\json-schema";
+                var path = @"C:\NordPool\public-intraday-api-jsonschema\v1";
 
                 foreach (var jsonType in types)
                 {

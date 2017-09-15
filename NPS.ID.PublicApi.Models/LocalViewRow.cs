@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace NPS.ID.PublicApi.Models
         public string ContractId { get; set; }
 
         [Description("The timestamp at which this order was received by the system")]
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? CreatedAt { get; set; }
 
         [Description("ID of the delivery area that this local view represents")]
         public long DeliveryAreaId { get; set; }
