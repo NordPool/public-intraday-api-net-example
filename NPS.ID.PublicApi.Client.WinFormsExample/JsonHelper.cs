@@ -32,6 +32,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Ignore
             };
+            serSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             if (usePrettyPrint)
             {
@@ -57,7 +58,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore
                 };
-
+                
                 T obj = JsonConvert.DeserializeObject<T>(JsonMessage, serSettings);
                 return obj;
             }

@@ -32,6 +32,9 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private const int DemoArea = 2;
 
+        private ContractRow sampleContract = null;
+        private ConfigurationRow currentConfiguration = null;
+
 
         public Form1()
         {
@@ -54,8 +57,6 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 // Subscribe to topics
                 SubscribeToServices(tradingService);
                 Log($"Subscribed to services..");
-                //// Send sample incorrect order reques to service:
-                //SendSampleIncorrectOrderRequest(tradingService);
 
             }
             catch (Exception ex)
@@ -179,7 +180,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 .Build(), CapacitiesCallBack);
 
             tradingService.Subscribe(Subscription.Subscription.Builder()
-                .WithTopic(Topic.HeartBeatPing)
+                .WithTopic(Topic.HeartbeatPing)
                 .WithVersion(apiVersion)
                 .WithSubscriptionType(SubscriptionType.Streaming)
                 .WithArea(DemoArea)
@@ -195,94 +196,86 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             }
         }
 
-
-        public void SendSampleOrderRequest(TradingService tradingService)
+        private void HeartbeatCallBack(string messageContent)
         {
-
-            Log("Attempting to send an order");
-            var incorrectOrder = SampleIncorrectOrderRequest();
-            tradingService.SendEntryOrderRequest(incorrectOrder);
+            ShowMessage(messageContent, "Heartbeat");
+            var heartbeatData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(heartbeatData));
         }
 
-        public void SendSampleIncorrectOrderRequest(TradingService tradingService)
+        private void CapacitiesCallBack(string messageContent)
         {
-
-            Log("Attempting to send an incorrect order, you will see the rejection message in the log.");
-            var incorrectOrder = SampleIncorrectOrderRequest();
-            tradingService.SendEntryOrderRequest(incorrectOrder);
-        }
-
-        private void HeartbeatCallBack(string messagecontent)
-        {
-            ShowMessage(messagecontent, "Heartbeat");
-        }
-
-        private void CapacitiesCallBack(string messagecontent)
-        {
-            ShowMessage(messagecontent, "Capacities");
-
+            ShowMessage(messageContent, "Capacities");
+            var capacitiesData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(capacitiesData));
         }
 
         private void PublicStatisticsCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Public Statistics");
-            var publicStatistics = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
+            var publicStatisticsData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(publicStatisticsData));
         }
 
         private void PrivateTradeCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Private Trade");
+            var privateTradesData = JsonHelper.DeserializeData<List<PrivateTradeRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(privateTradesData));
         }
 
         private void LocalViewCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Local View", true);
-            var localViewData= JsonHelper.DeserializeData<List<LocalViewRow>>(messageContent);
+            var localViewData = JsonHelper.DeserializeData<List<LocalViewRow>>(messageContent);
             Log(JsonHelper.SerializeObjectPrettyPrinted(localViewData));
-
-            var genLocalViewData = JsonHelper.DeserializeData<List<Models.Generated.LocalViewRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(genLocalViewData));
         }
 
         private void ConfigurationCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Configuration");
-            var configurations = JsonHelper.DeserializeData<List<ConfigurationRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(configurations));
-
-            //var configurationsGen = JsonHelper.DeserializeData<List<NPS.ID.PublicApi.Models.Generated.ConfigurationRow>>(messageContent);
-            //Log(JsonHelper.SerializeObjectPrettyPrinted(configurationsGen));
+            var configurationData = JsonHelper.DeserializeData<List<ConfigurationRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
+            if(currentConfiguration == null)
+                currentConfiguration = configurationData.FirstOrDefault();
         }
 
         private void ContractsCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Contracts");
-            var contracts = JsonHelper.DeserializeData<List<ContractRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(contracts));
+            var contractsData = JsonHelper.DeserializeData<List<ContractRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
+            if(sampleContract == null) { 
+                sampleContract = contractsData.FirstOrDefault(r=> r.State == ContractRowState.ACTI && r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
+                Log($"Sample contract: {Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(contractsData)}");
+            }
         }
 
         private void OrderExecutionCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Order Execution Report");
-            var orderExecutionReports = JsonHelper.DeserializeData<List<OrderExecutionReport>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(orderExecutionReports));
+            var orderExecutionsData = JsonHelper.DeserializeData<List<OrderExecutionReport>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(orderExecutionsData));
         }
 
         private void DeliveryAreasCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Delivery Areas");
+            var deliveryAreasData = JsonHelper.DeserializeData<List<DeliveryAreaRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
 
         }
 
         private void TickerCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Ticker");
-            var ticker = JsonHelper.DeserializeData<List<PublicTradeRow>>(messageContent);
+            var tickerData = JsonHelper.DeserializeData<List<PublicTradeRow>>(messageContent);
+            Log(JsonHelper.SerializeObjectPrettyPrinted(tickerData));
         }
 
 
 
-        private static OrderEntryRequest SampleOrderRequest()
+        private static OrderEntryRequest SampleIncorrectOrderRequest()
         {
             var request = new OrderEntryRequest()
             {
@@ -303,16 +296,29 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             return request;
         }
 
-        private static OrderEntryRequest SampleIncorrectOrderRequest()
+        private OrderEntryRequest SampleOrderRequest()
         {
+            var portFolio = currentConfiguration.Portfolios.Last();
             var request = new OrderEntryRequest()
             {
                 RequestId = Guid.NewGuid().ToString(),
+                RejectPartially = false,
                 Orders = new List<OrderEntry>
                 {
                     new OrderEntry()
                     {
-                        ClientOrderId = "Something"
+                        ClientOrderId = Guid.NewGuid().ToString(),
+                        PortfolioId  = portFolio.Id,
+                        Side = OrderEntrySide.SELL,
+                        ContractIds = new List<string> { sampleContract.ContractId },
+                        OrderType = OrderEntryOrderType.LIMIT,
+                        Quantity = 3000,
+                        State = OrderEntryState.ACTI,
+                        UnitPrice = 2500,
+                        TimeInForce = OrderEntryTimeInForce.GFS,
+                        DeliveryAreaId = portFolio.Areas.First().AreaId,
+                        //ExecutionRestriction = OrderEntryExecutionRestriction.AON,
+                        //ExpireTime = DateTimeOffset.Now.AddHours(6)
                     },
                 }
             };
@@ -385,7 +391,10 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             try
             {
-                SendSampleIncorrectOrderRequest(tradingService);
+                var order = SampleOrderRequest();
+                tradingService.SendEntryOrderRequest(order);
+                Log($"Sent order:{Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(order)}");
+
             }
             catch (Exception ex)
             {
@@ -399,18 +408,19 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             try
             {
 
-                var types = new Type[] {typeof(ConfigurationRow),
-                    typeof(HeartbeatMessage),
-                    typeof(DeliveryAreaRow),
-                    typeof(ContractRow),
-                    typeof(LocalViewRow),
-                    typeof(PublicStatisticRow),
-                    typeof(PublicTradeRow),
-                    typeof(CapacityRow),
-                    typeof(OrderEntryRequest),
-                    typeof(OrderModificationRequest),
-                    typeof(OrderExecutionReport),
-                    typeof(PrivateTradeRow)
+                var types = new Type[] {
+                    //typeof(Models.Draft.ConfigurationRow),
+                    //typeof(Models.Draft.HeartbeatMessage),
+                    //typeof(Models.Draft.DeliveryAreaRow),
+                    //typeof(Models.Draft.ContractRow),
+                    //typeof(Models.Draft.LocalViewRow),
+                    //typeof(Models.Draft.PublicStatisticRow),
+                    //typeof(Models.Draft.PublicTradeRow),
+                    //typeof(Models.Draft.CapacityRow),
+                    //typeof(Models.Draft.OrderEntryRequest),
+                    //typeof(Models.Draft.OrderModificationRequest),
+                    typeof(Models.Draft.OrderExecutionReport),
+                    //typeof(Models.Draft.PrivateTradeRow)
                 };
 
                 this.textBoxLog.Text = "";
@@ -419,12 +429,15 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
                 foreach (var jsonType in types)
                 {
+
                     var jsonSchemaGenerator = new JSchemaGenerator();
-                    jsonSchemaGenerator.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     jsonSchemaGenerator.GenerationProviders.Add(new StringEnumGenerationProvider());
+                    jsonSchemaGenerator.GenerationProviders.Add(new FormatSchemaProvider());
+                    jsonSchemaGenerator.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     jsonSchemaGenerator.SchemaLocationHandling = SchemaLocationHandling.Definitions;
                     jsonSchemaGenerator.SchemaPropertyOrderHandling = SchemaPropertyOrderHandling.Default;
                     jsonSchemaGenerator.SchemaReferenceHandling = SchemaReferenceHandling.Objects;
+                    jsonSchemaGenerator.DefaultRequired = Required.Default;
 
                     var myType = jsonType;
                     var schema = jsonSchemaGenerator.Generate(myType);
@@ -451,26 +464,65 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             try
             {
-                var schemaFolder = new DirectoryInfo(@"C:\NordPool\public-intraday-api-net-example\NPS.ID.PublicApi.Models\json-schema\");
+                var schemaFolder = new DirectoryInfo(@"C:\NordPool\public-intraday-api-jsonschema\v1\");
                 foreach (var schemaFile in schemaFolder.EnumerateFiles())
                 {
                     var contents = File.ReadAllText(schemaFile.FullName);
                     var schema = await JsonSchema4.FromJsonAsync(contents);
                     var generator = new CSharpGenerator(schema);
                     generator.Settings.ArrayType = "System.Collections.Generic.List";
-                    generator.Settings.Namespace = "NPS.ID.PublicApi.Models.Generated";
+                    generator.Settings.Namespace = "NPS.ID.PublicApi.Models";
                     generator.Settings.DateTimeType = "System.DateTimeOffset";
                     generator.Settings.ClassStyle = CSharpClassStyle.Poco;
-                    
-                                        
+
+
                     var csCode = generator.GenerateFile();
-                    File.WriteAllText(Path.Combine(@"C:\NordPool\public-intraday-api-net-example\NPS.ID.PublicApi.Models\cs", $"{schema.Title}.cs"), csCode);
+                    File.WriteAllText(Path.Combine(@"C:\NordPool\public-intraday-net-api\NPS.ID.PublicApi.Models", $"{schema.Title}.cs"), csCode);
                 }
 
             }
             catch (Exception ex)
             {
 
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void buttonClear_Click(object sender, EventArgs e)
+        {
+            this.textBoxLog.Text = "";
+        }
+
+        private void buttonLogout_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (tradingService == null)
+                {
+                    MessageBox.Show("Trading service not initialized");
+                    return;
+                }
+                tradingService.SendLogoutCommand();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var request = new OrderModificationRequest()
+                {
+                    RequestId = Guid.NewGuid().ToString(),
+                    OrderModificationType = OrderModificationRequestOrderModificationType.DEAC
+                };
+
+            }
+            catch (Exception ex)
+            {
                 MessageBox.Show(ex.ToString());
             }
         }

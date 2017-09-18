@@ -40,7 +40,7 @@ namespace NPS.ID.PublicApi.Client.Subscription
             {Topic.Ticker, "/ticker" },
             {Topic.PublicStatistics, "/publicStatistics"} ,
             {Topic.OrderExecutionReport, "/orderExecutionReport" },
-            {Topic.HeartBeatPing, "/heartbeatping" }
+            {Topic.HeartbeatPing, "/heartbeatping" }
 
         };
 
@@ -143,6 +143,7 @@ namespace NPS.ID.PublicApi.Client.Subscription
                 case Topic.Capacities:
                 case Topic.PublicStatistics:
                     return $"{fullTopic}/{subscription.Area}{IsGzipped(subscription)}";
+                case Topic.HeartbeatPing:
                 case Topic.Configuration:
                 case Topic.OrderExecutionReport:
                 case Topic.PrivateTrade:
@@ -174,8 +175,11 @@ namespace NPS.ID.PublicApi.Client.Subscription
             SendMessage(orderFrame);
         }
 
-        public void SendModificationOrderRequest()
+        public void SendModificationOrderRequest(OrderModificationRequest request)
         {
+            var orderJson = JsonConvert.SerializeObject(request);
+            var orderFrame = StompMessageFactory.SendFrame(orderJson, "/v1/orderEntryRequest");
+            SendMessage(orderFrame);
         }
 
         public void SendLogoutCommand()

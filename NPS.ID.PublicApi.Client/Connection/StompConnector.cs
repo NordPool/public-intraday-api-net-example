@@ -94,7 +94,6 @@ namespace NPS.ID.PublicApi.Client.Connection
             _webSocket.MessageReceived += WebSocketOnMessageReceived;
             _webSocket.Error += WebSocketOnError;
             _webSocket.Closed += WebSocketOnClosed;
-            _webSocket.AllowUnstrustedCertificate = true;
             _webSocket.Open();
         }
 

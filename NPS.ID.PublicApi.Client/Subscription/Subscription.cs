@@ -107,7 +107,7 @@ namespace NPS.ID.PublicApi.Client.Subscription
         Ticker,
         PublicStatistics,
         Contracts,
-        HeartBeatPing
+        HeartbeatPing
     }
 
     public enum SubscriptionType
