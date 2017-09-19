@@ -121,6 +121,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\public-intraday-net-api\NPS.ID.PublicApi.Models\NPS.ID.PublicApi.Models.csproj">
+      <Project>{5e352a1b-667b-4cec-9cfb-3b525e139d97}</Project>
+      <Name>NPS.ID.PublicApi.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NPS.ID.PublicApi.Client\NPS.ID.PublicApi.Client.csproj">
       <Project>{c0e9915a-ccd2-4242-8b0c-151bab7e8b11}</Project>
       <Name>NPS.ID.PublicApi.Client</Name>

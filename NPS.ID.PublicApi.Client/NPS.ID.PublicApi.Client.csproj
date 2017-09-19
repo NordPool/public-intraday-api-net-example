@@ -138,6 +138,12 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\public-intraday-net-api\NPS.ID.PublicApi.Models\NPS.ID.PublicApi.Models.csproj">
+      <Project>{5e352a1b-667b-4cec-9cfb-3b525e139d97}</Project>
+      <Name>NPS.ID.PublicApi.Models</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
