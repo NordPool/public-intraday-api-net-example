@@ -26,6 +26,7 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         private static readonly string SockJsStartMessage = "o";
         private static readonly string HeartBeatMessage = "h";
+        private static readonly string DisconnectCode = "1000";
 
 
         private static readonly ILog _logger =
@@ -125,6 +126,9 @@ namespace NPS.ID.PublicApi.Client.Connection
                 return;
 
             var stompMessage = StompMessageFromSockJSWrapper(messageReceivedEventArgs.Message);
+            //Disconnect -> no need to handle
+            if (stompMessage == DisconnectCode)
+                return;
             var bytes = Encoding.ASCII.GetBytes(stompMessage);
             var frame = FrameFromBytes(bytes);
 

@@ -178,8 +178,15 @@ namespace NPS.ID.PublicApi.Client.Subscription
         public void SendModificationOrderRequest(OrderModificationRequest request)
         {
             var orderJson = JsonConvert.SerializeObject(request);
-            var orderFrame = StompMessageFactory.SendFrame(orderJson, "/v1/orderEntryRequest");
+            var orderFrame = StompMessageFactory.SendFrame(orderJson, "/v1/orderModificationRequest");
             SendMessage(orderFrame);
+        }
+
+        public void SendTradeCancellationRequest(TradeRecallRequest request)
+        {
+            var tradeRecallJson = JsonConvert.SerializeObject(request);
+            var tradeRecallFrame = StompMessageFactory.SendFrame(tradeRecallJson, "/v1/tradeCancellationRequest");
+            SendMessage(tradeRecallFrame);
         }
 
         public void SendLogoutCommand()

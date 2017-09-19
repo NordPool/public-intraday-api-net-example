@@ -24,7 +24,7 @@ using System.Windows.Forms;
 
 namespace NPS.ID.PublicApi.Client.WinFormsExample
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private static ILog _logger =
             LogManager.GetLogger(
@@ -34,9 +34,10 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private ContractRow sampleContract = null;
         private ConfigurationRow currentConfiguration = null;
+        private OrderEntryRequest lastSentOrder = null;
 
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -57,6 +58,12 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 // Subscribe to topics
                 SubscribeToServices(tradingService);
                 Log($"Subscribed to services..");
+
+                this.buttonLogout.Enabled = true;
+                this.buttonSendOrderEntry.Enabled = true;
+                this.buttonSendOrderModification.Enabled = true;
+                this.buttonSendTradeRecall.Enabled = true;
+                this.buttonConnect.Enabled = false;
 
             }
             catch (Exception ex)
@@ -236,7 +243,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             ShowMessage(messageContent, "Configuration");
             var configurationData = JsonHelper.DeserializeData<List<ConfigurationRow>>(messageContent);
             Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
-            if(currentConfiguration == null)
+            if (currentConfiguration == null)
                 currentConfiguration = configurationData.FirstOrDefault();
         }
 
@@ -245,8 +252,9 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             ShowMessage(messageContent, "Contracts");
             var contractsData = JsonHelper.DeserializeData<List<ContractRow>>(messageContent);
             Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
-            if(sampleContract == null) { 
-                sampleContract = contractsData.FirstOrDefault(r=> r.State == ContractRowState.ACTI && r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
+            if (sampleContract == null)
+            {
+                sampleContract = contractsData.FirstOrDefault(r => r.State == ContractRowState.ACTI && r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
                 Log($"Sample contract: {Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(contractsData)}");
             }
         }
@@ -387,13 +395,26 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             return webSocketSettings;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonSendOrderEntry_Click(object sender, EventArgs e)
         {
             try
             {
+                if (currentConfiguration == null)
+                {
+                    MessageBox.Show("Missing login");
+                    return;
+                }
                 var order = SampleOrderRequest();
+
+                var str = InputForm.ShowForm(JsonHelper.SerializeObjectPrettyPrinted(order));
+                if (str == "")
+                    return;
+
+                order = JsonHelper.DeserializeData<OrderEntryRequest>(str);
+
                 tradingService.SendEntryOrderRequest(order);
                 Log($"Sent order:{Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(order)}");
+                lastSentOrder = order;
 
             }
             catch (Exception ex)
@@ -414,12 +435,13 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                     //typeof(Models.Draft.DeliveryAreaRow),
                     //typeof(Models.Draft.ContractRow),
                     //typeof(Models.Draft.LocalViewRow),
-                    //typeof(Models.Draft.PublicStatisticRow),
+                    typeof(Models.Draft.PublicStatisticRow),
                     //typeof(Models.Draft.PublicTradeRow),
                     //typeof(Models.Draft.CapacityRow),
                     //typeof(Models.Draft.OrderEntryRequest),
                     //typeof(Models.Draft.OrderModificationRequest),
-                    typeof(Models.Draft.OrderExecutionReport),
+                    //typeof(Models.Draft.OrderExecutionReport),
+                    //typeof(Models.Draft.TradeRecallRequest),
                     //typeof(Models.Draft.PrivateTradeRow)
                 };
 
@@ -499,10 +521,16 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (tradingService == null)
                 {
-                    MessageBox.Show("Trading service not initialized");
                     return;
                 }
                 tradingService.SendLogoutCommand();
+
+                this.buttonLogout.Enabled = false;
+                this.buttonSendOrderEntry.Enabled = false;
+                this.buttonSendOrderModification.Enabled = false;
+                this.buttonSendTradeRecall.Enabled = false;
+                this.buttonConnect.Enabled = true;
+
             }
             catch (Exception ex)
             {
@@ -510,15 +538,80 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonSendOrderModification_Click(object sender, EventArgs e)
         {
             try
             {
+                if (currentConfiguration == null)
+                {
+                    MessageBox.Show("Missing login");
+                    return;
+                }
                 var request = new OrderModificationRequest()
                 {
                     RequestId = Guid.NewGuid().ToString(),
-                    OrderModificationType = OrderModificationRequestOrderModificationType.DEAC
+                    OrderModificationType = OrderModificationRequestOrderModificationType.DEAC,
+                    Orders = new List<OrderModification>()
+                     {
+                         new OrderModification()
+                         {
+                             OrderId = "",
+                            ClientOrderId = lastSentOrder?.Orders.FirstOrDefault()?.ClientOrderId,
+                            ClipPriceChange = (lastSentOrder?.Orders.FirstOrDefault()?.ClipPriceChange ?? 0),
+                            ClipSize = (lastSentOrder?.Orders.FirstOrDefault()?.ClipSize ?? 0),
+                            ContractIds = lastSentOrder?.Orders.FirstOrDefault()?.ContractIds,
+                            ExecutionRestriction = (OrderModificationExecutionRestriction)Enum.Parse(typeof(OrderModificationExecutionRestriction),((lastSentOrder?.Orders.FirstOrDefault()?.ExecutionRestriction ?? OrderEntryExecutionRestriction.AON).ToString())),
+                            ExpireTime = lastSentOrder?.Orders.FirstOrDefault()?.ExpireTime ?? DateTimeOffset.MinValue,
+                            OrderType = (OrderModificationOrderType)Enum.Parse(typeof(OrderModificationOrderType),(( lastSentOrder?.Orders.FirstOrDefault()?.OrderType ?? OrderEntryOrderType.LIMIT).ToString())),
+                            PortfolioId = lastSentOrder?.Orders.FirstOrDefault()?.PortfolioId,
+                            Quantity = (lastSentOrder?.Orders.FirstOrDefault()?.Quantity ?? 0),
+                            RevisionNo = 0,
+                            Text = "",
+                            TimeInForce =  (OrderModificationTimeInForce)Enum.Parse(typeof(OrderModificationTimeInForce), ((lastSentOrder?.Orders.FirstOrDefault()?.TimeInForce ?? OrderEntryTimeInForce.GFS).ToString())),
+                            UnitPrice = lastSentOrder?.Orders.FirstOrDefault()?.UnitPrice ?? 0
+                         }
+                     }
                 };
+
+                var str = InputForm.ShowForm(JsonHelper.SerializeObjectPrettyPrinted(request));
+                if (str == "")
+                    return;
+
+                request = JsonHelper.DeserializeData<OrderModificationRequest>(str);
+                tradingService.SendModificationOrderRequest(request);
+                Log($"Sent order modification:{Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(request)}");
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void buttonSendTradeRecall_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentConfiguration == null)
+                {
+                    MessageBox.Show("Missing login");
+                    return;
+                }
+                var request = new TradeRecallRequest()
+                {
+                     RevisionNo = "",
+                     TradeId = ""
+                };
+
+                var str = InputForm.ShowForm(JsonHelper.SerializeObjectPrettyPrinted(request));
+                if (str == "")
+                    return;
+
+                request = JsonHelper.DeserializeData<TradeRecallRequest>(str);
+                tradingService.SendTradeCancellationRequest(request);
+                Log($"Sent trade recall:{Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(request)}");
+
 
             }
             catch (Exception ex)

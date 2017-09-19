@@ -1,6 +1,6 @@
 ﻿namespace NPS.ID.PublicApi.Client.WinFormsExample
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,26 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnConnect = new System.Windows.Forms.Button();
+            this.buttonConnect = new System.Windows.Forms.Button();
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.buttonGenerateSchemas = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.buttonSendOrderEntry = new System.Windows.Forms.Button();
             this.buttonGenerateCS = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonSendOrderModification = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
             this.buttonLogout = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.buttonSendTradeRecall = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // btnConnect
+            // buttonConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(13, 13);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(75, 23);
-            this.btnConnect.TabIndex = 0;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
+            this.buttonConnect.Location = new System.Drawing.Point(13, 13);
+            this.buttonConnect.Name = "buttonConnect";
+            this.buttonConnect.Size = new System.Drawing.Size(75, 23);
+            this.buttonConnect.TabIndex = 0;
+            this.buttonConnect.Text = "Connect";
+            this.buttonConnect.UseVisualStyleBackColor = true;
+            this.buttonConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // textBoxLog
             // 
@@ -71,15 +71,16 @@
             this.buttonGenerateSchemas.UseVisualStyleBackColor = true;
             this.buttonGenerateSchemas.Click += new System.EventHandler(this.buttonGenerateSchemas_Click);
             // 
-            // button2
+            // buttonSendOrderEntry
             // 
-            this.button2.Location = new System.Drawing.Point(13, 42);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(137, 23);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "SendOrderEntryRequest";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.buttonSendOrderEntry.Enabled = false;
+            this.buttonSendOrderEntry.Location = new System.Drawing.Point(13, 42);
+            this.buttonSendOrderEntry.Name = "buttonSendOrderEntry";
+            this.buttonSendOrderEntry.Size = new System.Drawing.Size(137, 23);
+            this.buttonSendOrderEntry.TabIndex = 4;
+            this.buttonSendOrderEntry.Text = "Send Order Creation";
+            this.buttonSendOrderEntry.UseVisualStyleBackColor = true;
+            this.buttonSendOrderEntry.Click += new System.EventHandler(this.buttonSendOrderEntry_Click);
             // 
             // buttonGenerateCS
             // 
@@ -91,15 +92,16 @@
             this.buttonGenerateCS.UseVisualStyleBackColor = true;
             this.buttonGenerateCS.Click += new System.EventHandler(this.buttonGenerateCS_Click);
             // 
-            // button1
+            // buttonSendOrderModification
             // 
-            this.button1.Location = new System.Drawing.Point(299, 42);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(183, 23);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "SendOrderModificationRequest";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonSendOrderModification.Enabled = false;
+            this.buttonSendOrderModification.Location = new System.Drawing.Point(156, 41);
+            this.buttonSendOrderModification.Name = "buttonSendOrderModification";
+            this.buttonSendOrderModification.Size = new System.Drawing.Size(183, 23);
+            this.buttonSendOrderModification.TabIndex = 6;
+            this.buttonSendOrderModification.Text = "Send Order Modification";
+            this.buttonSendOrderModification.UseVisualStyleBackColor = true;
+            this.buttonSendOrderModification.Click += new System.EventHandler(this.buttonSendOrderModification_Click);
             // 
             // buttonClear
             // 
@@ -114,39 +116,42 @@
             // 
             // buttonLogout
             // 
-            this.buttonLogout.Location = new System.Drawing.Point(94, 12);
+            this.buttonLogout.Enabled = false;
+            this.buttonLogout.Location = new System.Drawing.Point(94, 13);
             this.buttonLogout.Name = "buttonLogout";
-            this.buttonLogout.Size = new System.Drawing.Size(75, 23);
+            this.buttonLogout.Size = new System.Drawing.Size(132, 23);
             this.buttonLogout.TabIndex = 8;
             this.buttonLogout.Text = "Logout";
             this.buttonLogout.UseVisualStyleBackColor = true;
             this.buttonLogout.Click += new System.EventHandler(this.buttonLogout_Click);
             // 
-            // button3
+            // buttonSendTradeRecall
             // 
-            this.button3.Location = new System.Drawing.Point(156, 42);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(137, 23);
-            this.button3.TabIndex = 9;
-            this.button3.Text = "SendIncorrectOrderEntry";
-            this.button3.UseVisualStyleBackColor = true;
+            this.buttonSendTradeRecall.Enabled = false;
+            this.buttonSendTradeRecall.Location = new System.Drawing.Point(345, 42);
+            this.buttonSendTradeRecall.Name = "buttonSendTradeRecall";
+            this.buttonSendTradeRecall.Size = new System.Drawing.Size(183, 23);
+            this.buttonSendTradeRecall.TabIndex = 9;
+            this.buttonSendTradeRecall.Text = "Send Trade Recall";
+            this.buttonSendTradeRecall.UseVisualStyleBackColor = true;
+            this.buttonSendTradeRecall.Click += new System.EventHandler(this.buttonSendTradeRecall_Click);
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1083, 420);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.buttonSendTradeRecall);
             this.Controls.Add(this.buttonLogout);
             this.Controls.Add(this.buttonClear);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.buttonSendOrderModification);
             this.Controls.Add(this.buttonGenerateCS);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.buttonSendOrderEntry);
             this.Controls.Add(this.buttonGenerateSchemas);
             this.Controls.Add(this.textBoxLog);
-            this.Controls.Add(this.btnConnect);
-            this.Name = "Form1";
-            this.Text = "Intraday 2.0 Api Sample app [NOTSUPPORTED]";
+            this.Controls.Add(this.buttonConnect);
+            this.Name = "MainForm";
+            this.Text = "Intraday 2.0 Api Example app";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,15 +159,15 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.Button buttonGenerateSchemas;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button buttonSendOrderEntry;
         private System.Windows.Forms.Button buttonGenerateCS;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonSendOrderModification;
         private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.Button buttonLogout;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button buttonSendTradeRecall;
     }
 }
 
