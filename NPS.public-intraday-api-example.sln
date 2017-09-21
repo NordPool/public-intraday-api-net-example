@@ -5,10 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.public-intraday-api-example", "NPS.public-intraday-api-example\NPS.public-intraday-api-example.csproj", "{36F6559C-77E2-4332-9D32-AB1A3BF3A09F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.ID.PublicApi.Client", "NPS.ID.PublicApi.Client\NPS.ID.PublicApi.Client.csproj", "{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.ID.PublicApi.Client.WinFormsExample", "NPS.ID.PublicApi.Client.WinFormsExample\NPS.ID.PublicApi.Client.WinFormsExample.csproj", "{A78F80B9-8383-4223-B432-AAEA7F691EF0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{36F6559C-77E2-4332-9D32-AB1A3BF3A09F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36F6559C-77E2-4332-9D32-AB1A3BF3A09F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36F6559C-77E2-4332-9D32-AB1A3BF3A09F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
