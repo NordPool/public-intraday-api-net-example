@@ -413,7 +413,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login information. Add your credentails to app.config and restart the application");
+                    MessageBox.Show("Missing login information. Add your credentials to app.config and restart the application");
                     return;
                 }
                 var order = SampleOrderRequest();
@@ -470,7 +470,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login information. Add your credentails to app.config and restart the application");
+                    MessageBox.Show("Missing login information. Add your credentials to app.config and restart the application");
                     return;
                 }
                 var request = new OrderModificationRequest()
@@ -521,7 +521,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login");
+                    MessageBox.Show("Missing login information. Add your credentials to app.config and restart the application");
                     return;
                 }
                 var request = new TradeRecallRequest()
