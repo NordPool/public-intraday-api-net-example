@@ -44,6 +44,12 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private TradingService tradingService;
 
+
+        /// <summary>
+        /// Connect to trading service
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void btnConnect_Click(object sender, EventArgs e)
         {
             try
@@ -415,92 +421,6 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 tradingService.SendEntryOrderRequest(order);
                 Log($"Sent order:{Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(order)}");
                 lastSentOrder = order;
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.ToString());
-            }
-        }
-
-        private void buttonGenerateSchemas_Click(object sender, EventArgs e)
-        {
-            try
-            {
-
-                var types = new Type[] {
-                    //typeof(Models.Draft.ConfigurationRow),
-                    //typeof(Models.Draft.HeartbeatMessage),
-                    //typeof(Models.Draft.DeliveryAreaRow),
-                    //typeof(Models.Draft.ContractRow),
-                    //typeof(Models.Draft.LocalViewRow),
-                    typeof(Models.Draft.PublicStatisticRow),
-                    //typeof(Models.Draft.PublicTradeRow),
-                    //typeof(Models.Draft.CapacityRow),
-                    //typeof(Models.Draft.OrderEntryRequest),
-                    //typeof(Models.Draft.OrderModificationRequest),
-                    //typeof(Models.Draft.OrderExecutionReport),
-                    //typeof(Models.Draft.TradeRecallRequest),
-                    //typeof(Models.Draft.PrivateTradeRow)
-                };
-
-                this.textBoxLog.Text = "";
-
-                var path = @"C:\NordPool\public-intraday-api-jsonschema\v1";
-
-                foreach (var jsonType in types)
-                {
-
-                    var jsonSchemaGenerator = new JSchemaGenerator();
-                    jsonSchemaGenerator.GenerationProviders.Add(new StringEnumGenerationProvider());
-                    jsonSchemaGenerator.GenerationProviders.Add(new FormatSchemaProvider());
-                    jsonSchemaGenerator.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    jsonSchemaGenerator.SchemaLocationHandling = SchemaLocationHandling.Definitions;
-                    jsonSchemaGenerator.SchemaPropertyOrderHandling = SchemaPropertyOrderHandling.Default;
-                    jsonSchemaGenerator.SchemaReferenceHandling = SchemaReferenceHandling.Objects;
-                    jsonSchemaGenerator.DefaultRequired = Required.Default;
-
-                    var myType = jsonType;
-                    var schema = jsonSchemaGenerator.Generate(myType);
-
-                    schema.Title = myType.Name; // this doesn't seem to get done within the generator
-                    var writer = new StringWriter();
-                    var jsonTextWriter = new JsonTextWriter(writer);
-                    schema.WriteTo(jsonTextWriter);
-                    dynamic parsedJson = JsonConvert.DeserializeObject(writer.ToString());
-                    var prettyString = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-                    File.WriteAllText(Path.Combine(path, $"{jsonType.Name}.json"), prettyString);
-                    this.textBoxLog.Text += prettyString + Environment.NewLine;
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-        }
-
-        private async void buttonGenerateCS_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var schemaFolder = new DirectoryInfo(@"C:\NordPool\public-intraday-api-jsonschema\v1\");
-                foreach (var schemaFile in schemaFolder.EnumerateFiles())
-                {
-                    var contents = File.ReadAllText(schemaFile.FullName);
-                    var schema = await JsonSchema4.FromJsonAsync(contents);
-                    var generator = new CSharpGenerator(schema);
-                    generator.Settings.ArrayType = "System.Collections.Generic.List";
-                    generator.Settings.Namespace = "NPS.ID.PublicApi.Models";
-                    generator.Settings.DateTimeType = "System.DateTimeOffset";
-                    generator.Settings.ClassStyle = CSharpClassStyle.Poco;
-
-
-                    var csCode = generator.GenerateFile();
-                    File.WriteAllText(Path.Combine(@"C:\NordPool\public-intraday-net-api\NPS.ID.PublicApi.Models", $"{schema.Title}.cs"), csCode);
-                }
 
             }
             catch (Exception ex)
