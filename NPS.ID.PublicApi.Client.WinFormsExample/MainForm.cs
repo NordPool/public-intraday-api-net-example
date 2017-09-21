@@ -1,4 +1,10 @@
-﻿using log4net;
+﻿/*
+ *  Copyright 2017 Nord Pool.
+ *  This library is intended to aid integration with Nord Pool’s Intraday API and comes without any warranty. Users of this library are responsible for separately testing and ensuring that it works according to their own standards.
+ *  Please send feedback to idapi@nordpoolgroup.com.
+ */
+
+using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
@@ -46,7 +52,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
 
         /// <summary>
-        /// Connect to trading service
+        /// Connect to Nord Pool Intraday
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -54,7 +60,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             try
             {
-                Log("Starting to connect trading service..");
+                Log("Starting to connect Nord Pool Intraday.");
                 // Authorize to get auth token
                 var token = await AuthorizeToSSOService();
                 Log($"Got token {token}");
@@ -407,7 +413,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login");
+                    MessageBox.Show("Missing login information. Add your credentails to app.config and restart the application");
                     return;
                 }
                 var order = SampleOrderRequest();
@@ -464,7 +470,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login");
+                    MessageBox.Show("Missing login information. Add your credentails to app.config and restart the application");
                     return;
                 }
                 var request = new OrderModificationRequest()
