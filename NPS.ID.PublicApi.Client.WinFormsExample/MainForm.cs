@@ -14,7 +14,7 @@ using NPS.ID.PublicApi.Client.Connection;
 using NPS.ID.PublicApi.Client.Security;
 using NPS.ID.PublicApi.Client.Subscription;
 using NPS.ID.PublicApi.Client.Utilities;
-using NPS.ID.PublicApi.Models;
+using NPS.ID.PublicApi.Models.v1;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -225,7 +225,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         private void CapacitiesCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Capacities");
-            var capacitiesData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
+            var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(messageContent);
             Log(JsonHelper.SerializeObjectPrettyPrinted(capacitiesData));
         }
 
@@ -233,7 +233,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Public Statistics");
             var publicStatisticsData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(publicStatisticsData));
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(publicStatisticsData));
         }
 
         private void PrivateTradeCallBack(string messageContent)
@@ -266,7 +266,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
             if (sampleContract == null)
             {
-                sampleContract = contractsData.FirstOrDefault(r => r.State == ContractRowState.ACTI && r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
+                sampleContract = contractsData.FirstOrDefault(r => r.State == StateEnum.ACTI && r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
                 Log($"Sample contract: {Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(contractsData)}");
             }
         }
@@ -329,13 +329,13 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                     {
                         ClientOrderId = Guid.NewGuid().ToString(),
                         PortfolioId  = portFolio.Id,
-                        Side = OrderEntrySide.SELL,
+                        Side =  SideEnum.SELL,
                         ContractIds = new List<string> { sampleContract.ContractId },
-                        OrderType = OrderEntryOrderType.LIMIT,
+                        OrderType = OrderTypeEnum.LIMIT,
                         Quantity = 3000,
-                        State = OrderEntryState.ACTI,
+                        State =  StateEnum.ACTI,
                         UnitPrice = 2500,
-                        TimeInForce = OrderEntryTimeInForce.GFS,
+                        TimeInForce =  TimeInForceEnum.GFS,
                         DeliveryAreaId = portFolio.Areas.First().AreaId,
                         //ExecutionRestriction = OrderEntryExecutionRestriction.AON,
                         //ExpireTime = DateTimeOffset.Now.AddHours(6)
@@ -476,7 +476,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 var request = new OrderModificationRequest()
                 {
                     RequestId = Guid.NewGuid().ToString(),
-                    OrderModificationType = OrderModificationRequestOrderModificationType.DEAC,
+                    OrderModificationType = OrderModificationTypeEnum.DEAC,
                     Orders = new List<OrderModification>()
                      {
                          new OrderModification()
@@ -486,14 +486,14 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                             ClipPriceChange = (lastSentOrder?.Orders.FirstOrDefault()?.ClipPriceChange ?? 0),
                             ClipSize = (lastSentOrder?.Orders.FirstOrDefault()?.ClipSize ?? 0),
                             ContractIds = lastSentOrder?.Orders.FirstOrDefault()?.ContractIds,
-                            ExecutionRestriction = (OrderModificationExecutionRestriction)Enum.Parse(typeof(OrderModificationExecutionRestriction),((lastSentOrder?.Orders.FirstOrDefault()?.ExecutionRestriction ?? OrderEntryExecutionRestriction.AON).ToString())),
+                            ExecutionRestriction = lastSentOrder?.Orders.FirstOrDefault()?.ExecutionRestriction ?? ExecutionRestrictionEnum.AON, 
                             ExpireTime = lastSentOrder?.Orders.FirstOrDefault()?.ExpireTime ?? DateTimeOffset.MinValue,
-                            OrderType = (OrderModificationOrderType)Enum.Parse(typeof(OrderModificationOrderType),(( lastSentOrder?.Orders.FirstOrDefault()?.OrderType ?? OrderEntryOrderType.LIMIT).ToString())),
+                            OrderType = lastSentOrder?.Orders.FirstOrDefault()?.OrderType ?? OrderTypeEnum.LIMIT,
                             PortfolioId = lastSentOrder?.Orders.FirstOrDefault()?.PortfolioId,
                             Quantity = (lastSentOrder?.Orders.FirstOrDefault()?.Quantity ?? 0),
                             RevisionNo = 0,
                             Text = "",
-                            TimeInForce =  (OrderModificationTimeInForce)Enum.Parse(typeof(OrderModificationTimeInForce), ((lastSentOrder?.Orders.FirstOrDefault()?.TimeInForce ?? OrderEntryTimeInForce.GFS).ToString())),
+                            TimeInForce =  lastSentOrder?.Orders.FirstOrDefault()?.TimeInForce ?? TimeInForceEnum.GFS,
                             UnitPrice = lastSentOrder?.Orders.FirstOrDefault()?.UnitPrice ?? 0
                          }
                      }

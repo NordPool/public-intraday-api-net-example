@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 using NPS.ID.PublicApi.Client.Connection;
 using NPS.ID.PublicApi.Client.Utilities;
 using Stomp.Net.Stomp.Protocol;
-using NPS.ID.PublicApi.Models;
+using NPS.ID.PublicApi.Models.v1;
 
 namespace NPS.ID.PublicApi.Client.Subscription
 {
