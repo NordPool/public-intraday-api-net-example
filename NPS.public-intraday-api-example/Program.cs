@@ -226,7 +226,7 @@ namespace NPS.public_intraday_api_example
                 {
                     new OrderEntryRequest.Order()
                     {
-                        clientOrderId = "Something"
+                        clientOrderId = Guid.NewGuid().ToString() // User's own UID to track this order
                     },
                 }
             };
