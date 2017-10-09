@@ -5,11 +5,6 @@
  */
 
 using log4net;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Schema.Generation;
-using Newtonsoft.Json.Serialization;
-using NJsonSchema;
-using NJsonSchema.CodeGeneration.CSharp;
 using NPS.ID.PublicApi.Client.Connection;
 using NPS.ID.PublicApi.Client.Security;
 using NPS.ID.PublicApi.Client.Subscription;
@@ -17,13 +12,8 @@ using NPS.ID.PublicApi.Client.Utilities;
 using Nordpool.ID.PublicApi.v1;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
-using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -229,9 +219,9 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private void CapacitiesCallBack(string messageContent)
         {
-            ShowMessage(messageContent, "Capacities");
-            var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(capacitiesData));
+            //ShowMessage(messageContent, "Capacities");
+            //var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(messageContent);
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(capacitiesData));
         }
 
         private void PublicStatisticsCallBack(string messageContent)
@@ -311,7 +301,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 {
                     new OrderEntry()
                     {
-                        ClientOrderId = Guid.NewGuid().ToString(),
+                        ClientOrderId = Guid.NewGuid(),
                          PortfolioId = "Z00001-5"
 
                     },
@@ -332,7 +322,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 {
                     new OrderEntry()
                     {
-                        ClientOrderId = Guid.NewGuid().ToString(),
+                        ClientOrderId = Guid.NewGuid(),
                         PortfolioId  = portFolio.Id,
                         Side =  OrderSide.SELL,
                         ContractIds = new List<string> { sampleContract.ContractId },
@@ -487,11 +477,11 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                          new OrderModification()
                          {
                              OrderId = "",
-                            ClientOrderId = lastSentOrder?.Orders.FirstOrDefault()?.ClientOrderId,
+                            ClientOrderId = lastSentOrder?.Orders.FirstOrDefault()?.ClientOrderId ?? Guid.NewGuid(),
                             ClipPriceChange = (lastSentOrder?.Orders.FirstOrDefault()?.ClipPriceChange ?? 0),
                             ClipSize = (lastSentOrder?.Orders.FirstOrDefault()?.ClipSize ?? 0),
                             ContractIds = lastSentOrder?.Orders.FirstOrDefault()?.ContractIds,
-                            ExecutionRestriction = lastSentOrder?.Orders.FirstOrDefault()?.ExecutionRestriction ?? ExecutionRestriction.AON, 
+                            ExecutionRestriction = lastSentOrder?.Orders.FirstOrDefault()?.ExecutionRestriction ?? ExecutionRestriction.AON,
                             ExpireTime = lastSentOrder?.Orders.FirstOrDefault()?.ExpireTime ?? DateTimeOffset.MinValue,
                             OrderType = lastSentOrder?.Orders.FirstOrDefault()?.OrderType ?? OrderType.LIMIT,
                             PortfolioId = lastSentOrder?.Orders.FirstOrDefault()?.PortfolioId,
@@ -531,8 +521,8 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 }
                 var request = new TradeRecallRequest()
                 {
-                     RevisionNo = "",
-                     TradeId = ""
+                    RevisionNo = "",
+                    TradeId = ""
                 };
 
                 var str = InputForm.ShowForm(JsonHelper.SerializeObjectPrettyPrinted(request));
