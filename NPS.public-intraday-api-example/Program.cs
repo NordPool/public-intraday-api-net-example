@@ -273,7 +273,8 @@ namespace NPS.public_intraday_api_example
                 ClientSecret = ConfigurationManager.AppSettings["sso-clientSecret"],
                 Protocol = ConfigurationManager.AppSettings["sso-protocol"],
                 Host = ConfigurationManager.AppSettings["sso-host"],
-                TokenUri = ConfigurationManager.AppSettings["sso-tokenUri"]
+                TokenUri = ConfigurationManager.AppSettings["sso-tokenUri"],
+                Scope = ConfigurationManager.AppSettings["sso-scope"]
             };
 
             _logger.Info($"SSO settings read from App.config:");
@@ -282,6 +283,7 @@ namespace NPS.public_intraday_api_example
             _logger.Info($"Protocol: {ssoSettings.Protocol}");
             _logger.Info($"Host: {ssoSettings.Host}");
             _logger.Info($"Token URI: {ssoSettings.TokenUri}");
+            _logger.Info($"Scope: {ssoSettings.Scope}");
 
             return ssoSettings;
         }
@@ -294,8 +296,6 @@ namespace NPS.public_intraday_api_example
                 Port = Convert.ToInt32(ConfigurationManager.AppSettings["ws-port"]),
                 Protocol = ConfigurationManager.AppSettings["ws-protocol"],
                 Uri = ConfigurationManager.AppSettings["ws-uri"]
-
-
             };
 
             _logger.Info($"Web socket settings read from App.config:");

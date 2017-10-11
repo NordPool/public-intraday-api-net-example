@@ -14,7 +14,7 @@ namespace NPS.public_intraday_api_example.Services.Security
         private readonly string _protocol;
         private readonly string _grantType;
         private readonly string _scope;
-
+    
         public SSOService(string host, string clientId, string clientSecret, string tokenUri = "/connect/token",
             string protocol = "https", string grantType = "password", string scope = "intraday_api")
         {
@@ -34,8 +34,8 @@ namespace NPS.public_intraday_api_example.Services.Security
             _clientSecret = ssoSettings.ClientSecret;
             _tokenUri = ssoSettings.TokenUri;
             _protocol = ssoSettings.Protocol;
+            _scope = ssoSettings.Scope;
             _grantType = "password";
-            _scope = "intraday_api";
         }
 
         /// <summary>
