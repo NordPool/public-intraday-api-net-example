@@ -1,16 +1,17 @@
 ﻿# Nord Pool Intraday API .NET Example Code #
 
-This repository contains a .NET (Framework 4.6.1) console client example for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
-This sample code has been created based on the [Java Example Code](https://bitbucket.org/nordpoolspot/public-intraday-api-example) which should be used as primary example if possible. 
+This repository contains a .NET (Framework 4.6.2) Windows Forms example application for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
+This sample application uses .NET data objects published in [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api)
 
 ## Disclaimer ##
 
 We offer the client code examples to aid the development against Nord Pool's API at no warranty whatsoever. Clients are solely responsible for separately testing and ensuring that interaction with Nord Pool works according to their own standards.
 
-Additionally, we do not supply .NET library of communication protocol objects. We currently maintain [Java API library](https://bitbucket.org/nordpoolspot/public-intraday-api) as our single source of truth. This example does feature 
-Order Request protocol object for demo purposes, but to avoid confusion always use the Java API library as your only source for actual objects. 
-
 ## Using the example ##
+
+Example application can be opened with solution file: NPS.ID.PublicApi.Client.WinFormsExample.sln which is found in repository root.
+
+Example application assumes, that you have cloned also [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api) to your filesystem.
 
 All the relevant variables for connecting are located in App.config. Before running the example, user credentials should be updated to App.config:
 ```
