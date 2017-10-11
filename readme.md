@@ -11,7 +11,12 @@ We offer the client code examples to aid the development against Nord Pool's API
 
 Example application can be opened with solution file: NPS.ID.PublicApi.Client.WinFormsExample.sln which is found in repository root.
 
-Example application assumes, that you have cloned also [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api) to your filesystem.
+Example application requires, that you have cloned [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api) to your filesystem besides to this example app. Your configuration can be like:
+```
+#!
+C:\bitbucket\public-intraday-net-api
+C:\bitbucket\public-intraday-api-net-example
+```
 
 All the relevant variables for connecting are located in App.config. Before running the example, user credentials should be updated to App.config:
 ```
@@ -22,11 +27,11 @@ All the relevant variables for connecting are located in App.config. Before runn
 These credentials shall be obtained from [idapi@nordpoolgroup.com](mailto:idapi@nordpoolgroup.com) prior to running the example.
 
 Additionally, make sure that all the other variabels in the App.config point to correct addresses.
-Finally, build the solution (preferably with VS2017) and run it.
+Finally, build the solution with VS2017 and run it with startup project: **NPS.ID.PublicApi.Client.WinFormsExample**.
 
-The program will connect to the platform and subscribe to several topics. It also will send an invalid order so an error reply will come back from the system. The data received from the system will be printed as JSON in the console. Please note that for clarity we truncate some output that is too large (over 500 chars). 
+The program will connect to the platform and subscribe to several topics. It also provides examples on sending order messages to Intraday platform.
 
-The sequence of actions are located in **Program.cs** source code.
+The sequence of actions are located in **MainForm.cs** source code.
 
 #Important considerations#
 
