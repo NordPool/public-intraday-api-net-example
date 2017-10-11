@@ -7,6 +7,10 @@ This sample application uses .NET data objects published in [.NET API library](h
 
 We offer the client code examples to aid the development against Nord Pool's API at no warranty whatsoever. Clients are solely responsible for separately testing and ensuring that interaction with Nord Pool works according to their own standards.
 
+## Update 10/2017 ##
+
+Please note that former console-based example application is now deprecated. From now you should use **WinFormsExample** as described below.
+
 ## Using the example ##
 
 Example application can be opened with solution file: **NPS.ID.PublicApi.Client.WinFormsExample.sln** which is found in repository root.
