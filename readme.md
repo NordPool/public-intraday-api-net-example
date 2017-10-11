@@ -11,11 +11,11 @@ We offer the client code examples to aid the development against Nord Pool's API
 
 Example application can be opened with solution file: **NPS.ID.PublicApi.Client.WinFormsExample.sln** which is found in repository root.
 
-Example application requires, that you have cloned [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api) to your filesystem besides to this example app. Your configuration can be like:
+Example application requires, that you have cloned [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api) to your filesystem besides to this example app. Your local repository configuration can be for example:
 ```
 #!
-C:\bitbucket\public-intraday-net-api
-C:\bitbucket\public-intraday-api-net-example
+C:\[path]\public-intraday-net-api
+C:\[path]\public-intraday-api-net-example
 ```
 
 All the relevant variables for connecting are located in App.config. Before running the example, user credentials should be updated to App.config:
