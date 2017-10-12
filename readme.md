@@ -22,6 +22,8 @@ C:\[path]\public-intraday-net-api
 C:\[path]\public-intraday-api-net-example
 ```
 
+.NET Example client solution contains Api library -project including source code from public-intraday-net-api repository. .NET API library reference is always to the same version of the library than exists in disk.
+
 All the relevant variables for connecting are located in App.config. Before running the example, user credentials should be updated to App.config:
 ```
 #!
