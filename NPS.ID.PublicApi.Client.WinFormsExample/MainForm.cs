@@ -58,14 +58,14 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 Log("Starting to connect Nord Pool Intraday.");
                 // Authorize to get auth token
                 var token = await AuthorizeToSSOService();
-                Log($"Got token {token}");
+                Log($"Got token authorization token");
                 // Connect to trading service
                 tradingService = ConnectToTradingService(token);
                 Log($"Connected to Trading Service");
                 // Subscribe to topics
                 SubscribeToServices(tradingService);
                 Log($"Subscribed to services..");
-
+                
                 this.buttonLogout.Enabled = true;
                 this.buttonSendOrderEntry.Enabled = true;
                 this.buttonSendOrderModification.Enabled = true;
@@ -82,6 +82,8 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         delegate void SetTextCallback(string text);
         private void Log(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return;
             if (this.textBoxLog.InvokeRequired)
             {
                 SetTextCallback d = new SetTextCallback(Log);
@@ -219,8 +221,9 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private void CapacitiesCallBack(string messageContent)
         {
-            //ShowMessage(messageContent, "Capacities");
-            //var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(messageContent);
+            ShowMessage(messageContent, "Capacities");
+            var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(messageContent);
+            Log("If you want to see detailed Capacities - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(capacitiesData));
         }
 
@@ -228,7 +231,8 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Public Statistics");
             var publicStatisticsData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(publicStatisticsData));
+            Log("If you want to see detailed Public Statistics - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(publicStatisticsData));
         }
 
         private void PrivateTradeCallBack(string messageContent)
@@ -242,14 +246,16 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Local View", true);
             var localViewData = JsonHelper.DeserializeData<List<LocalViewRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(localViewData));
+            Log("If you want to see detailed Local View - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(localViewData));
         }
 
         private void ConfigurationCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Configuration");
             var configurationData = JsonHelper.DeserializeData<List<ConfigurationRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
+            Log("If you want to see detailed Configuration - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
             if (currentConfiguration == null)
                 currentConfiguration = configurationData.FirstOrDefault();
         }
@@ -258,11 +264,11 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Contracts");
             var contractsData = JsonHelper.DeserializeData<List<ContractRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
+            Log("If you want to see detailed Contracts - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
             if (sampleContract == null)
             {
                 sampleContract = contractsData.FirstOrDefault(r => r.State == ContractState.ACTI && r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
-                Log($"Sample contract: {Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(contractsData)}");
             }
         }
 
@@ -277,7 +283,8 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Delivery Areas");
             var deliveryAreasData = JsonHelper.DeserializeData<List<DeliveryAreaRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
+            Log("If you want to see detailed Delivery Areas - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
 
         }
 
