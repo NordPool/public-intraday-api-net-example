@@ -1,16 +1,28 @@
 ﻿# Nord Pool Intraday API .NET Example Code #
 
-This repository contains a .NET (Framework 4.6.1) console client example for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
-This sample code has been created based on the [Java Example Code](https://bitbucket.org/nordpoolspot/public-intraday-api-example) which should be used as primary example if possible. 
+This repository contains a .NET (Framework 4.6.2) Windows Forms example application for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
+This sample application uses .NET data objects published in [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api)
 
 ## Disclaimer ##
 
 We offer the client code examples to aid the development against Nord Pool's API at no warranty whatsoever. Clients are solely responsible for separately testing and ensuring that interaction with Nord Pool works according to their own standards.
 
-Additionally, we do not supply .NET library of communication protocol objects. We currently maintain [Java API library](https://bitbucket.org/nordpoolspot/public-intraday-api) as our single source of truth. This example does feature 
-Order Request protocol object for demo purposes, but to avoid confusion always use the Java API library as your only source for actual objects. 
+## Update 10/2017 ##
+
+Please note that former console-based example application is now deprecated. From now you should use **WinFormsExample** as described below.
 
 ## Using the example ##
+
+Example application can be opened with solution file: **NPS.ID.PublicApi.Client.WinFormsExample.sln** which is found in repository root.
+
+Example application requires, that you have cloned [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api) to your filesystem besides to this example app. Your local repository configuration can be for example:
+```
+#!
+C:\[path]\public-intraday-net-api
+C:\[path]\public-intraday-api-net-example
+```
+
+.NET Example client solution contains Api library -project including source code from public-intraday-net-api repository. .NET API library reference is always to the same version of the library than exists in disk.
 
 All the relevant variables for connecting are located in App.config. Before running the example, user credentials should be updated to App.config:
 ```
@@ -21,15 +33,15 @@ All the relevant variables for connecting are located in App.config. Before runn
 These credentials shall be obtained from [idapi@nordpoolgroup.com](mailto:idapi@nordpoolgroup.com) prior to running the example.
 
 Additionally, make sure that all the other variabels in the App.config point to correct addresses.
-Finally, build the solution (preferably with VS2017) and run it.
+Finally, build the solution with VS2017 and run it with startup project: **NPS.ID.PublicApi.Client.WinFormsExample**.
 
-The program will connect to the platform and subscribe to several topics. It also will send an invalid order so an error reply will come back from the system. The data received from the system will be printed as JSON in the console. Please note that for clarity we truncate some output that is too large (over 500 chars). 
+The program will connect to the platform and subscribe to several topics. It also provides examples on sending order messages to Intraday platform.
 
-The sequence of actions are located in **Program.cs** source code.
+The sequence of actions are located in **MainForm.cs** source code.
 
 #Important considerations#
 
-The current program is using the WebSocket4Net and Stomp.Net library to create a StompConnector that can operate through web sockets and handle all SockJS related details. That connector can be found from **Service/Connection/StompConnector.cs**.
+The current program is using the WebSocket4Net and Stomp.Net library to create a StompConnector that can operate through web sockets and handle all SockJS related details. That connector can be found from **NPS.ID.PublicApi.Client/Connection/StompConnector.cs**.
 
 The example uses port 8083 for establishing the web socket connection. For some organizations, it maybe so that only ports (80,443) used for HTTP and HTTPS protocols are opened by default. If the example doesn't connect to the API, check that the port 8083 has been opened from your firewall.
 
