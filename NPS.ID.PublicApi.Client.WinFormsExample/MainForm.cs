@@ -55,6 +55,14 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             try
             {
+                var cred = ReadUserCredentials();
+
+                if (string.IsNullOrEmpty(cred.UserName) || string.IsNullOrEmpty(cred.Password))
+                {
+                    MessageBox.Show("SSO UserName or password is not set. Update sso-user and sso-password to app.config AppSettings and re-run application");
+                    return;
+                }
+
                 Log("Starting to connect Nord Pool Intraday.");
                 // Authorize to get auth token
                 var token = await AuthorizeToSSOService();
@@ -65,7 +73,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 // Subscribe to topics
                 SubscribeToServices(tradingService);
                 Log($"Subscribed to services..");
-                
+
                 this.buttonLogout.Enabled = true;
                 this.buttonSendOrderEntry.Enabled = true;
                 this.buttonSendOrderModification.Enabled = true;
