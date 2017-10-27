@@ -9,7 +9,8 @@ We offer the client code examples to aid the development against Nord Pool's API
 
 ## Update 10/2017 ##
 
-Please note that former console-based example application is now deprecated. From now you should use **WinFormsExample** as described below.
+* Please note that former console-based example application is now deprecated. From now you should use **WinFormsExample** as described below.
+* Example Application now requires .NET 4.6.2. If you have not support for .NET 4.6.2. in your Visual Studio, install 4.6.2 developer pack from (https://www.microsoft.com/net/targeting)
 
 ## Using the example ##
 
