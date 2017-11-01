@@ -276,7 +276,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             //Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
             if (sampleContract == null)
             {
-                sampleContract = contractsData.FirstOrDefault(r => r.State == ContractState.ACTI && r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
+                sampleContract = contractsData.FirstOrDefault(r => r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
             }
         }
 
