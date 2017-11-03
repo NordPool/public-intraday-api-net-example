@@ -35,6 +35,8 @@
             this.buttonClear = new System.Windows.Forms.Button();
             this.buttonLogout = new System.Windows.Forms.Button();
             this.buttonSendTradeRecall = new System.Windows.Forms.Button();
+            this.buttonTradeHistory = new System.Windows.Forms.Button();
+            this.buttonOrderHistory = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonConnect
@@ -52,11 +54,11 @@
             this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLog.Location = new System.Drawing.Point(12, 79);
+            this.textBoxLog.Location = new System.Drawing.Point(12, 100);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(522, 303);
+            this.textBoxLog.Size = new System.Drawing.Size(426, 380);
             this.textBoxLog.TabIndex = 2;
             // 
             // buttonSendOrderEntry
@@ -73,9 +75,9 @@
             // buttonSendOrderModification
             // 
             this.buttonSendOrderModification.Enabled = false;
-            this.buttonSendOrderModification.Location = new System.Drawing.Point(156, 41);
+            this.buttonSendOrderModification.Location = new System.Drawing.Point(156, 42);
             this.buttonSendOrderModification.Name = "buttonSendOrderModification";
-            this.buttonSendOrderModification.Size = new System.Drawing.Size(183, 23);
+            this.buttonSendOrderModification.Size = new System.Drawing.Size(137, 23);
             this.buttonSendOrderModification.TabIndex = 6;
             this.buttonSendOrderModification.Text = "Send Order Modification";
             this.buttonSendOrderModification.UseVisualStyleBackColor = true;
@@ -84,7 +86,7 @@
             // buttonClear
             // 
             this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClear.Location = new System.Drawing.Point(459, 388);
+            this.buttonClear.Location = new System.Drawing.Point(363, 486);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(75, 23);
             this.buttonClear.TabIndex = 7;
@@ -106,19 +108,43 @@
             // buttonSendTradeRecall
             // 
             this.buttonSendTradeRecall.Enabled = false;
-            this.buttonSendTradeRecall.Location = new System.Drawing.Point(345, 42);
+            this.buttonSendTradeRecall.Location = new System.Drawing.Point(299, 42);
             this.buttonSendTradeRecall.Name = "buttonSendTradeRecall";
-            this.buttonSendTradeRecall.Size = new System.Drawing.Size(183, 23);
+            this.buttonSendTradeRecall.Size = new System.Drawing.Size(137, 23);
             this.buttonSendTradeRecall.TabIndex = 9;
             this.buttonSendTradeRecall.Text = "Send Trade Recall";
             this.buttonSendTradeRecall.UseVisualStyleBackColor = true;
             this.buttonSendTradeRecall.Click += new System.EventHandler(this.buttonSendTradeRecall_Click);
             // 
+            // buttonTradeHistory
+            // 
+            this.buttonTradeHistory.Enabled = false;
+            this.buttonTradeHistory.Location = new System.Drawing.Point(13, 71);
+            this.buttonTradeHistory.Name = "buttonTradeHistory";
+            this.buttonTradeHistory.Size = new System.Drawing.Size(137, 23);
+            this.buttonTradeHistory.TabIndex = 10;
+            this.buttonTradeHistory.Text = "REST: Trade history";
+            this.buttonTradeHistory.UseVisualStyleBackColor = true;
+            this.buttonTradeHistory.Click += new System.EventHandler(this.buttonTradeHistory_Click);
+            // 
+            // buttonOrderHistory
+            // 
+            this.buttonOrderHistory.Enabled = false;
+            this.buttonOrderHistory.Location = new System.Drawing.Point(156, 71);
+            this.buttonOrderHistory.Name = "buttonOrderHistory";
+            this.buttonOrderHistory.Size = new System.Drawing.Size(137, 23);
+            this.buttonOrderHistory.TabIndex = 11;
+            this.buttonOrderHistory.Text = "REST: Order history";
+            this.buttonOrderHistory.UseVisualStyleBackColor = true;
+            this.buttonOrderHistory.Click += new System.EventHandler(this.buttonOrderHistory_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(546, 420);
+            this.ClientSize = new System.Drawing.Size(450, 518);
+            this.Controls.Add(this.buttonOrderHistory);
+            this.Controls.Add(this.buttonTradeHistory);
             this.Controls.Add(this.buttonSendTradeRecall);
             this.Controls.Add(this.buttonLogout);
             this.Controls.Add(this.buttonClear);
@@ -142,6 +168,8 @@
         private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.Button buttonLogout;
         private System.Windows.Forms.Button buttonSendTradeRecall;
+        private System.Windows.Forms.Button buttonTradeHistory;
+        private System.Windows.Forms.Button buttonOrderHistory;
     }
 }
 

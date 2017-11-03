@@ -22,6 +22,7 @@ using Nordpool.ID.PublicApi.v1.Trade.Request;
 using Nordpool.ID.PublicApi.v1.Statistic;
 using Nordpool.ID.PublicApi.v1.Order;
 using Nordpool.ID.PublicApi.v1.Contract;
+using NPS.ID.PublicApi.Client.Rest;
 
 namespace NPS.ID.PublicApi.Client.WinFormsExample
 {
@@ -36,6 +37,9 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         private ContractRow sampleContract = null;
         private ConfigurationRow currentConfiguration = null;
         private OrderEntryRequest lastSentOrder = null;
+        private RestApiSettings restApiSettings = null;
+        private string token = null;
+        private string apiVersion = "";
 
 
         public MainForm()
@@ -65,7 +69,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
                 Log("Starting to connect Nord Pool Intraday.");
                 // Authorize to get auth token
-                var token = await AuthorizeToSSOService();
+                token = await AuthorizeToSSOService();
                 Log($"Got token authorization token");
                 // Connect to trading service
                 tradingService = ConnectToTradingService(token);
@@ -74,11 +78,16 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 SubscribeToServices(tradingService);
                 Log($"Subscribed to services..");
 
+                restApiSettings = ReadRestApiSettings();
+                
+                
                 this.buttonLogout.Enabled = true;
                 this.buttonSendOrderEntry.Enabled = true;
                 this.buttonSendOrderModification.Enabled = true;
                 this.buttonSendTradeRecall.Enabled = true;
-                this.buttonConnect.Enabled = false;
+                this.buttonConnect.Enabled = true;
+                this.buttonTradeHistory.Enabled = true;
+                this.buttonOrderHistory.Enabled = true;
 
             }
             catch (Exception ex)
@@ -142,7 +151,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             if (!tradingService.IsConnected)
                 throw new InvalidOperationException("Trading service not connected! Can't subscribe to any topics.");
 
-            var apiVersion = ConfigurationManager.AppSettings["api-version"];
+            apiVersion = ConfigurationManager.AppSettings["api-version"];
 
             tradingService.Subscribe(Subscription.Subscription.Builder()
                 .WithTopic(Topic.Ticker)
@@ -398,6 +407,20 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             return ssoSettings;
         }
 
+        private RestApiSettings ReadRestApiSettings()
+        {
+            var restapiSettings = new RestApiSettings()
+            {
+                Host = ConfigurationManager.AppSettings["rest-host"],
+                Protocol= ConfigurationManager.AppSettings["rest-protocol"]
+            };
+
+            Log($"Rest Api settings read from App.config:");
+            Log($"Host: {restapiSettings.Host}");
+            
+            return restapiSettings;
+        }
+
         private WebSocketSettings ReadWebSocketSettings()
         {
             var webSocketSettings = new WebSocketSettings()
@@ -465,7 +488,10 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 this.buttonSendOrderEntry.Enabled = false;
                 this.buttonSendOrderModification.Enabled = false;
                 this.buttonSendTradeRecall.Enabled = false;
+                this.buttonTradeHistory.Enabled = false;
+                this.buttonOrderHistory.Enabled = false;
                 this.buttonConnect.Enabled = true;
+
 
             }
             catch (Exception ex)
@@ -552,6 +578,34 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private async void buttonTradeHistory_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var restApiClient = new RestApiClient(restApiSettings.Host, restApiSettings.Protocol, token, apiVersion);
+                var data = await restApiClient.GetPrivateTrades(DateTimeOffset.Now.AddDays(-14), DateTimeOffset.Now);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private async void buttonOrderHistory_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var restApiClient = new RestApiClient(restApiSettings.Host, restApiSettings.Protocol, token, apiVersion);
+                var data = await restApiClient.GetOrderExecutions(DateTimeOffset.Now.AddDays(-14), DateTimeOffset.Now);
+            }
+            catch (Exception ex)
+            {
+
                 MessageBox.Show(ex.ToString());
             }
         }

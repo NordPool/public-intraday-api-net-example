@@ -19,6 +19,7 @@ namespace NPS.ID.PublicApi.Client.Utilities
     public class GenericRestConnector
     {
         private readonly BasicCredentials _credentials;
+        private string _xauthToken;
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public GenericRestConnector()
         {
@@ -27,6 +28,11 @@ namespace NPS.ID.PublicApi.Client.Utilities
         public GenericRestConnector(BasicCredentials credentials)
         {
             _credentials = credentials;
+        }
+
+        public GenericRestConnector( string xauthToken)
+        {
+            _xauthToken = xauthToken;
         }
 
         public async Task<T> Get<T>(string uri)
@@ -93,10 +99,17 @@ namespace NPS.ID.PublicApi.Client.Utilities
 
         private HttpClient GetHttpClient()
         {
+            HttpClient client;
             if (_credentials.Equals(default(BasicCredentials)))
-                return HttpClientFactory.Create();
+                client = HttpClientFactory.Create();
+            else
+                client = HttpClientFactory.CreateWithBasicAuth(_credentials.Password, _credentials.UserName);
 
-            return HttpClientFactory.CreateWithBasicAuth(_credentials.Password, _credentials.UserName);
+            if(!string.IsNullOrEmpty(_xauthToken))
+                client.DefaultRequestHeaders.Add("X-AUTH-TOKEN", _xauthToken);
+
+            return client;
+
         }
     }
 
