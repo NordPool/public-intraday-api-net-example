@@ -30,7 +30,7 @@ namespace NPS.ID.PublicApi.Client.Utilities
             _credentials = credentials;
         }
 
-        public GenericRestConnector( string xauthToken)
+        public GenericRestConnector(string xauthToken)
         {
             _xauthToken = xauthToken;
         }
@@ -39,14 +39,10 @@ namespace NPS.ID.PublicApi.Client.Utilities
         {
             using (var client = GetHttpClient())
             {
-                return await client.GetAsync(uri).ContinueWith(response =>
-                {
-                    response.Result.EnsureSuccessStatusCode();
-                    return response.Result.Content.ReadAsStringAsync().ContinueWith(responseString =>
-                    {
-                        return JsonConvert.DeserializeObject<T>(responseString.Result);
-                    }).Result;
-                });
+                var response = await client.GetAsync(uri);
+                response.EnsureSuccessStatusCode();
+                var responseString = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(responseString);
             }
         }
 
@@ -105,7 +101,7 @@ namespace NPS.ID.PublicApi.Client.Utilities
             else
                 client = HttpClientFactory.CreateWithBasicAuth(_credentials.Password, _credentials.UserName);
 
-            if(!string.IsNullOrEmpty(_xauthToken))
+            if (!string.IsNullOrEmpty(_xauthToken))
                 client.DefaultRequestHeaders.Add("X-AUTH-TOKEN", _xauthToken);
 
             return client;

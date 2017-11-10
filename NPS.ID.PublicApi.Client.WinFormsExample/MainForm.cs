@@ -88,6 +88,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 this.buttonConnect.Enabled = true;
                 this.buttonTradeHistory.Enabled = true;
                 this.buttonOrderHistory.Enabled = true;
+                this.buttonRestPublicTrades.Enabled = true;
 
             }
             catch (Exception ex)
@@ -293,7 +294,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Order Execution Report");
             var orderExecutionsData = JsonHelper.DeserializeData<List<OrderExecutionReport>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(orderExecutionsData));
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(orderExecutionsData));
         }
 
         private void DeliveryAreasCallBack(string messageContent)
@@ -309,7 +310,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Ticker");
             var tickerData = JsonHelper.DeserializeData<List<PublicTradeRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(tickerData));
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(tickerData));
         }
 
 
@@ -490,6 +491,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 this.buttonSendTradeRecall.Enabled = false;
                 this.buttonTradeHistory.Enabled = false;
                 this.buttonOrderHistory.Enabled = false;
+                this.buttonRestPublicTrades.Enabled = false;
                 this.buttonConnect.Enabled = true;
 
 
@@ -587,7 +589,8 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             try
             {
                 var restApiClient = new RestApiClient(restApiSettings.Host, restApiSettings.Protocol, token, apiVersion);
-                var data = await restApiClient.GetPrivateTrades(DateTimeOffset.Now.AddDays(-14), DateTimeOffset.Now);
+                var data = await restApiClient.GetPrivateTrades(DateTimeOffset.Now.AddDays(-7), DateTimeOffset.Now);
+                Log($"Private  trade history, {data?.Count() ?? 0} rows:"); Log(JsonHelper.SerializeObjectPrettyPrinted(data));
             }
             catch (Exception ex)
             {
@@ -601,7 +604,25 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             try
             {
                 var restApiClient = new RestApiClient(restApiSettings.Host, restApiSettings.Protocol, token, apiVersion);
-                var data = await restApiClient.GetOrderExecutions(DateTimeOffset.Now.AddDays(-14), DateTimeOffset.Now);
+                var data = await restApiClient.GetOrderExecutions(DateTimeOffset.Now.AddDays(-7), DateTimeOffset.Now);
+                Log("Private order history:");
+                Log(JsonHelper.SerializeObjectPrettyPrinted(data));
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private async void buttonRestPublicTrades_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var restApiClient = new RestApiClient(restApiSettings.Host, restApiSettings.Protocol, token, apiVersion);
+                var data = await restApiClient.GetPublicTrades(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now);
+                Log($"Public trade history, {data?.Count() ?? 0} rows:");
+                Log(JsonHelper.SerializeObjectPrettyPrinted(data));
             }
             catch (Exception ex)
             {

@@ -37,6 +37,7 @@
             this.buttonSendTradeRecall = new System.Windows.Forms.Button();
             this.buttonTradeHistory = new System.Windows.Forms.Button();
             this.buttonOrderHistory = new System.Windows.Forms.Button();
+            this.buttonRestPublicTrades = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonConnect
@@ -123,14 +124,14 @@
             this.buttonTradeHistory.Name = "buttonTradeHistory";
             this.buttonTradeHistory.Size = new System.Drawing.Size(137, 23);
             this.buttonTradeHistory.TabIndex = 10;
-            this.buttonTradeHistory.Text = "REST: Trade history";
+            this.buttonTradeHistory.Text = "REST: Private trades";
             this.buttonTradeHistory.UseVisualStyleBackColor = true;
             this.buttonTradeHistory.Click += new System.EventHandler(this.buttonTradeHistory_Click);
             // 
             // buttonOrderHistory
             // 
             this.buttonOrderHistory.Enabled = false;
-            this.buttonOrderHistory.Location = new System.Drawing.Point(156, 71);
+            this.buttonOrderHistory.Location = new System.Drawing.Point(299, 71);
             this.buttonOrderHistory.Name = "buttonOrderHistory";
             this.buttonOrderHistory.Size = new System.Drawing.Size(137, 23);
             this.buttonOrderHistory.TabIndex = 11;
@@ -138,11 +139,23 @@
             this.buttonOrderHistory.UseVisualStyleBackColor = true;
             this.buttonOrderHistory.Click += new System.EventHandler(this.buttonOrderHistory_Click);
             // 
+            // buttonRestPublicTrades
+            // 
+            this.buttonRestPublicTrades.Enabled = false;
+            this.buttonRestPublicTrades.Location = new System.Drawing.Point(156, 71);
+            this.buttonRestPublicTrades.Name = "buttonRestPublicTrades";
+            this.buttonRestPublicTrades.Size = new System.Drawing.Size(137, 23);
+            this.buttonRestPublicTrades.TabIndex = 12;
+            this.buttonRestPublicTrades.Text = "REST: Public trades";
+            this.buttonRestPublicTrades.UseVisualStyleBackColor = true;
+            this.buttonRestPublicTrades.Click += new System.EventHandler(this.buttonRestPublicTrades_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(450, 518);
+            this.Controls.Add(this.buttonRestPublicTrades);
             this.Controls.Add(this.buttonOrderHistory);
             this.Controls.Add(this.buttonTradeHistory);
             this.Controls.Add(this.buttonSendTradeRecall);
@@ -170,6 +183,7 @@
         private System.Windows.Forms.Button buttonSendTradeRecall;
         private System.Windows.Forms.Button buttonTradeHistory;
         private System.Windows.Forms.Button buttonOrderHistory;
+        private System.Windows.Forms.Button buttonRestPublicTrades;
     }
 }
 
