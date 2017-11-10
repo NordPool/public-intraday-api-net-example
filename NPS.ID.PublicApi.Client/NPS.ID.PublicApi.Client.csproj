@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NPS.ID.PublicApi.Client</RootNamespace>
     <AssemblyName>NPS.ID.PublicApi.Client</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -118,12 +118,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\RestApiSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Connection\Exceptions\StompConnectionException.cs" />
     <Compile Include="Connection\StompCommandConstants.cs" />
     <Compile Include="Connection\StompConnector.cs" />
     <Compile Include="Connection\StompMessageFactory.cs" />
     <Compile Include="Connection\WebSocketSettings.cs" />
+    <Compile Include="Rest\RestApiClient.cs" />
     <Compile Include="Security\Exceptions\TokenRequestFailedException.cs" />
     <Compile Include="Security\SSOService.cs" />
     <Compile Include="Security\SSOSettings.cs" />

@@ -41,5 +41,19 @@ namespace NPS.ID.PublicApi.Client.Utilities
 
             return client;
         }
+
+        /// <summary>
+        /// Creates a HttpClient with Basic-AUTH header value with given user name and password
+        /// </summary>
+        /// <param name="password">password used in Basic authentication</param>
+        /// <param name="username">username used in Basic authentication</param>
+        /// <returns>HttpClient with default request headers containting Basic-HTTP-authentication.</returns>
+        public static HttpClient CreateWithXAuthToken(string token)
+        {
+            var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = false });
+            client.DefaultRequestHeaders.Add("X-AUTH-TOKEN", token);
+
+            return client;
+        }
     }
 }
