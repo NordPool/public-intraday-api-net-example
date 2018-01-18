@@ -7,18 +7,18 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Text;
 using log4net;
 using Newtonsoft.Json;
 using Stomp.Net.Stomp.Protocol;
 using WebSocket4Net;
 using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
-using NPS.ID.PublicApi.Client.Connection;
 
 namespace NPS.ID.PublicApi.Client.Connection
 {
     /// <summary>
-    /// Connector for sending/receiving STOMP messages over SockJS using web sockets.
+    ///     Connector for sending/receiving STOMP messages over SockJS using web sockets.
     /// </summary>
     public class StompConnector
     {
@@ -33,6 +33,8 @@ namespace NPS.ID.PublicApi.Client.Connection
         private static readonly string SockJsStartMessage = "o";
         private static readonly string HeartBeatMessage = "h";
         private static readonly string DisconnectCode = "1000";
+        private static readonly string SecureWebSocketProtocol = "wss";
+        private static readonly string UnsecureWebSocketProtocol = "ws";
 
 
         private static readonly ILog _logger =
@@ -48,6 +50,18 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         private string _currentAuthToken;
 
+        public StompConnector(string hostName, string uri, int port, bool useSsl = true)
+        {
+            _hostName = hostName;
+            _uri = uri;
+            _port = port;
+            _protocol = useSsl ? SecureWebSocketProtocol : UnsecureWebSocketProtocol;
+
+            _webSocket = useSsl
+                ? new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12 | SslProtocols.Ssl3)
+                : new WebSocket(ConstructUri());
+        }
+
         public bool IsConnected { get; private set; }
         public string ConnectionUri { get; private set; }
         public event StompFrameReceivedEventHandler StompFrameReceived;
@@ -57,17 +71,9 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         public event StompErrorEventHandler StompError;
 
-        public StompConnector(string hostName, string uri, int port, string protocol = "ws")
-        {
-            _hostName = hostName;
-            _uri = uri;
-            _port = port;
-            _protocol = protocol;
-            _webSocket = new WebSocket(ConstructUri());
-        }
-
         /// <summary>
-        /// Constructs Uri that has both serverId and sessionId generated. See more from: https://sockjs.github.io/sockjs-protocol/sockjs-protocol-0.3.3.html#section-36
+        ///     Constructs Uri that has both serverId and sessionId generated. See more from:
+        ///     https://sockjs.github.io/sockjs-protocol/sockjs-protocol-0.3.3.html#section-36
         /// </summary>
         /// <returns></returns>
         private string ConstructUri()
@@ -82,7 +88,7 @@ namespace NPS.ID.PublicApi.Client.Connection
         }
 
         /// <summary>
-        /// SockJS requires client to generate random server id between 000-999
+        ///     SockJS requires client to generate random server id between 000-999
         /// </summary>
         /// <returns></returns>
         private static string ConstructServerId()
@@ -135,10 +141,10 @@ namespace NPS.ID.PublicApi.Client.Connection
             //Disconnect -> no need to handle
             if (stompMessage == DisconnectCode)
                 return;
-            var bytes = Encoding.ASCII.GetBytes(stompMessage);
-            var frame = FrameFromBytes(bytes);
+            byte[] bytes = Encoding.ASCII.GetBytes(stompMessage);
+            StompFrame frame = FrameFromBytes(bytes);
 
-            if (frame.Command == StompCommandConstants.Connected) 
+            if (frame.Command == StompCommandConstants.Connected)
             {
                 //Raise connected event after receiving connection
                 OnConnected(EventArgs.Empty);
@@ -146,12 +152,12 @@ namespace NPS.ID.PublicApi.Client.Connection
             }
             else
             {
-                OnFrameReceived(new StompFrameReceivedEventArgs() {Frame = frame});
+                OnFrameReceived(new StompFrameReceivedEventArgs {Frame = frame});
             }
         }
 
         /// <summary>
-        /// Gets the plain STOMP message from a received message. Strips SockJS wrapping.
+        ///     Gets the plain STOMP message from a received message. Strips SockJS wrapping.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -174,28 +180,28 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         protected virtual void OnFrameReceived(StompFrameReceivedEventArgs e)
         {
-            _logger.Info($"====================================");        
+            _logger.Info($"====================================");
             _logger.Warn($"Received new STOMP frame: {e.Frame}");
-            var handler = StompFrameReceived;
+            StompFrameReceivedEventHandler handler = StompFrameReceived;
             handler?.Invoke(this, e);
         }
 
         protected virtual void OnConnected(EventArgs e)
         {
-            var handler = StompConnectionEstablished;
+            StompConnectionEstablishedEventHandler handler = StompConnectionEstablished;
             _logger.Info("STOMP Connection established");
             handler?.Invoke(this, e);
         }
 
         protected virtual void OnDisconnected(EventArgs e)
         {
-            var handler = StompConnectionClosed;
+            StompConnectionClosedEventHandler handler = StompConnectionClosed;
             handler?.Invoke(this, e);
         }
 
         public void Send(StompFrame frame)
         {
-            var bytes = FrameToBytes(frame);
+            byte[] bytes = FrameToBytes(frame);
 
             var stringOfBytes = Encoding.UTF8.GetString(bytes);
             var serializedJsonArray = SerializeToJsonArray(stringOfBytes);
