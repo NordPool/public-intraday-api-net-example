@@ -15,5 +15,12 @@ namespace NPS.ID.PublicApi.Client.Connection
         public string Host { get; set; }
 
         public string Uri { get; set; }
+
+        public int SslPort { get; set; }
+
+        public int GetUsedPort()
+        {
+            return UseSsl ? SslPort : Port;
+        }
     }
 }
