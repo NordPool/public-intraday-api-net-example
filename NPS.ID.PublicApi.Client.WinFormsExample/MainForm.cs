@@ -428,14 +428,16 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 Host = ConfigurationManager.AppSettings["ws-host"],
                 Port = Convert.ToInt32(ConfigurationManager.AppSettings["ws-port"]),
-                Protocol = ConfigurationManager.AppSettings["ws-protocol"],
+                SslPort = Convert.ToInt32(ConfigurationManager.AppSettings["ws-port-ssl"]),
+                UseSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["ws-useSsl"]),
                 Uri = ConfigurationManager.AppSettings["ws-uri"]
             };
 
             Log($"Web socket settings read from App.config:");
             Log($"WS Host: {webSocketSettings.Host}");
             Log($"WS Port: {webSocketSettings.Port}");
-            Log($"WS Protocol: {webSocketSettings.Protocol}");
+            Log($"WS SSL Port: {webSocketSettings.SslPort}");
+            Log($"WS Use SSL: {webSocketSettings.UseSsl}");
             Log($"WS Uri: {webSocketSettings.Host}");
 
             return webSocketSettings;
