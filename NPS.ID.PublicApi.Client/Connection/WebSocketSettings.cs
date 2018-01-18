@@ -8,7 +8,7 @@ namespace NPS.ID.PublicApi.Client.Connection
 {
     public class WebSocketSettings
     {
-        public string Protocol { get; set; }
+        public bool UseSsl { get; set; }
 
         public int Port { get; set; }
 
