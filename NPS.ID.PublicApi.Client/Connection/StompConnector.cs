@@ -136,8 +136,8 @@ namespace NPS.ID.PublicApi.Client.Connection
             //Disconnect -> no need to handle
             if (stompMessage == DisconnectCode)
                 return;
-            byte[] bytes = Encoding.ASCII.GetBytes(stompMessage);
-            StompFrame frame = FrameFromBytes(bytes);
+            var bytes = Encoding.ASCII.GetBytes(stompMessage);
+            var frame = FrameFromBytes(bytes);
 
             if (frame.Command == StompCommandConstants.Connected)
             {
@@ -177,26 +177,26 @@ namespace NPS.ID.PublicApi.Client.Connection
         {
             _logger.Info($"====================================");
             _logger.Warn($"Received new STOMP frame: {e.Frame}");
-            StompFrameReceivedEventHandler handler = StompFrameReceived;
+            var handler = StompFrameReceived;
             handler?.Invoke(this, e);
         }
 
         protected virtual void OnConnected(EventArgs e)
         {
-            StompConnectionEstablishedEventHandler handler = StompConnectionEstablished;
+            var handler = StompConnectionEstablished;
             _logger.Info("STOMP Connection established");
             handler?.Invoke(this, e);
         }
 
         protected virtual void OnDisconnected(EventArgs e)
         {
-            StompConnectionClosedEventHandler handler = StompConnectionClosed;
+            var handler = StompConnectionClosed;
             handler?.Invoke(this, e);
         }
 
         public void Send(StompFrame frame)
         {
-            byte[] bytes = FrameToBytes(frame);
+            var bytes = FrameToBytes(frame);
 
             var stringOfBytes = Encoding.UTF8.GetString(bytes);
             var serializedJsonArray = SerializeToJsonArray(stringOfBytes);
