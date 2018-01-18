@@ -33,6 +33,8 @@ namespace NPS.ID.PublicApi.Client.Connection
         private static readonly string SockJsStartMessage = "o";
         private static readonly string HeartBeatMessage = "h";
         private static readonly string DisconnectCode = "1000";
+        private static readonly string SecureWebSocketProtocol = "wss";
+        private static readonly string UnsecureWebSocketProtocol = "ws";
 
 
         private static readonly ILog _logger =
@@ -48,13 +50,16 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         private string _currentAuthToken;
 
-        public StompConnector(string hostName, string uri, int port, string protocol = "ws")
+        public StompConnector(string hostName, string uri, int port, bool useSsl = true)
         {
             _hostName = hostName;
             _uri = uri;
             _port = port;
-            _protocol = protocol;
-            _webSocket = new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12 | SslProtocols.Ssl3);
+            _protocol = useSsl ? SecureWebSocketProtocol : UnsecureWebSocketProtocol;
+
+            _webSocket = useSsl
+                ? new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12 | SslProtocols.Ssl3)
+                : new WebSocket(ConstructUri());
         }
 
         public bool IsConnected { get; private set; }
@@ -136,8 +141,8 @@ namespace NPS.ID.PublicApi.Client.Connection
             //Disconnect -> no need to handle
             if (stompMessage == DisconnectCode)
                 return;
-            var bytes = Encoding.ASCII.GetBytes(stompMessage);
-            var frame = FrameFromBytes(bytes);
+            byte[] bytes = Encoding.ASCII.GetBytes(stompMessage);
+            StompFrame frame = FrameFromBytes(bytes);
 
             if (frame.Command == StompCommandConstants.Connected)
             {
@@ -177,26 +182,26 @@ namespace NPS.ID.PublicApi.Client.Connection
         {
             _logger.Info($"====================================");
             _logger.Warn($"Received new STOMP frame: {e.Frame}");
-            var handler = StompFrameReceived;
+            StompFrameReceivedEventHandler handler = StompFrameReceived;
             handler?.Invoke(this, e);
         }
 
         protected virtual void OnConnected(EventArgs e)
         {
-            var handler = StompConnectionEstablished;
+            StompConnectionEstablishedEventHandler handler = StompConnectionEstablished;
             _logger.Info("STOMP Connection established");
             handler?.Invoke(this, e);
         }
 
         protected virtual void OnDisconnected(EventArgs e)
         {
-            var handler = StompConnectionClosed;
+            StompConnectionClosedEventHandler handler = StompConnectionClosed;
             handler?.Invoke(this, e);
         }
 
         public void Send(StompFrame frame)
         {
-            var bytes = FrameToBytes(frame);
+            byte[] bytes = FrameToBytes(frame);
 
             var stringOfBytes = Encoding.UTF8.GetString(bytes);
             var serializedJsonArray = SerializeToJsonArray(stringOfBytes);
