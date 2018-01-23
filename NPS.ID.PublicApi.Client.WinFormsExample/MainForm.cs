@@ -32,7 +32,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             LogManager.GetLogger(
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const int DemoArea = 2;
+        private const int DemoArea = 3; // 3 = Finland
 
         private ContractRow sampleContract = null;
         private ConfigurationRow currentConfiguration = null;
@@ -216,7 +216,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             tradingService.Subscribe(Subscription.Subscription.Builder()
                 .WithTopic(Topic.HeartbeatPing)
                 .WithVersion(apiVersion)
-                .WithSubscriptionType(SubscriptionType.Streaming)
+                .WithSubscriptionType(SubscriptionType.Empty)
                 .WithArea(DemoArea)
                 .Build(), HeartbeatCallBack);
 
