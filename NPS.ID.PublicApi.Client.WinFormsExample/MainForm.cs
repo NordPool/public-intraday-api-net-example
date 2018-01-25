@@ -32,7 +32,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             LogManager.GetLogger(
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const int DemoArea = 3; // 3 = Finland
+        private const int DemoArea = 2; // 3 = Finland
 
         private ContractRow sampleContract = null;
         private ConfigurationRow currentConfiguration = null;
@@ -438,7 +438,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             Log($"WS Port: {webSocketSettings.Port}");
             Log($"WS SSL Port: {webSocketSettings.SslPort}");
             Log($"WS Use SSL: {webSocketSettings.UseSsl}");
-            Log($"WS Uri: {webSocketSettings.Host}");
+            Log($"WS Uri: {webSocketSettings.Uri}");
 
             return webSocketSettings;
         }
