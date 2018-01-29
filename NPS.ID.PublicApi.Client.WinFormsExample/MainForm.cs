@@ -23,6 +23,7 @@ using Nordpool.ID.PublicApi.v1.Statistic;
 using Nordpool.ID.PublicApi.v1.Order;
 using Nordpool.ID.PublicApi.v1.Contract;
 using NPS.ID.PublicApi.Client.Rest;
+using Nordpool.ID.PublicApi.v1.Heartbeat;
 
 namespace NPS.ID.PublicApi.Client.WinFormsExample
 {
@@ -233,7 +234,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         private void HeartbeatCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Heartbeat");
-            var heartbeatData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
+            var heartbeatData = JsonHelper.DeserializeData<List<HeartbeatMessage>>(messageContent);
             Log(JsonHelper.SerializeObjectPrettyPrinted(heartbeatData));
         }
 
@@ -449,7 +450,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login information. Add your credentials to app.config and restart the application");
+                    MessageBox.Show("Missing configuration data from the API - please check your configuration subscription!");
                     return;
                 }
                 var order = SampleOrderRequest();
@@ -510,7 +511,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login information. Add your credentials to app.config and restart the application");
+                    MessageBox.Show("Missing configuration data from the API - please check your configuration subscription!");
                     return;
                 }
                 var request = new OrderModificationRequest()
@@ -561,7 +562,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 if (currentConfiguration == null)
                 {
-                    MessageBox.Show("Missing login information. Add your credentials to app.config and restart the application");
+                    MessageBox.Show("Missing configuration data from the API - please check your configuration subscription!");
                     return;
                 }
                 var request = new TradeRecallRequest()
