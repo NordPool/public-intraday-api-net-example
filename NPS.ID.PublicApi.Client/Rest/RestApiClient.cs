@@ -21,7 +21,7 @@ namespace NPS.ID.PublicApi.Client.Rest
         private readonly string _token;
         private readonly string _apiversion;
 
-        private const string datetTimeFormat = "yyyy-MM-ddTHH\\:mm\\:ss.FFFZ";
+        private const string datetTimeFormat = "yyyy-MM-ddTHH\\:mm\\:ss.000Z";
 
         public RestApiClient(string host, string protocol, string token, string apiversion)
         {
@@ -40,14 +40,14 @@ namespace NPS.ID.PublicApi.Client.Rest
         public async System.Threading.Tasks.Task<List<PrivateTradeRow>> GetPrivateTrades(DateTimeOffset start, DateTimeOffset end)
         {
             var restConnector = new GenericRestConnector(_token);
-            
-
             try
             {
-
                 var startZuluTime = start.ToString(datetTimeFormat);
                 var endZuluTime = end.ToString(datetTimeFormat);
-                var response = await restConnector.Get<List<PrivateTradeRow>>(ConstructRestProxyUri($"privateTrade?startZuluTime={startZuluTime}&endZuluTime={endZuluTime}"));
+
+                var restCallString = ConstructRestProxyUri($"privateTrade?startZuluTime={startZuluTime}&endZuluTime={endZuluTime}");
+                Console.WriteLine("Calling REST uri: " + restCallString);
+                var response = await restConnector.Get<List<PrivateTradeRow>>(restCallString);
 
                 return response;
             }
@@ -70,7 +70,10 @@ namespace NPS.ID.PublicApi.Client.Rest
             {
                 var startZuluTime = start.ToString(datetTimeFormat);
                 var endZuluTime = end.ToString(datetTimeFormat);
-                var response = await restConnector.Get<OrderExecutionReport>(ConstructRestProxyUri($"orderExecutionReport?startZuluTime={startZuluTime}&endZuluTime={endZuluTime}"));
+
+                var restCallString = ConstructRestProxyUri($"orderExecutionReport?startZuluTime={startZuluTime}&endZuluTime={endZuluTime}");
+                Console.WriteLine("Calling REST uri: " + restCallString);
+                var response = await restConnector.Get<OrderExecutionReport>(restCallString);
 
                 return response;
             }
@@ -93,7 +96,10 @@ namespace NPS.ID.PublicApi.Client.Rest
             {
                 var startZuluTime = start.ToString(datetTimeFormat);
                 var endZuluTime = end.ToString(datetTimeFormat);
-                var response = await restConnector.Get<List<PublicTradeRow>>(ConstructRestProxyUri($"publicTrade?startZuluTime={startZuluTime}&endZuluTime={endZuluTime}"));
+
+                var restCallString = ConstructRestProxyUri($"publicTrade?startZuluTime={startZuluTime}&endZuluTime={endZuluTime}");
+                Console.WriteLine("Calling REST uri: " + restCallString);
+                var response = await restConnector.Get<List<PublicTradeRow>>(restCallString);
 
                 return response;
             }
@@ -107,6 +113,7 @@ namespace NPS.ID.PublicApi.Client.Rest
         {
             return $"{_protocol}://{_host}/api/{_apiversion}/{operation}";
         }
+
 
     }
 }
