@@ -79,7 +79,7 @@ namespace NPS.ID.PublicApi.Client.Rest
             }
             catch (Exception e)
             {
-                throw new Exception("Failed to get private trades", e);
+                throw new Exception("Failed to get order execution report", e);
             }
         }
 
@@ -105,7 +105,7 @@ namespace NPS.ID.PublicApi.Client.Rest
             }
             catch (Exception e)
             {
-                throw new Exception("Failed to get private trades", e);
+                throw new Exception("Failed to get public trades", e);
             }
         }
 
