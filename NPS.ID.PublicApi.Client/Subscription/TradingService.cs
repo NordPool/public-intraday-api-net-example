@@ -19,6 +19,7 @@ using NPS.ID.PublicApi.Client.Utilities;
 using Stomp.Net.Stomp.Protocol;
 using Nordpool.ID.PublicApi.v1.Trade.Request;
 using Nordpool.ID.PublicApi.v1.Order.Request;
+using Nordpool.ID.PublicApi.v1.Command;
 
 namespace NPS.ID.PublicApi.Client.Subscription
 {
@@ -199,7 +200,20 @@ namespace NPS.ID.PublicApi.Client.Subscription
         public void SendLogoutCommand()
         {
             var logoutFrame = StompMessageFactory.SendFrame(@"{""type"":""LOGOUT""}", "/v1/command");
+
             SendMessage(logoutFrame);
+        }
+
+
+        public void SendTokenRefresh(TokenRefreshCommand request)
+        {
+            var f = StompMessageFactory.SendFrame(@"{""type"":""TOKEN_REFRESH""," +
+                "\"oldToken\":\"" + request.OldToken + "\"," +
+                "\"newToken\":\"" + request.NewToken + "\"" +
+                "}", "/v1/command");
+
+            _logger.Info("Sending token refresh: " + f.ToString());
+            SendMessage(f);
         }
 
         private void SendMessage(StompFrame frame)
