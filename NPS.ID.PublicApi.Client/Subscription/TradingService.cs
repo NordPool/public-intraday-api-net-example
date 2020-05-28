@@ -91,9 +91,9 @@ namespace NPS.ID.PublicApi.Client.Subscription
         public void Connect(string authToken, int timeoutInMilliseconds = 20000)
         {
             _logger.Info("Connecting Trading Service...");
-            _logger.Info($"Host: {_webSocketSettings.Host}, Uri: {_webSocketSettings.Uri}, Port: {_webSocketSettings.GetUsedPort()}, Use Ssl: {_webSocketSettings.UseSsl}");
+            _logger.Info($"Host: {_webSocketSettings.Host}, Uri: {_webSocketSettings.Uri}, Port: {_webSocketSettings.GetUsedPort()}, Use Ssl: {_webSocketSettings.UseSsl}, HeartbeatSending: {_webSocketSettings.HeartbeatOutgoingInterval}");
             _stompConnector = new StompConnector(_webSocketSettings.Host, _webSocketSettings.Uri,
-                _webSocketSettings.GetUsedPort(), _webSocketSettings.UseSsl);
+                _webSocketSettings.GetUsedPort(), _webSocketSettings.UseSsl, _webSocketSettings.HeartbeatOutgoingInterval);
             _stompConnector.StompConnectionEstablished += StompConnectorOnStompConnectionEstablished;
             _stompConnector.StompConnectionClosed += StompConnectorOnStompConnectionClosed;
             _stompConnector.StompFrameReceived += StompConnectorOnStompFrameReceived;

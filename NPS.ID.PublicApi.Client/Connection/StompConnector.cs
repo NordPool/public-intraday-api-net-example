@@ -5,12 +5,17 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
+using System.Threading.Tasks;
 using log4net;
 using Newtonsoft.Json;
+using Quartz;
+using Quartz.Impl;
 using Stomp.Net.Stomp.Protocol;
 using WebSocket4Net;
 using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
@@ -49,8 +54,10 @@ namespace NPS.ID.PublicApi.Client.Connection
         private readonly WebSocket _webSocket;
 
         private string _currentAuthToken;
+        private IScheduler _heartbeatScheduler;
+        private readonly int _heartbeatInterval;
 
-        public StompConnector(string hostName, string uri, int port, bool useSsl = true)
+        public StompConnector(string hostName, string uri, int port, bool useSsl = true, int heartbeatInterval = 0)
         {
             _hostName = hostName;
             _uri = uri;
@@ -60,6 +67,7 @@ namespace NPS.ID.PublicApi.Client.Connection
             _webSocket = useSsl
                 ? new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12 | SslProtocols.Ssl3)
                 : new WebSocket(ConstructUri());
+            _heartbeatInterval = heartbeatInterval;
         }
 
         public bool IsConnected { get; private set; }
@@ -113,6 +121,10 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         private void WebSocketOnClosed(object sender, EventArgs eventArgs)
         {
+            if (_heartbeatScheduler != null)
+            {
+                _heartbeatScheduler.Shutdown();
+            }
             StompConnectionClosed?.Invoke(this, eventArgs);
         }
 
@@ -129,7 +141,7 @@ namespace NPS.ID.PublicApi.Client.Connection
         {
             if (messageReceivedEventArgs.Message == SockJsStartMessage)
             {
-                Send(StompMessageFactory.ConnectionFrame(_currentAuthToken));
+                Send(StompMessageFactory.ConnectionFrame(_currentAuthToken, _heartbeatInterval));
                 return;
             }
 
@@ -174,10 +186,6 @@ namespace NPS.ID.PublicApi.Client.Connection
         {
         }
 
-        public void Disconnect()
-        {
-        }
-
         protected virtual void OnFrameReceived(StompFrameReceivedEventArgs e)
         {
             _logger.Info($"====================================");
@@ -188,14 +196,9 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         protected virtual void OnConnected(EventArgs e)
         {
+            ScheduleSendingHeartbeat().GetAwaiter().GetResult();
             StompConnectionEstablishedEventHandler handler = StompConnectionEstablished;
             _logger.Info("STOMP Connection established");
-            handler?.Invoke(this, e);
-        }
-
-        protected virtual void OnDisconnected(EventArgs e)
-        {
-            StompConnectionClosedEventHandler handler = StompConnectionClosed;
             handler?.Invoke(this, e);
         }
 
@@ -211,6 +214,43 @@ namespace NPS.ID.PublicApi.Client.Connection
             _webSocket.Send(serializedJsonArray);
         }
 
+        public void SendHeartbeat()
+        {
+            _logger.Info("Sending heartbeat frame");
+            // must send an end-of-line as heartbeat frame
+            _webSocket.Send(SerializeToJsonArray("\n")); 
+          
+        }
+        
+        private async Task ScheduleSendingHeartbeat()
+        {
+            if (_heartbeatInterval > 0)
+            {
+                NameValueCollection props = new NameValueCollection
+                {
+                    { "quartz.serializer.type", "binary" }
+                };
+                StdSchedulerFactory factory = new StdSchedulerFactory(props);
+                _heartbeatScheduler = await factory.GetScheduler();
+                await _heartbeatScheduler.Start();
+
+                IJobDetail job = JobBuilder.Create<SendingHeartbeatJob>()
+                    .WithIdentity("hearbeatJob", "stomp")
+                    .Build();
+                job.JobDataMap["stompConnector"] = this;
+
+                ITrigger trigger = TriggerBuilder.Create()
+                    .WithIdentity("triggerHeartbeat", "stomp")
+                    .WithSimpleSchedule(x => x
+                        .WithInterval(TimeSpan.FromMilliseconds(_heartbeatInterval))
+                        .RepeatForever())
+                    .Build();
+
+                // Tell quartz to schedule the job using our trigger
+                await _heartbeatScheduler.ScheduleJob(job, trigger);
+            }
+            
+        }
 
         private static byte[] FrameToBytes(StompFrame frame)
         {
@@ -263,5 +303,14 @@ namespace NPS.ID.PublicApi.Client.Connection
         public string Message { get; set; }
 
         public bool IsFatal { get; set; }
+    }
+
+    public class SendingHeartbeatJob : IJob
+    {
+        public async Task Execute(IJobExecutionContext context)
+        {
+            var stompConnector = context.JobDetail.JobDataMap["stompConnector"] as StompConnector;
+            stompConnector.SendHeartbeat();
+        }
     }
 }
