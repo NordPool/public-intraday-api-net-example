@@ -9,6 +9,7 @@ using System.Text;
 using NPS.ID.PublicApi.Client.Utilities;
 using Stomp.Net.Stomp.Protocol;
 using NPS.ID.PublicApi.Client.Connection;
+using System;
 
 namespace NPS.ID.PublicApi.Client.Connection
 {
@@ -22,12 +23,12 @@ namespace NPS.ID.PublicApi.Client.Connection
         private const string ContentTypeHeader = "content-type";
         private const string ContentLengthHeader = "content-length";
 
-        public static StompFrame ConnectionFrame(string authToken)
+        public static StompFrame ConnectionFrame(string authToken, long heartbeatOutgoingInterval = 0)
         {
             return CreateFrame(StompCommandConstants.Connect, new Dictionary<string, string>()
             {
                 {AcceptVersionHeader, "1.1,1.0"},
-                {HeartbeatHeader, "0,0"},
+                {HeartbeatHeader, $"{heartbeatOutgoingInterval},0"},
                 {AuthHeader, authToken}
             });
         }

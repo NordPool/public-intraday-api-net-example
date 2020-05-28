@@ -18,6 +18,8 @@ namespace NPS.ID.PublicApi.Client.Connection
 
         public int SslPort { get; set; }
 
+        public int HeartbeatOutgoingInterval { get; set; }
+
         public int GetUsedPort()
         {
             return UseSsl ? SslPort : Port;

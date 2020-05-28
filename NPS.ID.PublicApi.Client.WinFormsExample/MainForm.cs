@@ -431,7 +431,8 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 Port = Convert.ToInt32(ConfigurationManager.AppSettings["ws-port"]),
                 SslPort = Convert.ToInt32(ConfigurationManager.AppSettings["ws-port-ssl"]),
                 UseSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["ws-useSsl"]),
-                Uri = ConfigurationManager.AppSettings["ws-uri"]
+                Uri = ConfigurationManager.AppSettings["ws-uri"],
+                HeartbeatOutgoingInterval = Convert.ToInt32(ConfigurationManager.AppSettings["ws-heartbeat-outgoing"])
             };
 
             Log($"Web socket settings read from App.config:");
@@ -440,6 +441,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             Log($"WS SSL Port: {webSocketSettings.SslPort}");
             Log($"WS Use SSL: {webSocketSettings.UseSsl}");
             Log($"WS Uri: {webSocketSettings.Uri}");
+            Log($"WS Heartbeat Outgoing Interval: {webSocketSettings.HeartbeatOutgoingInterval}");
 
             return webSocketSettings;
         }
