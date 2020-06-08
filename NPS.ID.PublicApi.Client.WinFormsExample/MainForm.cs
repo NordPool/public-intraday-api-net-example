@@ -273,8 +273,11 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Configuration");
             var configurationData = JsonHelper.DeserializeData<List<ConfigurationRow>>(messageContent);
-            Log("If you want to see detailed Configuration - data, uncomment Logging in MainForm.cs");
-            //Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
+            // Log("If you want to see detailed Configuration - data, uncomment Logging in MainForm.cs");
+
+            Log("Configuration data =");
+            Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData)); // ML CHANGE
+
             if (currentConfiguration == null)
                 currentConfiguration = configurationData.FirstOrDefault();
         }
@@ -283,11 +286,15 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Contracts");
             var contractsData = JsonHelper.DeserializeData<List<ContractRow>>(messageContent);
-            Log("If you want to see detailed Contracts - data, uncomment Logging in MainForm.cs");
-            //Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
+            // Log("If you want to see detailed Contracts - data, uncomment Logging in MainForm.cs");
+            Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
             if (sampleContract == null)
             {
-                sampleContract = contractsData.FirstOrDefault(r => r.DlvryStart > DateTimeOffset.Now.AddHours(3) && r.DlvryStart > DateTimeOffset.Now.AddHours(5));
+                sampleContract = contractsData.FirstOrDefault(r => r.DlvryStart > DateTimeOffset.Now.AddHours(1) && r.DlvryStart < DateTimeOffset.Now.AddHours(4));
+                if (sampleContract == null)
+                {
+                    Log("WARNING: no valid contract to be used for order creation has been found! Check contracts.");
+                }
             }
         }
 
@@ -295,15 +302,15 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             ShowMessage(messageContent, "Order Execution Report");
             var orderExecutionsData = JsonHelper.DeserializeData<List<OrderExecutionReport>>(messageContent);
-            //Log(JsonHelper.SerializeObjectPrettyPrinted(orderExecutionsData));
+            Log(JsonHelper.SerializeObjectPrettyPrinted(orderExecutionsData));
         }
 
         private void DeliveryAreasCallBack(string messageContent)
         {
             ShowMessage(messageContent, "Delivery Areas");
             var deliveryAreasData = JsonHelper.DeserializeData<List<DeliveryAreaRow>>(messageContent);
-            Log("If you want to see detailed Delivery Areas - data, uncomment Logging in MainForm.cs");
-            //Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
+            // Log("If you want to see detailed Delivery Areas - data, uncomment Logging in MainForm.cs");
+            Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
 
         }
 
@@ -339,7 +346,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private OrderEntryRequest SampleOrderRequest()
         {
-            var portFolio = currentConfiguration.Portfolios.Last();
+            var portFolio = currentConfiguration.Portfolios.First();
             var request = new OrderEntryRequest()
             {
                 RequestId = Guid.NewGuid().ToString(),
@@ -358,14 +365,16 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                         UnitPrice = 2500,
                         TimeInForce =  TimeInForce.GFS,
                         DeliveryAreaId = portFolio.Areas.First().AreaId,
-                        //ExecutionRestriction = OrderEntryExecutionRestriction.AON,
-                        //ExpireTime = DateTimeOffset.Now.AddHours(6)
+                        ExecutionRestriction = ExecutionRestriction.NON,
+                        // ExpireTime = DateTimeOffset.Now.AddHours(6)
                     },
                 }
             };
 
             return request;
         }
+
+
         private void ShowMessage(string message, string fromTopic, bool isGzipped = false)
         {
             Log($"Message from \"{fromTopic}\" topic");
