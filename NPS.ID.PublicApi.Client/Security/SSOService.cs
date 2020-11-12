@@ -108,7 +108,7 @@ namespace NPS.ID.PublicApi.Client.Security
 
         private string ConstructPayloadForTokenRequest(string userName, string password)
         {
-            return $"grant_type={_grantType}&scope={_scope}&username={userName}&password={password}";
+            return $"grant_type={_grantType}&scope={_scope}&username={userName}&password={System.Net.WebUtility.UrlEncode(password)}";
         }
     }
 
