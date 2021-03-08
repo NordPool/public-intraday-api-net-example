@@ -70,8 +70,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             }
             catch (Exception ex)
             {
-                
-                throw;
+                throw ex;
             }
         }
     }
