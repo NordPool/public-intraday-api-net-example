@@ -80,8 +80,8 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 Log($"Subscribed to services..");
 
                 restApiSettings = ReadRestApiSettings();
-                
-                
+
+
                 this.buttonLogout.Enabled = true;
                 this.buttonSendOrderEntry.Enabled = true;
                 this.buttonSendOrderModification.Enabled = true;
@@ -103,6 +103,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
         {
             if (string.IsNullOrEmpty(text))
                 return;
+
             if (this.textBoxLog.InvokeRequired)
             {
                 SetTextCallback d = new SetTextCallback(Log);
@@ -231,63 +232,65 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             }
         }
 
-        private void HeartbeatCallBack(string messageContent)
+        private void HeartbeatCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Heartbeat");
-            var heartbeatData = JsonHelper.DeserializeData<List<HeartbeatMessage>>(messageContent);
+            ShowMessage(e.MessageContent, "Heartbeat");
+            var heartbeatData = JsonHelper.DeserializeData<List<HeartbeatMessage>>(e.MessageContent);
             Log(JsonHelper.SerializeObjectPrettyPrinted(heartbeatData));
         }
 
-        private void CapacitiesCallBack(string messageContent)
+        private void CapacitiesCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Capacities");
-            var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(messageContent);
+            ShowMessage(e.MessageContent, "Capacities");
+            var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(e.MessageContent);
             Log("If you want to see detailed Capacities - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(capacitiesData));
         }
 
-        private void PublicStatisticsCallBack(string messageContent)
+        private void PublicStatisticsCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Public Statistics");
-            var publicStatisticsData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(messageContent);
+            ShowMessage(e.MessageContent, "Public Statistics");
+            var publicStatisticsData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(e.MessageContent);
             Log("If you want to see detailed Public Statistics - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(publicStatisticsData));
         }
 
-        private void PrivateTradeCallBack(string messageContent)
+        private void PrivateTradeCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Private Trade");
-            var privateTradesData = JsonHelper.DeserializeData<List<PrivateTradeRow>>(messageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(privateTradesData));
+            ShowMessage(e.MessageContent, "Private Trade");
+            var privateTradesData = JsonHelper.DeserializeData<List<PrivateTradeRow>>(e.MessageContent);
+            Log("If you want to see detailed Private Trades - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(privateTradesData));
         }
 
-        private void LocalViewCallBack(string messageContent)
+        private void LocalViewCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Local View", true);
-            var localViewData = JsonHelper.DeserializeData<List<LocalViewRow>>(messageContent);
+            ShowMessage(e.MessageContent, "Local View", true);
+            var localViewData = JsonHelper.DeserializeData<List<LocalViewRow>>(e.MessageContent);
             Log("If you want to see detailed Local View - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(localViewData));
         }
 
-        private void ConfigurationCallBack(string messageContent)
+        private void ConfigurationCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Configuration");
-            var configurationData = JsonHelper.DeserializeData<List<ConfigurationRow>>(messageContent);
-            // Log("If you want to see detailed Configuration - data, uncomment Logging in MainForm.cs");
+            ShowMessage(e.MessageContent, "Configuration");
+            var configurationData = JsonHelper.DeserializeData<List<ConfigurationRow>>(e.MessageContent);
 
+            // Log("If you want to see detailed Configuration - data, uncomment Logging in MainForm.cs");
             Log("Configuration data =");
-            Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData)); // ML CHANGE
+            Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
 
             if (currentConfiguration == null)
                 currentConfiguration = configurationData.FirstOrDefault();
         }
 
-        private void ContractsCallBack(string messageContent)
+        private void ContractsCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Contracts");
-            var contractsData = JsonHelper.DeserializeData<List<ContractRow>>(messageContent);
-            // Log("If you want to see detailed Contracts - data, uncomment Logging in MainForm.cs");
-            Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
+            ShowMessage(e.MessageContent, "Contracts");
+            var contractsData = JsonHelper.DeserializeData<List<ContractRow>>(e.MessageContent);
+
+            Log("If you want to see detailed Contracts - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
             if (sampleContract == null)
             {
                 sampleContract = contractsData.FirstOrDefault(r => r.DlvryStart > DateTimeOffset.Now.AddHours(1) && r.DlvryStart < DateTimeOffset.Now.AddHours(4));
@@ -298,30 +301,28 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             }
         }
 
-        private void OrderExecutionCallBack(string messageContent)
+        private void OrderExecutionCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Order Execution Report");
-            var orderExecutionsData = JsonHelper.DeserializeData<List<OrderExecutionReport>>(messageContent);
+            ShowMessage(e.MessageContent, "Order Execution Report");
+            var orderExecutionsData = JsonHelper.DeserializeData<List<OrderExecutionReport>>(e.MessageContent);
             Log(JsonHelper.SerializeObjectPrettyPrinted(orderExecutionsData));
         }
 
-        private void DeliveryAreasCallBack(string messageContent)
+        private void DeliveryAreasCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Delivery Areas");
-            var deliveryAreasData = JsonHelper.DeserializeData<List<DeliveryAreaRow>>(messageContent);
+            ShowMessage(e.MessageContent, "Delivery Areas");
+            var deliveryAreasData = JsonHelper.DeserializeData<List<DeliveryAreaRow>>(e.MessageContent);
             // Log("If you want to see detailed Delivery Areas - data, uncomment Logging in MainForm.cs");
             Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
-
         }
 
-        private void TickerCallBack(string messageContent)
+        private void TickerCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(messageContent, "Ticker");
-            var tickerData = JsonHelper.DeserializeData<List<PublicTradeRow>>(messageContent);
-            //Log(JsonHelper.SerializeObjectPrettyPrinted(tickerData));
+            ShowMessage(e.MessageContent, "Ticker");
+            var tickerData = JsonHelper.DeserializeData<List<PublicTradeRow>>(e.MessageContent);
+            Log("If you want to see detailed Ticker - data, uncomment Logging in MainForm.cs");
+            // Log(JsonHelper.SerializeObjectPrettyPrinted(tickerData));
         }
-
-
 
         private static OrderEntryRequest SampleIncorrectOrderRequest()
         {
@@ -377,7 +378,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private void ShowMessage(string message, string fromTopic, bool isGzipped = false)
         {
-            Log($"Message from \"{fromTopic}\" topic");
+            Log(Environment.NewLine + $"Message from \"{fromTopic}\" topic:");
 
             //var messageContent = isGzipped ? GzipCompressor.Decompress(message) : message;
             //Log($"JSON: {messageContent}");
@@ -423,12 +424,12 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             var restapiSettings = new RestApiSettings()
             {
                 Host = ConfigurationManager.AppSettings["rest-host"],
-                Protocol= ConfigurationManager.AppSettings["rest-protocol"]
+                Protocol = ConfigurationManager.AppSettings["rest-protocol"]
             };
 
             Log($"Rest Api settings read from App.config:");
             Log($"Host: {restapiSettings.Host}");
-            
+
             return restapiSettings;
         }
 
@@ -475,11 +476,9 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 tradingService.SendEntryOrderRequest(order);
                 Log($"Sent order:{Environment.NewLine}{JsonHelper.SerializeObjectPrettyPrinted(order)}");
                 lastSentOrder = order;
-
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.ToString());
             }
         }
@@ -507,8 +506,6 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 this.buttonOrderHistory.Enabled = false;
                 this.buttonRestPublicTrades.Enabled = false;
                 this.buttonConnect.Enabled = true;
-
-
             }
             catch (Exception ex)
             {
@@ -604,7 +601,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             {
                 var restApiClient = new RestApiClient(restApiSettings.Host, restApiSettings.Protocol, token, apiVersion);
                 var data = await restApiClient.GetPrivateTrades(DateTimeOffset.Now.AddDays(-7), DateTimeOffset.Now);
-                Log($"Private  trade history, {data?.Count() ?? 0} rows:"); Log(JsonHelper.SerializeObjectPrettyPrinted(data));
+                Log($"Private trade history, {data?.Count() ?? 0} rows:"); Log(JsonHelper.SerializeObjectPrettyPrinted(data));
             }
             catch (Exception ex)
             {
