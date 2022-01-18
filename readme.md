@@ -1,7 +1,7 @@
 ﻿# Nord Pool Intraday API .NET Example Code #
 
 This repository contains a .NET (Framework 4.6.2) Windows Forms example application for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
-This sample application uses .NET data objects published in [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api)
+This sample application uses .NET data objects published in [.NET API library](https://github.com/NordPool/public-intraday-net-api)
 
 ## Disclaimer ##
 
@@ -16,7 +16,7 @@ We offer the client code examples to aid the development against Nord Pool's API
 
 Example application can be opened with solution file: **NPS.ID.PublicApi.Client.WinFormsExample.sln** which is found in repository root.
 
-Example application requires, that you have cloned [.NET API library](https://bitbucket.org/nordpoolspot/public-intraday-net-api) to your filesystem besides to this example app. Your local repository configuration can be for example:
+Example application requires, that you have cloned [.NET API library](https://github.com/NordPool/public-intraday-net-api) to your filesystem besides to this example app. Your local repository configuration can be for example:
 ```
 #!
 C:\[path]\public-intraday-net-api
