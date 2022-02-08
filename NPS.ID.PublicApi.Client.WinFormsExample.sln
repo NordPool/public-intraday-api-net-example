@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32106.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.ID.PublicApi.Client.WinFormsExample", "NPS.ID.PublicApi.Client.WinFormsExample\NPS.ID.PublicApi.Client.WinFormsExample.csproj", "{A78F80B9-8383-4223-B432-AAEA7F691EF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NPS.ID.PublicApi.Client.WinFormsExample", "NPS.ID.PublicApi.Client.WinFormsExample\NPS.ID.PublicApi.Client.WinFormsExample.csproj", "{23FED931-B79F-4BD3-BF25-238E16515CBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.ID.PublicApi.Client", "NPS.ID.PublicApi.Client\NPS.ID.PublicApi.Client.csproj", "{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NPS.ID.PublicApi.Client", "NPS.ID.PublicApi.Client\NPS.ID.PublicApi.Client.csproj", "{D15CADD8-BC74-40D8-828E-66F8F177368B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.ID.PublicApi.Models", "..\public-intraday-net-api\NPS.ID.PublicApi.Models\NPS.ID.PublicApi.Models.csproj", "{5E352A1B-667B-4CEC-9CFB-3B525E139D97}"
 EndProject
@@ -15,14 +15,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A78F80B9-8383-4223-B432-AAEA7F691EF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C0E9915A-CCD2-4242-8B0C-151BAB7E8B11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23FED931-B79F-4BD3-BF25-238E16515CBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23FED931-B79F-4BD3-BF25-238E16515CBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23FED931-B79F-4BD3-BF25-238E16515CBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23FED931-B79F-4BD3-BF25-238E16515CBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D15CADD8-BC74-40D8-828E-66F8F177368B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D15CADD8-BC74-40D8-828E-66F8F177368B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D15CADD8-BC74-40D8-828E-66F8F177368B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D15CADD8-BC74-40D8-828E-66F8F177368B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E352A1B-667B-4CEC-9CFB-3B525E139D97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5E352A1B-667B-4CEC-9CFB-3B525E139D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E352A1B-667B-4CEC-9CFB-3B525E139D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -30,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {305B915B-20ED-4AE3-8579-82CB29823498}
 	EndGlobalSection
 EndGlobal
