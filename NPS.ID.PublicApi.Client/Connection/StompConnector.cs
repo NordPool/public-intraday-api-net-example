@@ -4,14 +4,10 @@
  *  Please send feedback to idapi@nordpoolgroup.com.
  */
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
-using System.Threading.Tasks;
 using log4net;
 using Newtonsoft.Json;
 using Quartz;

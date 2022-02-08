@@ -4,26 +4,20 @@
  *  Please send feedback to idapi@nordpoolgroup.com.
  */
 
-using log4net;
-using NPS.ID.PublicApi.Client.Connection;
-using NPS.ID.PublicApi.Client.Security;
-using NPS.ID.PublicApi.Client.Subscription;
-using NPS.ID.PublicApi.Client.Utilities;
-using Nordpool.ID.PublicApi.v1;
-using System;
-using System.Collections.Generic;
+
 using System.Configuration;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Nordpool.ID.PublicApi.v1.Order.Request;
 using Nordpool.ID.PublicApi.v1.Trade.Request;
 using Nordpool.ID.PublicApi.v1.Statistic;
 using Nordpool.ID.PublicApi.v1.Order;
-using Nordpool.ID.PublicApi.v1.Contract;
 using NPS.ID.PublicApi.Client.Rest;
 using Nordpool.ID.PublicApi.v1.Heartbeat;
+using log4net;
+using NPS.ID.PublicApi.Client.Connection;
+using Nordpool.ID.PublicApi.v1;
+using NPS.ID.PublicApi.Client.Subscription;
+using NPS.ID.PublicApi.Client.Security;
+using NPS.ID.PublicApi.Client.Utilities;
 
 namespace NPS.ID.PublicApi.Client.WinFormsExample
 {

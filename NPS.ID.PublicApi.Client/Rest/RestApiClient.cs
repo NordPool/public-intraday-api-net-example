@@ -4,13 +4,8 @@
  *  Please send feedback to idapi@nordpoolgroup.com.
  */
 
-using System;
-using Newtonsoft.Json;
-using NPS.ID.PublicApi.Client.Security.Exceptions;
 using NPS.ID.PublicApi.Client.Utilities;
 using Nordpool.ID.PublicApi.v1;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Client.Rest
 {

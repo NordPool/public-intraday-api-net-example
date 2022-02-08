@@ -4,12 +4,9 @@
  *  Please send feedback to idapi@nordpoolgroup.com.
  */
 
-using System.Collections.Generic;
 using System.Text;
 using NPS.ID.PublicApi.Client.Utilities;
 using Stomp.Net.Stomp.Protocol;
-using NPS.ID.PublicApi.Client.Connection;
-using System;
 
 namespace NPS.ID.PublicApi.Client.Connection
 {
