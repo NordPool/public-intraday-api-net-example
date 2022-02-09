@@ -61,7 +61,7 @@ namespace NPS.ID.PublicApi.Client.Connection
             _protocol = useSsl ? SecureWebSocketProtocol : UnsecureWebSocketProtocol;
 
             _webSocket = useSsl
-                ? new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12 | SslProtocols.Ssl3)
+                ? new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12)
                 : new WebSocket(ConstructUri());
             _heartbeatInterval = heartbeatInterval;
         }
@@ -305,8 +305,11 @@ namespace NPS.ID.PublicApi.Client.Connection
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            var stompConnector = context.JobDetail.JobDataMap["stompConnector"] as StompConnector;
-            stompConnector.SendHeartbeat();
+            await Task.Run(() =>
+            {
+                var stompConnector = context.JobDetail.JobDataMap["stompConnector"] as StompConnector;
+                stompConnector?.SendHeartbeat();
+            });
         }
     }
 }
