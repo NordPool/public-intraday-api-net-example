@@ -4,12 +4,8 @@
  *  Please send feedback to idapi@nordpoolgroup.com.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using log4net;
 using Newtonsoft.Json;
 using NPS.ID.PublicApi.Client.Connection;

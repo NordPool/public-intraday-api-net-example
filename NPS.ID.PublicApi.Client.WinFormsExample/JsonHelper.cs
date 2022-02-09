@@ -7,12 +7,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NPS.ID.PublicApi.Client.WinFormsExample
 {
@@ -57,21 +52,14 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         public static T DeserializeData<T>(string JsonMessage) where T : new()
         {
-            try
+            var serSettings = new JsonSerializerSettings
             {
-                var serSettings = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    NullValueHandling = NullValueHandling.Ignore
-                };
-                
-                T obj = JsonConvert.DeserializeObject<T>(JsonMessage, serSettings);
-                return obj;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+            T obj = JsonConvert.DeserializeObject<T>(JsonMessage, serSettings);
+            return obj;
         }
     }
 }

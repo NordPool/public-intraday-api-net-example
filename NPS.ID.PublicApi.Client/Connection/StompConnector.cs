@@ -4,14 +4,10 @@
  *  Please send feedback to idapi@nordpoolgroup.com.
  */
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
-using System.Threading.Tasks;
 using log4net;
 using Newtonsoft.Json;
 using Quartz;
@@ -65,7 +61,7 @@ namespace NPS.ID.PublicApi.Client.Connection
             _protocol = useSsl ? SecureWebSocketProtocol : UnsecureWebSocketProtocol;
 
             _webSocket = useSsl
-                ? new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12 | SslProtocols.Ssl3)
+                ? new WebSocket(ConstructUri(), sslProtocols: SslProtocols.Tls12)
                 : new WebSocket(ConstructUri());
             _heartbeatInterval = heartbeatInterval;
         }
@@ -309,8 +305,11 @@ namespace NPS.ID.PublicApi.Client.Connection
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            var stompConnector = context.JobDetail.JobDataMap["stompConnector"] as StompConnector;
-            stompConnector.SendHeartbeat();
+            await Task.Run(() =>
+            {
+                var stompConnector = context.JobDetail.JobDataMap["stompConnector"] as StompConnector;
+                stompConnector?.SendHeartbeat();
+            });
         }
     }
 }
