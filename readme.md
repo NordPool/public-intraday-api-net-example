@@ -1,16 +1,16 @@
 ﻿# Nord Pool Intraday API .NET Example Code #
 
-This repository contains a .NET (Framework 4.6.2) Windows Forms example application for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
+This repository contains a .NET 6 Windows Forms example application for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
 This sample application uses .NET data objects published in [.NET API library](https://github.com/NordPool/public-intraday-net-api)
 
 ## Disclaimer ##
 
 We offer the client code examples to aid the development against Nord Pool's API at no warranty whatsoever. Clients are solely responsible for separately testing and ensuring that interaction with Nord Pool works according to their own standards.
 
-## Update 10/2017 ##
+## Update 02/2022 ##
 
 * Please note that former console-based example application is now deprecated. From now you should use **WinFormsExample** as described below.
-* Example Application now requires .NET 4.6.2. If you have not support for .NET 4.6.2. in your Visual Studio, install 4.6.2 developer pack from (https://www.microsoft.com/net/targeting)
+* Example Application now requires .NET 6. If you have not support for .NET 6. in your Visual Studio, install developer SDK from (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
 ## Using the example ##
 
@@ -34,7 +34,7 @@ All the relevant variables for connecting are located in App.config. Before runn
 These credentials shall be obtained from [idapi@nordpoolgroup.com](mailto:idapi@nordpoolgroup.com) prior to running the example.
 
 Additionally, make sure that all the other variabels in the App.config point to correct addresses.
-Finally, build the solution with VS2017 and run it with startup project: **NPS.ID.PublicApi.Client.WinFormsExample**.
+Finally, build the solution with Visual Studio or with dotnet CLI and run it with startup project: **NPS.ID.PublicApi.Client.WinFormsExample**.
 
 The program will connect to the platform and subscribe to several topics. It also provides examples on sending order messages to Intraday platform.
 
