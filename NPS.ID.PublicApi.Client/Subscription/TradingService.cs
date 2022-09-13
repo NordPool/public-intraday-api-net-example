@@ -14,6 +14,7 @@ using Stomp.Net.Stomp.Protocol;
 using Nordpool.ID.PublicApi.v1.Trade.Request;
 using Nordpool.ID.PublicApi.v1.Order.Request;
 using Nordpool.ID.PublicApi.v1.Command;
+using System.Threading.Channels;
 
 namespace NPS.ID.PublicApi.Client.Subscription
 {
@@ -31,8 +32,8 @@ namespace NPS.ID.PublicApi.Client.Subscription
         private StompConnector _stompConnector;
 
         // public delegate void HandleStompMessageContent(string messageContent);
-
-        private Dictionary<Subscription, EventHandler<StompMessageEventArgs>> _subscriptionHandles;
+        
+        private Dictionary<string, Channel<StompFrame>> _subscriptionHandles;
 
         private EventHandler<StompMessageEventArgs> allMessagesHandler;
 
@@ -73,7 +74,7 @@ namespace NPS.ID.PublicApi.Client.Subscription
         {
             _webSocketSettings = webSocketSettings;
             _ssoCredentials = ssoCredentials;
-            _subscriptionHandles = new Dictionary<Subscription, EventHandler<StompMessageEventArgs>>();
+            _subscriptionHandles = new();
         }
 
         public void SubscribeAll(EventHandler<StompMessageEventArgs> handler)
@@ -88,7 +89,11 @@ namespace NPS.ID.PublicApi.Client.Subscription
                     "Failed to subscribe because no connection is established! Connect first!");
 
 
-            _subscriptionHandles.Add(subscription, callBack);
+            Channel<StompFrame> frameQueue = Channel.CreateUnbounded<StompFrame>(new UnboundedChannelOptions() { SingleReader = true, SingleWriter = true });
+
+            _subscriptionHandles.Add(subscription.Id, frameQueue);
+
+            _ = StartToListenTopic(frameQueue, callBack);
 
             var destination = BuildFullTopic(subscription);
 
@@ -121,6 +126,33 @@ namespace NPS.ID.PublicApi.Client.Subscription
 
         }
 
+        private async Task StartToListenTopic(Channel<StompFrame> frameQueue, EventHandler<StompMessageEventArgs> subscriptionHandlePairHandler)
+        {
+            await Task.Yield();
+
+            await foreach (var frame in frameQueue.Reader.ReadAllAsync())
+                ProcessOneFrame(frame, subscriptionHandlePairHandler);
+        }
+
+        private void ProcessOneFrame(StompFrame frame, EventHandler<StompMessageEventArgs> subscriptionHandlePairHandler)
+        {
+            var content = frame.Content;
+            var contentEncoding = frame.Properties.FirstOrDefault(r => r.Key == "Content-Encoding").Value;
+           
+            var gzipped = string.Equals(contentEncoding, "GZIP", StringComparison.InvariantCultureIgnoreCase);
+            if (gzipped)
+                content = GzipCompressor.Decompress(frame.Content);
+
+            var headers = frame.Properties.ToDictionary(p => p.Key, p => p.Value);
+            var args = new StompMessageEventArgs()
+            {
+                Headers = headers,
+                MessageContent = Encoding.UTF8.GetString(content),
+            };
+            allMessagesHandler?.Invoke(this, args);
+            subscriptionHandlePairHandler?.Invoke(this, args);              
+        }
+
         private void StompConnectorOnStompFrameReceived(object sender, StompConnector.StompFrameReceivedEventArgs stompFrameReceivedEventArgs)
         {
             var frame = stompFrameReceivedEventArgs.Frame;
@@ -132,28 +164,11 @@ namespace NPS.ID.PublicApi.Client.Subscription
                 return;
 
             //Find related subscription
-            var subscriptionHandlePair =
-                _subscriptionHandles.First(x => x.Key.Id == frame.Properties["subscription"]);
-            var content = frame.Content;
-            var gzipped = false;
-            var contentEncoding = frame.Properties.FirstOrDefault(r => r.Key == "Content-Encoding").Value;
-            gzipped = string.Equals(contentEncoding, "GZIP", StringComparison.InvariantCultureIgnoreCase);
+            var subscriptionName = frame.Properties["subscription"];
+            if (!_subscriptionHandles.TryGetValue(subscriptionName, out var subscriptionHandlePair))
+                return;
 
-            if (gzipped)
-
-                content = GzipCompressor.Decompress(frame.Content);
-            var headers = frame.Properties.ToDictionary(p => p.Key, p => p.Value);
-            var args = new StompMessageEventArgs()
-            {
-
-                Headers = headers,
-                MessageContent = Encoding.UTF8.GetString(content),
-            };
-            allMessagesHandler?.Invoke(this, args);
-            subscriptionHandlePair.Value?.Invoke(this, args);
-
-
-
+            subscriptionHandlePair.Writer.TryWrite(frame);
         }
 
         private static string GetDestinationPathFromTopic(Topic topic)
@@ -251,7 +266,7 @@ namespace NPS.ID.PublicApi.Client.Subscription
         {
             allMessagesHandler = null;
             var oldHandlers = _subscriptionHandles;
-            _subscriptionHandles = new Dictionary<Subscription, EventHandler<StompMessageEventArgs>>();
+            _subscriptionHandles = new();
 
             oldHandlers.Clear();
         }
