@@ -5,19 +5,19 @@
  */
 
 
-using System.Configuration;
+using Extend;
+using log4net;
+using Nordpool.ID.PublicApi.v1;
+using Nordpool.ID.PublicApi.v1.Contract;
+using Nordpool.ID.PublicApi.v1.Order;
 using Nordpool.ID.PublicApi.v1.Order.Request;
 using Nordpool.ID.PublicApi.v1.Trade.Request;
-using Nordpool.ID.PublicApi.v1.Statistic;
-using Nordpool.ID.PublicApi.v1.Order;
-using NPS.ID.PublicApi.Client.Rest;
-using Nordpool.ID.PublicApi.v1.Heartbeat;
-using log4net;
 using NPS.ID.PublicApi.Client.Connection;
-using Nordpool.ID.PublicApi.v1;
-using NPS.ID.PublicApi.Client.Subscription;
+using NPS.ID.PublicApi.Client.Rest;
 using NPS.ID.PublicApi.Client.Security;
+using NPS.ID.PublicApi.Client.Subscription;
 using NPS.ID.PublicApi.Client.Utilities;
+using System.Configuration;
 
 namespace NPS.ID.PublicApi.Client.WinFormsExample
 {
@@ -29,7 +29,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private const int DemoArea = 2; // 3 = Finland
 
-        private ContractRow sampleContract = null;
+        private List<ContractRow> sampleContract = null;
         private ConfigurationRow currentConfiguration = null;
         private OrderEntryRequest lastSentOrder = null;
         private RestApiSettings restApiSettings = null;
@@ -228,51 +228,52 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private void HeartbeatCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Heartbeat");
-            var heartbeatData = JsonHelper.DeserializeData<List<HeartbeatMessage>>(e.MessageContent);
-            Log(JsonHelper.SerializeObjectPrettyPrinted(heartbeatData));
+            //ShowMessage(e.MessageContent, "Heartbeat");
+            //var heartbeatData = JsonHelper.DeserializeData<List<HeartbeatMessage>>(e.MessageContent);
+            //Log("If you want to see detailed Heartbeat - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(heartbeatData));
         }
 
         private void CapacitiesCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Capacities");
-            var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(e.MessageContent);
-            Log("If you want to see detailed Capacities - data, uncomment Logging in MainForm.cs");
+            //ShowMessage(e.MessageContent, "Capacities");
+            //var capacitiesData = JsonHelper.DeserializeData<List<CapacityRow>>(e.MessageContent);
+            //Log("If you want to see detailed Capacities - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(capacitiesData));
         }
 
         private void PublicStatisticsCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Public Statistics");
-            var publicStatisticsData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(e.MessageContent);
-            Log("If you want to see detailed Public Statistics - data, uncomment Logging in MainForm.cs");
+            //ShowMessage(e.MessageContent, "Public Statistics");
+            //var publicStatisticsData = JsonHelper.DeserializeData<List<PublicStatisticRow>>(e.MessageContent);
+            //Log("If you want to see detailed Public Statistics - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(publicStatisticsData));
         }
 
         private void PrivateTradeCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Private Trade");
-            var privateTradesData = JsonHelper.DeserializeData<List<PrivateTradeRow>>(e.MessageContent);
-            Log("If you want to see detailed Private Trades - data, uncomment Logging in MainForm.cs");
+            //ShowMessage(e.MessageContent, "Private Trade");
+            //var privateTradesData = JsonHelper.DeserializeData<List<PrivateTradeRow>>(e.MessageContent);
+            //Log("If you want to see detailed Private Trades - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(privateTradesData));
         }
 
         private void LocalViewCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Local View", true);
-            var localViewData = JsonHelper.DeserializeData<List<LocalViewRow>>(e.MessageContent);
-            Log("If you want to see detailed Local View - data, uncomment Logging in MainForm.cs");
+            //ShowMessage(e.MessageContent, "Local View", true);
+            //var localViewData = JsonHelper.DeserializeData<List<LocalViewRow>>(e.MessageContent);
+            //Log("If you want to see detailed Local View - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(localViewData));
         }
 
         private void ConfigurationCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Configuration");
+            //ShowMessage(e.MessageContent, "Configuration");
             var configurationData = JsonHelper.DeserializeData<List<ConfigurationRow>>(e.MessageContent);
 
-            // Log("If you want to see detailed Configuration - data, uncomment Logging in MainForm.cs");
-            Log("Configuration data =");
-            Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
+            //Log("If you want to see detailed Configuration - data, uncomment Logging in MainForm.cs");
+            //Log("Configuration data =");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(configurationData));
 
             if (currentConfiguration == null)
                 currentConfiguration = configurationData.FirstOrDefault();
@@ -283,16 +284,23 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             ShowMessage(e.MessageContent, "Contracts");
             var contractsData = JsonHelper.DeserializeData<List<ContractRow>>(e.MessageContent);
 
-            Log("If you want to see detailed Contracts - data, uncomment Logging in MainForm.cs");
+            //Log("If you want to see detailed Contracts - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(contractsData));
             if (sampleContract == null)
             {
-                sampleContract = contractsData.FirstOrDefault(r => r.DlvryStart > DateTimeOffset.Now.AddHours(1) && r.DlvryStart < DateTimeOffset.Now.AddHours(4));
+                sampleContract = contractsData.FindAll(r => r.DlvryStart > DateTimeOffset.Now.AddHours(1) && r.DlvryStart < DateTimeOffset.Now.AddHours(48));
+                
                 if (sampleContract == null)
                 {
                     Log("WARNING: no valid contract to be used for order creation has been found! Check contracts.");
+                    return;
                 }
             }
+
+            sampleContract.ForEach(l => l.DlvryAreaState.RemoveAll(d => !d.State.Equals(ContractState.ACTI)));
+            sampleContract.RemoveAll(c => c.DlvryAreaState.Count == 0);
+
+            Log(JsonHelper.SerializeObjectPrettyPrinted(sampleContract));
         }
 
         private void OrderExecutionCallBack(object sender, StompMessageEventArgs e)
@@ -304,17 +312,17 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
 
         private void DeliveryAreasCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Delivery Areas");
-            var deliveryAreasData = JsonHelper.DeserializeData<List<DeliveryAreaRow>>(e.MessageContent);
+            //ShowMessage(e.MessageContent, "Delivery Areas");
+            //var deliveryAreasData = JsonHelper.DeserializeData<List<DeliveryAreaRow>>(e.MessageContent);
             // Log("If you want to see detailed Delivery Areas - data, uncomment Logging in MainForm.cs");
-            Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(deliveryAreasData));
         }
 
         private void TickerCallBack(object sender, StompMessageEventArgs e)
         {
-            ShowMessage(e.MessageContent, "Ticker");
-            var tickerData = JsonHelper.DeserializeData<List<PublicTradeRow>>(e.MessageContent);
-            Log("If you want to see detailed Ticker - data, uncomment Logging in MainForm.cs");
+            //ShowMessage(e.MessageContent, "Ticker");
+            //var tickerData = JsonHelper.DeserializeData<List<PublicTradeRow>>(e.MessageContent);
+            //Log("If you want to see detailed Ticker - data, uncomment Logging in MainForm.cs");
             // Log(JsonHelper.SerializeObjectPrettyPrinted(tickerData));
         }
 
@@ -353,7 +361,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                         ClientOrderId = Guid.NewGuid(),
                         PortfolioId  = portFolio.Id,
                         Side =  OrderSide.SELL,
-                        ContractIds = new List<string> { sampleContract.ContractId },
+                        ContractIds = new List<string> { sampleContract[0].ContractId },
                         OrderType = OrderType.LIMIT,
                         Quantity = 3000,
                         State =  OrderState.ACTI,

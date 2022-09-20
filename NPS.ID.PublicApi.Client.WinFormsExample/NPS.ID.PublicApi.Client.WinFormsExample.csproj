@@ -7,6 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
 	<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
