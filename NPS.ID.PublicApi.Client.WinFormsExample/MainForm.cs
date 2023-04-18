@@ -216,6 +216,12 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 .WithArea(DemoArea)
                 .Build(), HeartbeatCallBack);
 
+            tradingService.Subscribe(Subscription.Subscription.Builder()
+                .WithTopic(Topic.ThrottlingLimits)
+                .WithVersion(apiVersion)
+                .WithSubscriptionType(SubscriptionType.Conflated)
+                .Build(), ThrottlingLimitsCallBack);
+
             try
             {
                 Thread.Sleep(3000);
@@ -232,6 +238,14 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
             //var heartbeatData = JsonHelper.DeserializeData<List<HeartbeatMessage>>(e.MessageContent);
             //Log("If you want to see detailed Heartbeat - data, uncomment Logging in MainForm.cs");
             //Log(JsonHelper.SerializeObjectPrettyPrinted(heartbeatData));
+        }
+
+        private void ThrottlingLimitsCallBack(object sender, StompMessageEventArgs e)
+        {
+            //ShowMessage(e.MessageContent, "ThrottlingLimits");
+            //var throttlingLimitsData = JsonHelper.DeserializeData<List<ThrottlingLimitMessage>>(e.MessageContent);
+            //Log("If you want to see detailed ThrottlingLimits - data, uncomment Logging in MainForm.cs");
+            //Log(JsonHelper.SerializeObjectPrettyPrinted(throttlingLimitsData));
         }
 
         private void CapacitiesCallBack(object sender, StompMessageEventArgs e)

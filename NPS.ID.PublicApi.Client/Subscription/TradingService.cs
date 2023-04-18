@@ -53,8 +53,8 @@ namespace NPS.ID.PublicApi.Client.Subscription
             {Topic.Ticker, "/ticker" },
             {Topic.PublicStatistics, "/publicStatistics"} ,
             {Topic.OrderExecutionReport, "/orderExecutionReport" },
-            {Topic.HeartbeatPing, "/heartbeatping" }
-
+            {Topic.HeartbeatPing, "/heartbeatping" },
+            {Topic.ThrottlingLimits, "/throttlingLimits" }
         };
 
         private static readonly Dictionary<SubscriptionType, string> SubscriptionTypesStrings =
@@ -178,6 +178,7 @@ namespace NPS.ID.PublicApi.Client.Subscription
                 case Topic.Ticker:
                 case Topic.DeliveryAreas:
                 case Topic.Contracts:
+                case Topic.ThrottlingLimits:
                     return $"{fullTopic}{IsGzipped(subscription)}";
                 default:
                     _logger.Error("Invalid subscription type!");
