@@ -351,7 +351,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 {
                     new OrderEntry()
                     {
-                        ClientOrderId = Guid.NewGuid(),
+                        ClientOrderId = Guid.NewGuid().ToString(),
                          PortfolioId = "Z00001-5"
 
                     },
@@ -372,7 +372,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                 {
                     new OrderEntry()
                     {
-                        ClientOrderId = Guid.NewGuid(),
+                        ClientOrderId = Guid.NewGuid().ToString(),
                         PortfolioId  = portFolio.Id,
                         Side =  OrderSide.SELL,
                         ContractIds = new List<string> { sampleContract[0].ContractId },
@@ -547,7 +547,7 @@ namespace NPS.ID.PublicApi.Client.WinFormsExample
                          new OrderModification()
                          {
                              OrderId = "",
-                            ClientOrderId = lastSentOrder?.Orders.FirstOrDefault()?.ClientOrderId ?? Guid.NewGuid(),
+                            ClientOrderId = lastSentOrder?.Orders.FirstOrDefault()?.ClientOrderId ?? Guid.NewGuid().ToString(),
                             ClipPriceChange = (lastSentOrder?.Orders.FirstOrDefault()?.ClipPriceChange ?? 0),
                             ClipSize = (lastSentOrder?.Orders.FirstOrDefault()?.ClipSize ?? 0),
                             ContractIds = lastSentOrder?.Orders.FirstOrDefault()?.ContractIds,
