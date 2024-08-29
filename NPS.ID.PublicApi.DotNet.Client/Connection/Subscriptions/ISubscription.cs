@@ -1,0 +1,8 @@
+namespace NPS.ID.PublicApi.DotNet.Client.Connection.Subscriptions;
+
+public interface ISubscription
+{
+    public string Id { get; }
+    public string Type { get; }
+    public string Destination { get; }
+}
