@@ -21,7 +21,7 @@ Example application requires, that you have cloned [.NET API library](https://gi
 ```
 #!
 C:\[path]\public-intraday-net-api
-C:\[path]\public-intraday-api-dotnet-console-example
+C:\[path]\public-intraday-api-net-example
 ```
 
 .NET Example client solution contains Api library-project including source code from public-intraday-net-api repository. .NET API library reference is always to the same version of the library than exists in disk.
