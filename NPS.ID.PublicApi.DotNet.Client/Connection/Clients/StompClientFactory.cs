@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NPS.ID.PublicApi.DotNet.Client.Connection.Enums;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Options;
 using NPS.ID.PublicApi.DotNet.Client.Security.Options;
 
@@ -17,7 +18,7 @@ public class StompClientFactory : IClientFactory
         _webSocketConnectorFactory = webSocketConnectorFactory;
     }
 
-    public async Task<IClient> CreateAsync(string clientId, CredentialsOptions credentialsOptions, WebSocketOptions connectionOptions, CancellationToken cancellationToken)
+    public async Task<IClient> CreateAsync(WebSocketClientTarget clientTarget, string clientId, CredentialsOptions credentialsOptions, WebSocketOptions connectionOptions, CancellationToken cancellationToken)
     {
         var webSocketConnector = _webSocketConnectorFactory.Create(connectionOptions, credentialsOptions);
 
@@ -25,6 +26,7 @@ public class StompClientFactory : IClientFactory
             _loggerFactory.CreateLogger<StompClient>(),
             _loggerFactory,
             webSocketConnector,
+            clientTarget,
             clientId);
 
         var timeoutCancellationToken = new CancellationTokenSource(_connectionAttemptTimeout).Token;

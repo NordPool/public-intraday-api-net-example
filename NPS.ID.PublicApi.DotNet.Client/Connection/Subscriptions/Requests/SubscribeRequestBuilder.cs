@@ -20,21 +20,56 @@ public class SubscribeRequestBuilder
         return new SubscribeRequestBuilder(user, version);
     }
 
-    public SubscribeRequest CreateMarketInfo(PublishingMode publishingMode, int deliveryAreaId)
+    public SubscribeRequest CreateDeliveryAreas()
     {
-        return SubscribeRequest.MarketInfo(GetSubId(), _user, _version, publishingMode, deliveryAreaId);
+        return SubscribeRequest.DeliveryAreas(GetSubId(), _user, _version);
     }
-
-    public SubscribeRequest CreateLocalView(PublishingMode publishingMode, int deliveryAreaId)
+    
+    public SubscribeRequest CreateConfiguration()
     {
-        return SubscribeRequest.LocalView(GetSubId(), _user, _version, publishingMode, deliveryAreaId);
+        return SubscribeRequest.Configuration(GetSubId(), _user, _version);
     }
-
+    
+    public SubscribeRequest CreateOrderExecutionReport(PublishingMode publishingMode)
+    {
+        return SubscribeRequest.OrderExecutionReports(GetSubId(), _user, _version, publishingMode);
+    }
+    
     public SubscribeRequest CreateContracts(PublishingMode publishingMode)
     {
         return SubscribeRequest.Contracts(GetSubId(), _user, _version, publishingMode);
     }
+    
+    public SubscribeRequest CreateLocalViews(PublishingMode publishingMode, int deliveryAreaId)
+    {
+        return SubscribeRequest.LocalView(GetSubId(), _user, _version, publishingMode, deliveryAreaId);
+    }
 
+    public SubscribeRequest CreatePrivateTrades(PublishingMode publishingMode)
+    {
+        return SubscribeRequest.PrivateTrades(GetSubId(), _user, _version, publishingMode);
+    }
+    
+    public SubscribeRequest CreateTicker(PublishingMode publishingMode)
+    {
+        return SubscribeRequest.Ticker(GetSubId(), _user, _version, publishingMode);
+    }
+
+    public SubscribeRequest CreateMyTicker(PublishingMode publishingMode)
+    {
+        return SubscribeRequest.MyTicker(GetSubId(), _user, _version, publishingMode);
+    }
+    
+    public SubscribeRequest CreatePublicStatistics(PublishingMode publishingMode)
+    {
+        return SubscribeRequest.PublicStatistics(GetSubId(), _user, _version, publishingMode);
+    }
+
+    public SubscribeRequest CreateThrottlingLimits(PublishingMode publishingMode)
+    {
+        return SubscribeRequest.ThrottlingLimits(GetSubId(), _user, _version, publishingMode);
+    }
+    
     public SubscribeRequest CreateCapacities(PublishingMode publishingMode, int deliveryAreaId)
     {
         return CreateCapacities(publishingMode, deliveryAreaId, Array.Empty<int>());
@@ -45,34 +80,14 @@ public class SubscribeRequestBuilder
         return SubscribeRequest.Capacities(GetSubId(), _user, _version, publishingMode, deliveryAreaId, additionalDeliveryAreas);
     }
 
-    public SubscribeRequest CreateTicker(PublishingMode publishingMode)
-    {
-        return SubscribeRequest.Ticker(GetSubId(), _user, _version, publishingMode);
-    }
-
-    public SubscribeRequest CreateMyTicker(PublishingMode publishingMode)
-    {
-        return SubscribeRequest.MyTicker(GetSubId(), _user, _version, publishingMode);
-    }
-
     public SubscribeRequest CreateHeartBeat()
     {
         return SubscribeRequest.Heartbeat(GetSubId(), _user, _version);
     }
 
-    public SubscribeRequest CreateConfiguration()
+    public SubscribeRequest CreateMarketInfo(PublishingMode publishingMode, int deliveryAreaId)
     {
-        return SubscribeRequest.Configuration(GetSubId(), _user, _version);
-    }
-
-    public SubscribeRequest CreateOrderExecutionReport(PublishingMode publishingMode)
-    {
-        return SubscribeRequest.OrderExecutionReports(GetSubId(), _user, _version, publishingMode);
-    }
-    
-    public SubscribeRequest CreateDeliveryAreas()
-    {
-        return SubscribeRequest.DeliveryAreas(GetSubId(), _user, _version);
+        return SubscribeRequest.MarketInfo(GetSubId(), _user, _version, publishingMode, deliveryAreaId);
     }
 
     private string GetSubId()

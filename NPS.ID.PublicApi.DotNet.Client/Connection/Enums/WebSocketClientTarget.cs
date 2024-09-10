@@ -4,5 +4,5 @@ public enum WebSocketClientTarget
 {
     None = 0,
     Middleware,
-    Edge
+    PMD
 }

@@ -15,25 +15,34 @@ public class SubscribeRequest
         Type = type;
     }
 
-    public static SubscribeRequest MarketInfo(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId)
+    public static SubscribeRequest DeliveryAreas(string subscriptionId, string user, string version)
     {
-        return new SubscribeRequest(subscriptionId, "market_info", ComposeDestination(user, version, mode, $"marketinfo/{deliveryAreaId}"));
+        return new SubscribeRequest(subscriptionId, "delivery_areas", ComposeDestination(user, version, PublishingMode.Streaming, "deliveryAreas"));
     }
-
+    
+    public static SubscribeRequest Configuration(string subscriptionId, string user, string version)
+    {
+        return new SubscribeRequest(subscriptionId, "configuration", ComposeDestination(user, version, "configuration"));
+    }
+    
+    public static SubscribeRequest OrderExecutionReports(string subscriptionId, string user, string version, PublishingMode mode)
+    {
+        return new SubscribeRequest(subscriptionId, "order_execution_report", ComposeDestination(user, version, mode, "orderExecutionReport"));
+    }
+    
+    public static SubscribeRequest Contracts(string subscriptionId, string user, string version, PublishingMode mode)
+    {
+        return new SubscribeRequest(subscriptionId, "contracts", ComposeDestination(user, version, mode, "contracts"));
+    }
+    
     public static SubscribeRequest LocalView(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId)
     {
         return new SubscribeRequest(subscriptionId, "localview", ComposeDestination(user, version, mode, $"localview/{deliveryAreaId}"));
     }
 
-    public static SubscribeRequest Capacities(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId, IEnumerable<int> additionalDeliveryAreas)
+    public static SubscribeRequest PrivateTrades(string subscriptionId, string user, string version, PublishingMode mode)
     {
-        var additionalAreasPart = additionalDeliveryAreas.Any() ? $"/{string.Join("-", additionalDeliveryAreas)}" : string.Empty;
-        return new SubscribeRequest(subscriptionId, "capacities", ComposeDestination(user, version, mode, $"capacities/{deliveryAreaId}{additionalAreasPart}"));
-    }
-
-    public static SubscribeRequest Contracts(string subscriptionId, string user, string version, PublishingMode mode)
-    {
-        return new SubscribeRequest(subscriptionId, "contracts", ComposeDestination(user, version, mode, "contracts"));
+        return new SubscribeRequest(subscriptionId, "private_trade", ComposeDestination(user, version, mode, "privateTrade"));
     }
 
     public static SubscribeRequest Ticker(string subscriptionId, string user, string version, PublishingMode mode)
@@ -45,25 +54,31 @@ public class SubscribeRequest
     {
         return new SubscribeRequest(subscriptionId, "my_ticker", ComposeDestination(user, version, mode, "myTicker"));
     }
+    
+    public static SubscribeRequest PublicStatistics(string subscriptionId, string user, string version, PublishingMode mode)
+    {
+        return new SubscribeRequest(subscriptionId, "public_statistics", ComposeDestination(user, version, mode, "publicStatistics"));
+    }
+
+    public static SubscribeRequest ThrottlingLimits(string subscriptionId, string user, string version, PublishingMode mode)
+    {
+        return new SubscribeRequest(subscriptionId, "throttling_limits", ComposeDestination(user, version, mode, "throttlingLimits"));
+    }
+    
+    public static SubscribeRequest Capacities(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId, IEnumerable<int> additionalDeliveryAreas)
+    {
+        var additionalAreasPart = additionalDeliveryAreas.Any() ? $"/{string.Join("-", additionalDeliveryAreas)}" : string.Empty;
+        return new SubscribeRequest(subscriptionId, "capacities", ComposeDestination(user, version, mode, $"capacities/{deliveryAreaId}{additionalAreasPart}"));
+    }
 
     public static SubscribeRequest Heartbeat(string subscriptionId, string user, string version)
     {
         return new SubscribeRequest(subscriptionId, "heartbeat", ComposeDestination(user, version, "heartbeatping"));
     }
 
-    public static SubscribeRequest Configuration(string subscriptionId, string user, string version)
+    public static SubscribeRequest MarketInfo(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId)
     {
-        return new SubscribeRequest(subscriptionId, "configuration", ComposeDestination(user, version, "configuration"));
-    }
-
-    public static SubscribeRequest OrderExecutionReports(string subscriptionId, string user, string version, PublishingMode mode)
-    {
-        return new SubscribeRequest( subscriptionId, "order_execution_report", ComposeDestination(user, version, mode, "orderExecutionReport"));
-    }
-    
-    public static SubscribeRequest DeliveryAreas(string subscriptionId, string user, string version)
-    {
-        return new SubscribeRequest( subscriptionId, "delivery_areas", ComposeDestination(user, version, PublishingMode.Streaming, "deliveryAreas"));
+        return new SubscribeRequest(subscriptionId, "market_info", ComposeDestination(user, version, mode, $"marketinfo/{deliveryAreaId}"));
     }
 
     private static string ComposeDestination(string user, string version, PublishingMode mode, string topic)

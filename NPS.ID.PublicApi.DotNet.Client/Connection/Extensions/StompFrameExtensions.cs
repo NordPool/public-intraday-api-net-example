@@ -13,6 +13,18 @@ public static class StompFrameExtensions
         return frame.Properties.TryGetValue(Headers.Server.IsSnapshot, out var isSnapshotString) && string.Equals(isSnapshotString, "true");
     }
     
+    public static string GetDestination(this StompFrame frame)
+    {
+        _ = frame.Properties.TryGetValue(Headers.Destination, out var destination);
+        return destination;
+    }
+    
+    public static string GetSequenceNumber(this StompFrame frame)
+    {
+        _ = frame.Properties.TryGetValue(Headers.Server.SequenceNumber, out var sequenceNumber);
+        return sequenceNumber;
+    }
+    
     public static PublishingMode GetPublishingMode(this StompFrame frame)
     {
         return frame.Properties.TryGetValue(Headers.Destination, out var dest) && dest.Contains("/streaming/")

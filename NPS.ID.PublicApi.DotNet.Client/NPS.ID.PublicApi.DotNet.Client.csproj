@@ -12,6 +12,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
         <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.10.48" />
@@ -20,17 +21,6 @@
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
         <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
         <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Connection\IClient.cs" />
-      <Compile Remove="Connection\IClientFactory.cs" />
-      <Compile Remove="Connection\StompClientFactory.cs" />
-      <Compile Remove="Connection\StompClient.cs" />
-      <Compile Remove="Connection\Clients\EdgeClient.cs" />
-      <Compile Remove="Connection\Clients\EdgeClientFactory.cs" />
-      <Compile Remove="Connection\Clients\MiddlewareClient.cs" />
-      <Compile Remove="Connection\Clients\MiddlewareClientFactory.cs" />
     </ItemGroup>
 
     <ItemGroup>

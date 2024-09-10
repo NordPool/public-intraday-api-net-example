@@ -5,5 +5,5 @@ public record EndpointsOptions
     public const string SectionName = "Endpoints";
     
     public WebSocketOptions Middleware { get; set; }
-    public WebSocketOptions Edge { get; set; }
+    public WebSocketOptions Pmd { get; set; }
 }

@@ -21,15 +21,15 @@ public class GenericClientFactory : IGenericClientFactory
         _clientFactory = clientFactory;
     }
 
-    public Task<IClient> CreateAsync(string clientId, WebSocketClientTarget target, CancellationToken cancellationToken)
+    public Task<IClient> CreateAsync(string clientId, WebSocketClientTarget clientTarget, CancellationToken cancellationToken)
     {
-        var options = target switch
+        var options = clientTarget switch
         {
             WebSocketClientTarget.Middleware => _endpointsOptions.Middleware,
-            WebSocketClientTarget.Edge => _endpointsOptions.Edge,
-            _ => throw new ArgumentOutOfRangeException(nameof(target))
+            WebSocketClientTarget.PMD => _endpointsOptions.Pmd,
+            _ => throw new ArgumentOutOfRangeException(nameof(clientTarget))
         };
 
-        return _clientFactory.CreateAsync(clientId, _credentialsOptions, options, cancellationToken);
+        return _clientFactory.CreateAsync(clientTarget, clientId, _credentialsOptions, options, cancellationToken);
     }
 }
