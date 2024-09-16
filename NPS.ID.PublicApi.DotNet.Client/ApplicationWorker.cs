@@ -6,7 +6,6 @@ using Nordpool.ID.PublicApi.v1;
 using Nordpool.ID.PublicApi.v1.Contract;
 using Nordpool.ID.PublicApi.v1.Order;
 using Nordpool.ID.PublicApi.v1.Order.Request;
-using Nordpool.ID.PublicApi.v1.Portfolio;
 using Nordpool.ID.PublicApi.v1.Statistic;
 using Nordpool.ID.PublicApi.v1.Throttling;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Clients;
@@ -59,8 +58,8 @@ public class ApplicationWorker
         var middlewareClient =
             await CreateClientAsync(WebSocketClientTarget.Middleware, _cancellationTokenSource.Token);
 
-        // Delivery areas
-        await SubscribeDeliveryAreasAsync(pmdClient, _cancellationTokenSource.Token);
+        // // Delivery areas
+        // await SubscribeDeliveryAreasAsync(pmdClient, _cancellationTokenSource.Token);
 
         // Configurations 
         await SubscribeConfigurationsAsync(middlewareClient, _cancellationTokenSource.Token);
@@ -74,34 +73,34 @@ public class ApplicationWorker
         await SubscribeContractsAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
 
-        // Local views 
-        await SubscribeLocalViewsAsync(pmdClient, PublishingMode.Conflated,
-            _cancellationTokenSource.Token);
-        
-        // Private trades
-        await SubscribePrivateTradesAsync(middlewareClient, PublishingMode.Streaming,
-            _cancellationTokenSource.Token);
-        
-        // Tickers 
-        await SubscribeTickersAsync(pmdClient, PublishingMode.Conflated,
-            _cancellationTokenSource.Token);
-        
-        // MyTickers 
-        await SubscribeMyTickersAsync(pmdClient, PublishingMode.Conflated,
-            _cancellationTokenSource.Token);
-        
-        // Public statistics 
-        await SubscribePublicStatisticsAsync(pmdClient, PublishingMode.Conflated,
-            _cancellationTokenSource.Token);
-        
-        // Throttling limits
-        await SubscribeThrottlingLimitsAsync(middlewareClient,
-            PublishingMode.Conflated,
-            _cancellationTokenSource.Token);
-        
-        // Capacities 
-        await SubscribeCapacitiesAsync(pmdClient, PublishingMode.Conflated,
-            _cancellationTokenSource.Token);
+        // // Local views 
+        // await SubscribeLocalViewsAsync(pmdClient, PublishingMode.Conflated,
+        //     _cancellationTokenSource.Token);
+        //
+        // // Private trades
+        // await SubscribePrivateTradesAsync(middlewareClient, PublishingMode.Streaming,
+        //     _cancellationTokenSource.Token);
+        //
+        // // Tickers 
+        // await SubscribeTickersAsync(pmdClient, PublishingMode.Conflated,
+        //     _cancellationTokenSource.Token);
+        //
+        // // MyTickers 
+        // await SubscribeMyTickersAsync(pmdClient, PublishingMode.Conflated,
+        //     _cancellationTokenSource.Token);
+        //
+        // // Public statistics 
+        // await SubscribePublicStatisticsAsync(pmdClient, PublishingMode.Conflated,
+        //     _cancellationTokenSource.Token);
+        //
+        // // Throttling limits
+        // await SubscribeThrottlingLimitsAsync(middlewareClient,
+        //     PublishingMode.Conflated,
+        //     _cancellationTokenSource.Token);
+        //
+        // // Capacities 
+        // await SubscribeCapacitiesAsync(pmdClient, PublishingMode.Conflated,
+        //     _cancellationTokenSource.Token);
 
         // Order 
         // We wait some time in hope to get some example contracts and configurations that are needed for preparing example order request
@@ -113,14 +112,14 @@ public class ApplicationWorker
         await SendOrderModificatonRequest(middlewareClient,
             _cancellationTokenSource.Token);
         
-         // Wait before invalid order request
-         Thread.Sleep(5000);
-         await SendInvalidOrderRequestAsync(middlewareClient,
-             _cancellationTokenSource.Token);
-         // Wait before invalid order modification request
-         Thread.Sleep(5000);
-         await SendInvalidOrderModificatonRequest(middlewareClient,
-             _cancellationTokenSource.Token);
+         // // Wait before invalid order request
+         // Thread.Sleep(5000);
+         // await SendInvalidOrderRequestAsync(middlewareClient,
+         //     _cancellationTokenSource.Token);
+         // // Wait before invalid order modification request
+         // Thread.Sleep(5000);
+         // await SendInvalidOrderModificatonRequest(middlewareClient,
+         //     _cancellationTokenSource.Token);
 
         _cancellationTokenSource.Token.WaitHandle.WaitOne();
     }
@@ -224,8 +223,8 @@ public class ApplicationWorker
 
     private async Task SendOrderRequestAsync(IClient client, CancellationToken cancellationToken)
     {
-        var exampleData = GetExampleContractAndPortfolio(client);
-        if (exampleData == default((ContractRow, Portfolio)))
+        var exampleData = GetExampleContractPortfolioAndArea(client);
+        if (exampleData is null)
         {
             return;
         }
@@ -240,15 +239,15 @@ public class ApplicationWorker
                 {
                     Text = "New order",
                     ClientOrderId = Guid.NewGuid().ToString(),
-                    PortfolioId = exampleData.Portfolio!.Id,
+                    PortfolioId = exampleData.Value.PortfolioId,
                     Side = OrderSide.SELL,
-                    ContractIds = [exampleData.Contract!.ContractId],
+                    ContractIds = [exampleData.Value.ContractId],
                     OrderType = OrderType.LIMIT,
                     Quantity = 3000,
                     State = OrderState.ACTI,
                     UnitPrice = 2500,
                     TimeInForce = TimeInForce.GFS,
-                    DeliveryAreaId = exampleData.Portfolio.Areas.First().AreaId,
+                    DeliveryAreaId = exampleData.Value.AreaId,
                     ExecutionRestriction = ExecutionRestriction.NON,
                     ExpireTime = DateTimeOffset.Now.AddHours(6),
                 }
@@ -271,16 +270,18 @@ public class ApplicationWorker
         {
             _logger.LogInformation("[{clientTarget}]No valid order to be used for order modification has been found!",
                 client.ClientTarget);
+            return;
         }
         var lastOrderEntry = lastOrder!.Orders.Single();
 
         // Get last order execution report response for above order request (OrderId required for order modification request)
         var lastOrderExecutionReport = _simpleCacheStorage.GetFromCache<OrderExecutionReport>()
-            .FirstOrDefault(oer => oer.RequestId == lastOrder.RequestId);
+            .LastOrDefault(oer => oer.Orders.Count == 1 && oer.Orders.Single().ClientOrderId == lastOrder.Orders.Single().ClientOrderId);
         if (lastOrderExecutionReport is null || lastOrderExecutionReport.Orders.IsNullOrEmpty())
         {
             _logger.LogInformation("[{clientTarget}]No valid order execution report to be used for order modification has been found!",
                 client.ClientTarget);
+            return;
         }
 
         var lastOrderExecutionReportOrderEntry = lastOrderExecutionReport!.Orders.Single();
@@ -319,8 +320,8 @@ public class ApplicationWorker
     private async Task SendInvalidOrderRequestAsync(IClient client,
         CancellationToken cancellationToken)
     {
-        var exampleData = GetExampleContractAndPortfolio(client);
-        if (exampleData == default)
+        var exampleData = GetExampleContractPortfolioAndArea(client);
+        if (exampleData is null)
         {
             return;
         }
@@ -335,7 +336,7 @@ public class ApplicationWorker
                 new OrderEntry()
                 {
                     ClientOrderId = Guid.NewGuid().ToString(),
-                    PortfolioId = exampleData.Portfolio!.Id
+                    PortfolioId = exampleData.Value.PortfolioId
                 }
             ]
         };
@@ -365,36 +366,46 @@ public class ApplicationWorker
         await client.SendAsync(invalidOrderModificationRequest, DestinationHelper.ComposeDestination(_version,"orderModificationRequest"), cancellationToken);
     }
 
-    private (ContractRow Contract, Portfolio Portfolio) GetExampleContractAndPortfolio(IClient client)
+    private (string ContractId, string PortfolioId, long AreaId)? GetExampleContractPortfolioAndArea(IClient client)
     {
-        var exampleContract = _simpleCacheStorage
+        var exampleContracts = _simpleCacheStorage
             .GetFromCache<ContractRow>()
-            .FirstOrDefault(c => c.ProductType != ProductType.CUSTOM_BLOCK && c.DlvryAreaState.Any(s => s.State == ContractState.ACTI));
-        if (exampleContract is null)
+            .Where(c => c.ProductType != ProductType.CUSTOM_BLOCK && c.DlvryAreaState.Any(s => s.State == ContractState.ACTI))
+            .ToList();
+        if (exampleContracts.IsNullOrEmpty())
         {
             _logger.LogWarning(
-                "[{clientTarget}]No valid contract to be used for order creation has been found! Check contracts available in {simpleCacheStorage} property.",
-                client.ClientTarget, nameof(_simpleCacheStorage));
+                "[{clientTarget}]No valid contract to be used for order creation has been found in cache!",
+                client.ClientTarget);
             return default;
         }
 
-        var exampleAreas = exampleContract
+        var exampleRandomContract =  exampleContracts
+            .ElementAtOrDefault(Random.Shared.Next(0, exampleContracts.Count));
+
+        var exampleAreas = exampleRandomContract!
             .DlvryAreaState
             .Where(s => s.State == ContractState.ACTI);
         
-        var examplePortfolio = _simpleCacheStorage.GetFromCache<ConfigurationRow>()
-            .FirstOrDefault()
-            ?.Portfolios
-            .FirstOrDefault(p => p.Areas.Any(a => exampleAreas.Any(s => s.DlvryAreaId == a.AreaId)));
-        if (examplePortfolio is null)
+        var examplePortfolios = _simpleCacheStorage.GetFromCache<ConfigurationRow>()
+            .SelectMany(c => c.Portfolios)
+            .Where(p => p.Areas.Any(a => exampleAreas.Any(s => s.DlvryAreaId == a.AreaId)))
+            .ToList();
+        
+        var exampleRandomPortfolioForContract = examplePortfolios
+            .ElementAtOrDefault(Random.Shared.Next(0, examplePortfolios.Count));
+        if (exampleRandomPortfolioForContract is null)
         {
             _logger.LogWarning(
-                "[{clientTarget}]No valid portfolio to be used for order creation has been found! Check contracts available in {simpleCacheStorage} property.",
-                client.ClientTarget, nameof(_simpleCacheStorage));
+                "[{clientTarget}]No valid portfolio to be used for order creation has been found in cache!.",
+                client.ClientTarget);
             return default;
         }
 
-        return (exampleContract, examplePortfolio);
+        var deliveryAreaPortfolio = exampleRandomPortfolioForContract.Areas
+            .First(a => exampleAreas.Any(s => s.DlvryAreaId == a.AreaId));
+
+        return (exampleRandomContract.ContractId, exampleRandomPortfolioForContract.Id, deliveryAreaPortfolio.AreaId);
     }
     
     private async Task ReadSubscriptionChannel<TValue>(IClient client, WebSocketClientTarget clientTarget,
