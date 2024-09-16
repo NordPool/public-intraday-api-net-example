@@ -60,9 +60,9 @@ public class SubscribeRequestBuilder
         return SubscribeRequest.MyTicker(GetSubId(), _user, _version, publishingMode);
     }
     
-    public SubscribeRequest CreatePublicStatistics(PublishingMode publishingMode)
+    public SubscribeRequest CreatePublicStatistics(PublishingMode publishingMode, int deliveryAreaId)
     {
-        return SubscribeRequest.PublicStatistics(GetSubId(), _user, _version, publishingMode);
+        return SubscribeRequest.PublicStatistics(GetSubId(), _user, _version, publishingMode, deliveryAreaId);
     }
 
     public SubscribeRequest CreateThrottlingLimits(PublishingMode publishingMode)

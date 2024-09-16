@@ -2,14 +2,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Nordpool.ID.PublicApi.v1;
+using Nordpool.ID.PublicApi.v1.Contract;
 using Nordpool.ID.PublicApi.v1.Order;
 using Nordpool.ID.PublicApi.v1.Order.Request;
+using Nordpool.ID.PublicApi.v1.Portfolio;
 using Nordpool.ID.PublicApi.v1.Statistic;
 using Nordpool.ID.PublicApi.v1.Throttling;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Clients;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Enums;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Storage;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Subscriptions;
+using NPS.ID.PublicApi.DotNet.Client.Connection.Subscriptions.Helpers;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Subscriptions.Requests;
 using NPS.ID.PublicApi.DotNet.Client.Security.Options;
 
@@ -19,6 +22,7 @@ public class ApplicationWorker
 {
     private readonly ILogger<ApplicationWorker> _logger;
 
+    private readonly string _version = "v1";
     private readonly int _demoArea = 2; // 3 = Finland
     private readonly string _clientId = $"{Guid.NewGuid()}-dotnet-demo-client";
 
@@ -37,7 +41,7 @@ public class ApplicationWorker
         _logger = logger;
         _cancellationTokenSource = new CancellationTokenSource();
         _genericClientFactory = genericClientFactory;
-        _subscribeRequestBuilder = SubscribeRequestBuilder.CreateBuilder(credentialsOptions.Value.UserName, "v1");
+        _subscribeRequestBuilder = SubscribeRequestBuilder.CreateBuilder(credentialsOptions.Value.UserName, _version);
 
         Console.CancelKeyPress += (_, eArgs) =>
         {
@@ -59,45 +63,34 @@ public class ApplicationWorker
 
         // Configurations 
         await SubscribeConfigurationsAsync(middlewareClient, _cancellationTokenSource.Token);
-
+        
         // Order execution report
         await SubscribeOrderExecutionReportAsync(middlewareClient,
             PublishingMode.Streaming,
             _cancellationTokenSource.Token);
-
+        
         // Contracts
         await SubscribeContractsAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
-        await SubscribeContractsAsync(middlewareClient, PublishingMode.Conflated,
-            _cancellationTokenSource.Token);
 
-        // Local views
+        // Local views //
         await SubscribeLocalViewsAsync(pmdClient, PublishingMode.Streaming,
-            _cancellationTokenSource.Token);
-        await SubscribeLocalViewsAsync(middlewareClient, PublishingMode.Streaming,
             _cancellationTokenSource.Token);
         
         // Private trades
         await SubscribePrivateTradesAsync(middlewareClient, PublishingMode.Streaming,
             _cancellationTokenSource.Token);
         
-        // Tickers
+        // Tickers //
         await SubscribeTickersAsync(pmdClient, PublishingMode.Streaming,
             _cancellationTokenSource.Token);
-        await SubscribeTickersAsync(middlewareClient, PublishingMode.Streaming,
-            _cancellationTokenSource.Token);
         
-        // MyTickers
+        // MyTickers //
         await SubscribeMyTickersAsync(pmdClient, PublishingMode.Streaming,
             _cancellationTokenSource.Token);
-        await SubscribeMyTickersAsync(middlewareClient, PublishingMode.Streaming,
-            _cancellationTokenSource.Token);
         
-        // Public statistics
+        // Public statistics //
         await SubscribePublicStatisticsAsync(pmdClient, PublishingMode.Streaming,
-            _cancellationTokenSource.Token);
-        await SubscribePublicStatisticsAsync(middlewareClient,
-            PublishingMode.Streaming,
             _cancellationTokenSource.Token);
         
         // Throttling limits
@@ -105,22 +98,28 @@ public class ApplicationWorker
             PublishingMode.Conflated,
             _cancellationTokenSource.Token);
         
-        // Capacities
+        // Capacities //?
         await SubscribeCapacitiesAsync(pmdClient, PublishingMode.Streaming,
-            _cancellationTokenSource.Token);
-        await SubscribeCapacitiesAsync(middlewareClient, PublishingMode.Streaming,
             _cancellationTokenSource.Token);
 
         // Order 
         // We wait some time in hope to get some example contracts and configurations that are needed for preparing example order request
         Thread.Sleep(5000);
-        await SendOrderRequestAsync(middlewareClient, _cancellationTokenSource.Token);
+        await SendOrderRequestAsync(middlewareClient, 
+            _cancellationTokenSource.Token);
+        // Wait before order modification
+        Thread.Sleep(5000);
         await SendOrderModificatonRequest(middlewareClient,
             _cancellationTokenSource.Token);
-        await SendInvalidOrderRequestAsync(middlewareClient,
-            _cancellationTokenSource.Token);
-        await SendInvalidOrderModificatonRequest(middlewareClient,
-            _cancellationTokenSource.Token);
+        
+         // Wait before invalid order request
+         Thread.Sleep(5000);
+         await SendInvalidOrderRequestAsync(middlewareClient,
+             _cancellationTokenSource.Token);
+         // Wait before invalid order modification request
+         Thread.Sleep(5000);
+         await SendInvalidOrderModificatonRequest(middlewareClient,
+             _cancellationTokenSource.Token);
 
         _cancellationTokenSource.Token.WaitHandle.WaitOne();
     }
@@ -199,7 +198,7 @@ public class ApplicationWorker
     private async Task SubscribePublicStatisticsAsync(IClient client, PublishingMode publishingMode,
         CancellationToken cancellationToken)
     {
-        var publicStatisticsSubscription = _subscribeRequestBuilder.CreatePublicStatistics(publishingMode);
+        var publicStatisticsSubscription = _subscribeRequestBuilder.CreatePublicStatistics(publishingMode, _demoArea);
         var subscription =
             await client.SubscribeAsync<PublicStatisticRow>(publicStatisticsSubscription, cancellationToken);
         await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
@@ -224,25 +223,9 @@ public class ApplicationWorker
 
     private async Task SendOrderRequestAsync(IClient client, CancellationToken cancellationToken)
     {
-        var exampleContract = _simpleCacheStorage.GetFromCache<ContractRow>(client.ClientTarget)
-            .FirstOrDefault();
-        if (exampleContract is null)
+        var exampleData = GetExampleContractAndPortfolio(client);
+        if (exampleData == default((ContractRow, Portfolio)))
         {
-            _logger.LogWarning(
-                "[{clientTarget}]No valid contract to be used for order creation has been found! Check contracts available in {simpleCacheStorage} property.",
-                client.ClientTarget, nameof(_simpleCacheStorage));
-            return;
-        }
-
-        var examplePortfolio = _simpleCacheStorage.GetFromCache<ConfigurationRow>(client.ClientTarget)
-            .FirstOrDefault()
-            ?.Portfolios
-            .FirstOrDefault();
-        if (examplePortfolio is null)
-        {
-            _logger.LogWarning(
-                "[{clientTarget}]No valid portfolio to be used for order creation has been found! Check contracts available in {simpleCacheStorage} property.",
-                client.ClientTarget, nameof(_simpleCacheStorage));
             return;
         }
 
@@ -256,42 +239,52 @@ public class ApplicationWorker
                 {
                     Text = "New order",
                     ClientOrderId = Guid.NewGuid().ToString(),
-                    PortfolioId = examplePortfolio!.Id,
+                    PortfolioId = exampleData.Portfolio!.Id,
                     Side = OrderSide.SELL,
-                    ContractIds = [exampleContract!.ContractId],
+                    ContractIds = [exampleData.Contract!.ContractId],
                     OrderType = OrderType.LIMIT,
                     Quantity = 3000,
                     State = OrderState.ACTI,
                     UnitPrice = 2500,
                     TimeInForce = TimeInForce.GFS,
-                    DeliveryAreaId = examplePortfolio.Areas.First().AreaId,
+                    DeliveryAreaId = exampleData.Portfolio.Areas.First().AreaId,
                     ExecutionRestriction = ExecutionRestriction.NON,
-                    ExpireTime = DateTimeOffset.Now.AddHours(6)
+                    ExpireTime = DateTimeOffset.Now.AddHours(6),
                 }
             ]
         };
 
         // Store created order in simple cache storage for order modification request
-        _simpleCacheStorage.SetCache(client.ClientTarget, [orderRequest]);
+        _simpleCacheStorage.SetCache([orderRequest]);
 
         _logger.LogInformation("[{clientTarget}]Attempting to send correct order request.", client.ClientTarget);
-        await client.SendAsync(orderRequest, "orderEntryRequest", cancellationToken);
+        await client.SendAsync(orderRequest, DestinationHelper.ComposeDestination(_version,"orderEntryRequest"), cancellationToken);
     }
 
     private async Task SendOrderModificatonRequest(IClient client, CancellationToken cancellationToken)
     {
         // Get last created order for update purpose
-        var lastOrder = _simpleCacheStorage.GetFromCache<OrderEntryRequest>(client.ClientTarget)
+        var lastOrder = _simpleCacheStorage.GetFromCache<OrderEntryRequest>()
             .LastOrDefault();
         if (lastOrder is null)
         {
             _logger.LogInformation("[{clientTarget}]No valid order to be used for order modification has been found!",
                 client.ClientTarget);
         }
+        var lastOrderEntry = lastOrder!.Orders.Single();
 
-        var lastOrderEntry = lastOrder!.Orders.First();
+        // Get last order execution report response for above order request (OrderId required for order modification request)
+        var lastOrderExecutionReport = _simpleCacheStorage.GetFromCache<OrderExecutionReport>()
+            .FirstOrDefault(oer => oer.RequestId == lastOrder.RequestId);
+        if (lastOrderExecutionReport is null)
+        {
+            _logger.LogInformation("[{clientTarget}]No valid order execution report to be used for order modification has been found!",
+                client.ClientTarget);
+        }
 
-        var orderModificatonRequest = new OrderModificationRequest()
+        var lastOrderExecutionReportOrderEntry = lastOrderExecutionReport!.Orders.Single();
+
+        var orderModificationRequest = new OrderModificationRequest()
         {
             RequestId = Guid.NewGuid().ToString(),
             OrderModificationType = OrderModificationType.DEAC,
@@ -299,7 +292,7 @@ public class ApplicationWorker
             [
                 new OrderModification()
                 {
-                    OrderId = string.Empty,
+                    OrderId = lastOrderExecutionReportOrderEntry.OrderId,
                     RevisionNo = 0L,
                     Text = "Modified order",
                     ClientOrderId = lastOrderEntry.ClientOrderId,
@@ -319,13 +312,19 @@ public class ApplicationWorker
 
         _logger.LogInformation("[{clientTarget}]Attempting to send an correct order modification request.",
             client.ClientTarget);
-        await client.SendAsync(orderModificatonRequest, "orderModificationRequest", cancellationToken);
+        await client.SendAsync(orderModificationRequest, DestinationHelper.ComposeDestination(_version,"orderModificationRequest"), cancellationToken);
     }
 
     private async Task SendInvalidOrderRequestAsync(IClient client,
         CancellationToken cancellationToken)
     {
+        var exampleData = GetExampleContractAndPortfolio(client);
+        if (exampleData == default)
+        {
+            return;
+        }
         
+        // Invalid order request - missing order details, detailed error will be logged as a part of order execution report response
         var invalidOrderRequest = new OrderEntryRequest()
         {
             RequestId = Guid.NewGuid().ToString(),
@@ -333,11 +332,15 @@ public class ApplicationWorker
             Orders =
             [
                 new OrderEntry()
+                {
+                    ClientOrderId = Guid.NewGuid().ToString(),
+                    PortfolioId = exampleData.Portfolio!.Id
+                }
             ]
         };
 
         _logger.LogInformation("[{clientTarget}]Attempting to send incorrect order request.", client.ClientTarget);
-        await client.SendAsync(invalidOrderRequest, "orderEntryRequest", cancellationToken);
+        await client.SendAsync(invalidOrderRequest, DestinationHelper.ComposeDestination(_version,"orderEntryRequest"), cancellationToken);
     }
 
     private async Task SendInvalidOrderModificatonRequest(IClient client,
@@ -350,14 +353,49 @@ public class ApplicationWorker
             Orders =
             [
                 new OrderModification()
+                {
+                    ClientOrderId = Guid.NewGuid().ToString()
+                }
             ]
         };
 
         _logger.LogInformation("[{clientTarget}]Attempting to send an incorrect order modification request.",
             client.ClientTarget);
-        await client.SendAsync(invalidOrderModificationRequest, "orderModificationRequest", cancellationToken);
+        await client.SendAsync(invalidOrderModificationRequest, DestinationHelper.ComposeDestination(_version,"orderModificationRequest"), cancellationToken);
     }
 
+    private (ContractRow Contract, Portfolio Portfolio) GetExampleContractAndPortfolio(IClient client)
+    {
+        var exampleContract = _simpleCacheStorage
+            .GetFromCache<ContractRow>()
+            .FirstOrDefault(c => c.ProductType != ProductType.CUSTOM_BLOCK && c.DlvryAreaState.Any(s => s.State == ContractState.ACTI));
+        if (exampleContract is null)
+        {
+            _logger.LogWarning(
+                "[{clientTarget}]No valid contract to be used for order creation has been found! Check contracts available in {simpleCacheStorage} property.",
+                client.ClientTarget, nameof(_simpleCacheStorage));
+            return default;
+        }
+
+        var exampleAreas = exampleContract
+            .DlvryAreaState
+            .Where(s => s.State == ContractState.ACTI);
+        
+        var examplePortfolio = _simpleCacheStorage.GetFromCache<ConfigurationRow>()
+            .FirstOrDefault()
+            ?.Portfolios
+            .FirstOrDefault(p => p.Areas.Any(a => exampleAreas.Any(s => s.DlvryAreaId == a.AreaId)));
+        if (examplePortfolio is null)
+        {
+            _logger.LogWarning(
+                "[{clientTarget}]No valid portfolio to be used for order creation has been found! Check contracts available in {simpleCacheStorage} property.",
+                client.ClientTarget, nameof(_simpleCacheStorage));
+            return default;
+        }
+
+        return (exampleContract, examplePortfolio);
+    }
+    
     private async Task ReadSubscriptionChannel<TValue>(IClient client, WebSocketClientTarget clientTarget,
         ISubscription<TValue> subscription, CancellationToken cancellationToken)
     {
@@ -371,7 +409,7 @@ public class ApplicationWorker
                     continue;
                 }
 
-                _simpleCacheStorage.SetCache(clientTarget, message.Data.ToList());
+                _simpleCacheStorage.SetCache(message.Data.ToList());
                 var responseString = JsonConvert.SerializeObject(message);
 
                 // Trimming response content
