@@ -59,7 +59,7 @@ public class ApplicationWorker
             await CreateClientAsync(WebSocketClientTarget.Middleware, _cancellationTokenSource.Token);
 
         // // Delivery areas
-        // await SubscribeDeliveryAreasAsync(pmdClient, _cancellationTokenSource.Token);
+        await SubscribeDeliveryAreasAsync(pmdClient, _cancellationTokenSource.Token);
 
         // Configurations 
         await SubscribeConfigurationsAsync(middlewareClient, _cancellationTokenSource.Token);
@@ -73,34 +73,34 @@ public class ApplicationWorker
         await SubscribeContractsAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
 
-        // // Local views 
-        // await SubscribeLocalViewsAsync(pmdClient, PublishingMode.Conflated,
-        //     _cancellationTokenSource.Token);
-        //
-        // // Private trades
-        // await SubscribePrivateTradesAsync(middlewareClient, PublishingMode.Streaming,
-        //     _cancellationTokenSource.Token);
-        //
-        // // Tickers 
-        // await SubscribeTickersAsync(pmdClient, PublishingMode.Conflated,
-        //     _cancellationTokenSource.Token);
-        //
-        // // MyTickers 
-        // await SubscribeMyTickersAsync(pmdClient, PublishingMode.Conflated,
-        //     _cancellationTokenSource.Token);
-        //
-        // // Public statistics 
-        // await SubscribePublicStatisticsAsync(pmdClient, PublishingMode.Conflated,
-        //     _cancellationTokenSource.Token);
-        //
-        // // Throttling limits
-        // await SubscribeThrottlingLimitsAsync(middlewareClient,
-        //     PublishingMode.Conflated,
-        //     _cancellationTokenSource.Token);
-        //
-        // // Capacities 
-        // await SubscribeCapacitiesAsync(pmdClient, PublishingMode.Conflated,
-        //     _cancellationTokenSource.Token);
+        // Local views 
+        await SubscribeLocalViewsAsync(pmdClient, PublishingMode.Conflated,
+            _cancellationTokenSource.Token);
+        
+        // Private trades
+        await SubscribePrivateTradesAsync(middlewareClient, PublishingMode.Streaming,
+            _cancellationTokenSource.Token);
+        
+        // Tickers 
+        await SubscribeTickersAsync(pmdClient, PublishingMode.Conflated,
+            _cancellationTokenSource.Token);
+        
+        // MyTickers 
+        await SubscribeMyTickersAsync(pmdClient, PublishingMode.Conflated,
+            _cancellationTokenSource.Token);
+        
+        // Public statistics 
+        await SubscribePublicStatisticsAsync(pmdClient, PublishingMode.Conflated,
+            _cancellationTokenSource.Token);
+        
+        // Throttling limits
+        await SubscribeThrottlingLimitsAsync(middlewareClient,
+            PublishingMode.Conflated,
+            _cancellationTokenSource.Token);
+        
+        // Capacities 
+        await SubscribeCapacitiesAsync(pmdClient, PublishingMode.Conflated,
+            _cancellationTokenSource.Token);
 
         // Order 
         // We wait some time in hope to get some example contracts and configurations that are needed for preparing example order request
@@ -112,14 +112,14 @@ public class ApplicationWorker
         await SendOrderModificatonRequest(middlewareClient,
             _cancellationTokenSource.Token);
         
-         // // Wait before invalid order request
-         // Thread.Sleep(5000);
-         // await SendInvalidOrderRequestAsync(middlewareClient,
-         //     _cancellationTokenSource.Token);
-         // // Wait before invalid order modification request
-         // Thread.Sleep(5000);
-         // await SendInvalidOrderModificatonRequest(middlewareClient,
-         //     _cancellationTokenSource.Token);
+         // Wait before invalid order request
+         Thread.Sleep(5000);
+         await SendInvalidOrderRequestAsync(middlewareClient,
+             _cancellationTokenSource.Token);
+         // Wait before invalid order modification request
+         Thread.Sleep(5000);
+         await SendInvalidOrderModificatonRequest(middlewareClient,
+             _cancellationTokenSource.Token);
 
         _cancellationTokenSource.Token.WaitHandle.WaitOne();
     }
