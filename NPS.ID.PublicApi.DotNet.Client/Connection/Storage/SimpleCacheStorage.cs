@@ -1,5 +1,4 @@
 using Extend;
-using NPS.ID.PublicApi.DotNet.Client.Connection.Enums;
 
 namespace NPS.ID.PublicApi.DotNet.Client.Connection.Storage;
 

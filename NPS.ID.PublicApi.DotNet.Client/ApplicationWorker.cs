@@ -1,3 +1,4 @@
+using Extend;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -73,24 +74,24 @@ public class ApplicationWorker
         await SubscribeContractsAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
 
-        // Local views //
-        await SubscribeLocalViewsAsync(pmdClient, PublishingMode.Streaming,
+        // Local views 
+        await SubscribeLocalViewsAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
         
         // Private trades
         await SubscribePrivateTradesAsync(middlewareClient, PublishingMode.Streaming,
             _cancellationTokenSource.Token);
         
-        // Tickers //
-        await SubscribeTickersAsync(pmdClient, PublishingMode.Streaming,
+        // Tickers 
+        await SubscribeTickersAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
         
-        // MyTickers //
-        await SubscribeMyTickersAsync(pmdClient, PublishingMode.Streaming,
+        // MyTickers 
+        await SubscribeMyTickersAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
         
-        // Public statistics //
-        await SubscribePublicStatisticsAsync(pmdClient, PublishingMode.Streaming,
+        // Public statistics 
+        await SubscribePublicStatisticsAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
         
         // Throttling limits
@@ -98,8 +99,8 @@ public class ApplicationWorker
             PublishingMode.Conflated,
             _cancellationTokenSource.Token);
         
-        // Capacities //?
-        await SubscribeCapacitiesAsync(pmdClient, PublishingMode.Streaming,
+        // Capacities 
+        await SubscribeCapacitiesAsync(pmdClient, PublishingMode.Conflated,
             _cancellationTokenSource.Token);
 
         // Order 
@@ -276,7 +277,7 @@ public class ApplicationWorker
         // Get last order execution report response for above order request (OrderId required for order modification request)
         var lastOrderExecutionReport = _simpleCacheStorage.GetFromCache<OrderExecutionReport>()
             .FirstOrDefault(oer => oer.RequestId == lastOrder.RequestId);
-        if (lastOrderExecutionReport is null)
+        if (lastOrderExecutionReport is null || lastOrderExecutionReport.Orders.IsNullOrEmpty())
         {
             _logger.LogInformation("[{clientTarget}]No valid order execution report to be used for order modification has been found!",
                 client.ClientTarget);
