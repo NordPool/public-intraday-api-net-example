@@ -20,6 +20,8 @@ builder.Services.AddWebSocketConnector();
 
 builder.Services.AddApplicationWorker();
 
+builder.Services.AddMemoryCache();
+
 using var host = builder.Build();
 using var scope = host.Services.CreateScope();
 

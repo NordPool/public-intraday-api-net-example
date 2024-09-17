@@ -31,7 +31,7 @@ public class ApplicationWorker
 
     private readonly CancellationTokenSource _cancellationTokenSource;
 
-    private readonly SimpleCacheStorage _simpleCacheStorage = new();
+    private readonly MemoryCacheProxy _memoryCacheProxy = new();
 
     public ApplicationWorker(
         ILogger<ApplicationWorker> logger,
@@ -271,7 +271,7 @@ public class ApplicationWorker
         };
 
         // Store created order in simple cache storage for order modification request
-        _simpleCacheStorage.SetCache([orderRequest]);
+        _memoryCacheProxy.SetCache([orderRequest]);
 
         _logger.LogInformation("[{clientTarget}]Attempting to send correct order request.", client.ClientTarget);
         await client.SendAsync(orderRequest, DestinationHelper.ComposeDestination(_version,"orderEntryRequest"), cancellationToken);
@@ -280,7 +280,7 @@ public class ApplicationWorker
     private async Task SendOrderModificationRequestAsync(IClient client, CancellationToken cancellationToken)
     {
         // Get last created order for update purpose
-        var lastOrder = _simpleCacheStorage.GetFromCache<OrderEntryRequest>()
+        var lastOrder = _memoryCacheProxy.GetFromCache<OrderEntryRequest>()
             .LastOrDefault();
         if (lastOrder is null)
         {
@@ -291,7 +291,7 @@ public class ApplicationWorker
         var lastOrderEntry = lastOrder!.Orders.Single();
 
         // Get last order execution report response for above order request (OrderId required for order modification request)
-        var lastOrderExecutionReport = _simpleCacheStorage.GetFromCache<OrderExecutionReport>()
+        var lastOrderExecutionReport = _memoryCacheProxy.GetFromCache<OrderExecutionReport>()
             .LastOrDefault(oer => oer.Orders.Count == 1 && oer.Orders.Single().ClientOrderId == lastOrder.Orders.Single().ClientOrderId);
         if (lastOrderExecutionReport is null || lastOrderExecutionReport.Orders.IsNullOrEmpty())
         {
@@ -384,7 +384,7 @@ public class ApplicationWorker
 
     private (string ContractId, string PortfolioId, long AreaId)? GetExampleContractPortfolioAndArea(IClient client)
     {
-        var exampleContracts = _simpleCacheStorage
+        var exampleContracts = _memoryCacheProxy
             .GetFromCache<ContractRow>()
             .Where(c => c.ProductType != ProductType.CUSTOM_BLOCK && c.DlvryAreaState.Any(s => s.State == ContractState.ACTI))
             .ToList();
@@ -403,7 +403,7 @@ public class ApplicationWorker
             .DlvryAreaState
             .Where(s => s.State == ContractState.ACTI);
         
-        var examplePortfolios = _simpleCacheStorage.GetFromCache<ConfigurationRow>()
+        var examplePortfolios = _memoryCacheProxy.GetFromCache<ConfigurationRow>()
             .SelectMany(c => c.Portfolios)
             .Where(p => p.Areas.Any(a => exampleAreas.Any(s => s.DlvryAreaId == a.AreaId)))
             .ToList();
@@ -437,7 +437,7 @@ public class ApplicationWorker
                     continue;
                 }
 
-                _simpleCacheStorage.SetCache(message.Data.ToList());
+                _memoryCacheProxy.SetCache(message.Data.ToList());
                 var responseString = JsonSerializer.Serialize(message);
 
                 // Trimming response content
