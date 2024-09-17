@@ -1,7 +1,6 @@
 using System.Text;
 using NPS.ID.PublicApi.DotNet.Client.Utils;
 using Stomp.Net.Stomp.Protocol;
-using static NPS.ID.PublicApi.DotNet.Client.Connection.Messages.Commands;
 using ClientCommands = NPS.ID.PublicApi.DotNet.Client.Connection.Messages.Commands.Client;
 
 namespace NPS.ID.PublicApi.DotNet.Client.Connection.Messages;

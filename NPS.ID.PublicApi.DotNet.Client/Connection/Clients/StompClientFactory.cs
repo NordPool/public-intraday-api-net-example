@@ -10,7 +10,7 @@ public class StompClientFactory : IClientFactory
     private readonly IWebSocketConnectorFactory _webSocketConnectorFactory;
     private readonly ILoggerFactory _loggerFactory;
 
-    private readonly TimeSpan _connectionAttemptTimeout = TimeSpan.FromSeconds(600);
+    private readonly TimeSpan _connectionAttemptTimeout = TimeSpan.FromSeconds(60);
 
     public StompClientFactory(ILoggerFactory loggerFactory, IWebSocketConnectorFactory webSocketConnectorFactory)
     {

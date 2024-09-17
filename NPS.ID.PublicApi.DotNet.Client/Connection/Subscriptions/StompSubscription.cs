@@ -14,7 +14,7 @@ public class StompSubscription<TValue> : Subscription, ISubscription<TValue>
     {
         NullValueHandling = NullValueHandling.Ignore
     };
-
+    
     private readonly ILogger<StompSubscription<TValue>> _logger;
     private readonly Channel<ReceivedMessage<IReadOnlyCollection<TValue>>> _channel;
 
@@ -37,11 +37,10 @@ public class StompSubscription<TValue> : Subscription, ISubscription<TValue>
         using var memoryStream = new MemoryStream(frame.Content);
         using var reader = new StreamReader(memoryStream, Encoding.UTF8);
         using var jsonReader = new JsonTextReader(reader);
-
+        
         try
         {
             var data = JsonSerializer.Create(Settings).Deserialize<IReadOnlyCollection<TValue>>(jsonReader);
-
             if (data is null)
             {
                 return;

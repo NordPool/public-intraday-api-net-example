@@ -1,5 +1,5 @@
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 using NPS.ID.PublicApi.DotNet.Client.Security.Exceptions;
 using NPS.ID.PublicApi.DotNet.Client.Security.Responses;
 
@@ -29,7 +29,7 @@ public class SsoService : ISsoService
             var response = await _httpClient.PostAsync("", new StringContent(payload, Encoding.UTF8, mediaType), cancellationToken);
             response.EnsureSuccessStatusCode();
             var tokenResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<AccessTokenResponse>(tokenResponse).Token;
+            return JsonSerializer.Deserialize<AccessTokenResponse>(tokenResponse).Token;
         }
         catch (Exception e)
         {

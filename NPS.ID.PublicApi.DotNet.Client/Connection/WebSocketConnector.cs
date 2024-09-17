@@ -2,8 +2,8 @@ using System.Buffers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Nordpool.ID.PublicApi.v1.Command;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Extensions;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Events;
@@ -286,7 +286,7 @@ public class WebSocketConnector : IAsyncDisposable
             OldToken = previousAuthToken
         };
 
-        var refreshTokenCommandPayload = JsonConvert.SerializeObject(refreshTokenCommand);
+        var refreshTokenCommandPayload = JsonSerializer.Serialize(refreshTokenCommand);
         
         var stompFrame = StompMessageFactory.SendFrame(refreshTokenCommandPayload, "/v1/command");
 

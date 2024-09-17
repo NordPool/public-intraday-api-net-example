@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.IO;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Enums;
 

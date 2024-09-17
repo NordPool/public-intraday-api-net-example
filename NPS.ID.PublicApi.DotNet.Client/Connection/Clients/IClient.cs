@@ -6,7 +6,6 @@ namespace NPS.ID.PublicApi.DotNet.Client.Connection.Clients;
 
 public interface IClient
 {
-    string ClientId { get; }
     WebSocketClientTarget ClientTarget { get; }
     
     Task<bool> OpenAsync(CancellationToken cancellationToken);
@@ -18,5 +17,5 @@ public interface IClient
 
     Task UnsubscribeAsync(string subscriptionId, CancellationToken cancellationToken);
 
-    ValueTask DisconnectAsync();
+    Task DisconnectAsync(CancellationToken cancellationToken);
 }

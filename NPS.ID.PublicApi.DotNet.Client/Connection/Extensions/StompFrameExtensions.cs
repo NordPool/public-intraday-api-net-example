@@ -1,5 +1,5 @@
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Enums;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Messages;
 using Stomp.Net.Stomp.Protocol;
@@ -47,7 +47,7 @@ public static class StompFrameExtensions
     public static byte[] ConvertToMessageBytes(this StompFrame frame)
     {
         var messageText = frame.ToMessageText();
-        var serializedJsonArray = JsonConvert.SerializeObject(new[] { messageText });
+        var serializedJsonArray = JsonSerializer.Serialize(new[] { messageText });
         var messageBytes = Encoding.UTF8.GetBytes(serializedJsonArray);
         return messageBytes;
     }

@@ -1,8 +1,8 @@
 using System.Text;
+using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
-using Newtonsoft.Json;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Enums;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Extensions;
 using NPS.ID.PublicApi.DotNet.Client.Connection.Events;
@@ -133,7 +133,7 @@ public class StompClient : IClient
         messageStream.Seek(1, SeekOrigin.Begin);
 
         using var streamReader = new StreamReader(messageStream);
-        var stompMessage = JsonConvert.DeserializeObject<string[]>(streamReader.ReadToEnd()).ElementAt(0);
+        var stompMessage = JsonSerializer.Deserialize<string[]>(streamReader.ReadToEnd()).ElementAt(0);
         
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(stompMessage));
         using var binaryReader = new BinaryReader(memoryStream, Encoding.UTF8);
@@ -179,7 +179,7 @@ public class StompClient : IClient
     public async Task SendAsync<TRequest>(TRequest request, string destination, CancellationToken cancellationToken)
         where TRequest : class, new()
     {
-        var payload = JsonConvert.SerializeObject(request);
+        var payload = JsonSerializer.Serialize(request);
         var payloadFrame = StompMessageFactory.SendFrame(payload, destination);
         await _webSocketConnector.SendStompFrameAsync(payloadFrame, cancellationToken);
     }
@@ -193,13 +193,13 @@ public class StompClient : IClient
         {
             subscription.Close();
 
-            _logger.LogInformation("[{clientTarget}][SubscriptionId:{Subscription}]Unsubscribed", ClientTarget, subscription);
+            _logger.LogInformation("[{clientTarget}][SubscriptionId:{Subscription}]Unsubscribed", ClientTarget, subscription.Id);
         }
     }
 
-    public async ValueTask DisconnectAsync()
+    public async Task DisconnectAsync(CancellationToken cancellationToken)
     {
-        await UnsubscribeAllAsync(CancellationToken.None);
+        await UnsubscribeAllAsync(cancellationToken);
         _connectionClosed = true;
         await _webSocketConnector.DisposeAsync();
     }

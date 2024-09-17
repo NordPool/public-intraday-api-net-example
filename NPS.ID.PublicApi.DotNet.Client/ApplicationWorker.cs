@@ -1,7 +1,7 @@
+using System.Text.Json;
 using Extend;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Nordpool.ID.PublicApi.v1;
 using Nordpool.ID.PublicApi.v1.Contract;
 using Nordpool.ID.PublicApi.v1.Order;
@@ -58,7 +58,16 @@ public class ApplicationWorker
         var middlewareClient =
             await CreateClientAsync(WebSocketClientTarget.Middleware, _cancellationTokenSource.Token);
 
-        // // Delivery areas
+        // Set clients disconnection behaviour while closing app with CTRL + C keys
+        _cancellationTokenSource.Token
+            .Register(() =>
+            {
+                var pmdDisconnectionTask = pmdClient.DisconnectAsync(CancellationToken.None);
+                var middlewareDisconnectionTask = middlewareClient.DisconnectAsync(CancellationToken.None);
+                Task.WaitAll(pmdDisconnectionTask, middlewareDisconnectionTask);
+            });
+        
+        // Delivery areas
         await SubscribeDeliveryAreasAsync(pmdClient, _cancellationTokenSource.Token);
 
         // Configurations 
@@ -105,20 +114,20 @@ public class ApplicationWorker
         // Order 
         // We wait some time in hope to get some example contracts and configurations that are needed for preparing example order request
         Thread.Sleep(5000);
-        await SendOrderRequestAsync(middlewareClient, 
+        await SendOrderEntryRequestAsync(middlewareClient, 
             _cancellationTokenSource.Token);
         // Wait before order modification
         Thread.Sleep(5000);
-        await SendOrderModificatonRequest(middlewareClient,
+        await SendOrderModificationRequestAsync(middlewareClient,
             _cancellationTokenSource.Token);
         
          // Wait before invalid order request
          Thread.Sleep(5000);
-         await SendInvalidOrderRequestAsync(middlewareClient,
+         await SendInvalidOrderEntryRequestAsync(middlewareClient,
              _cancellationTokenSource.Token);
          // Wait before invalid order modification request
          Thread.Sleep(5000);
-         await SendInvalidOrderModificatonRequest(middlewareClient,
+         await SendInvalidOrderModificationRequestAsync(middlewareClient,
              _cancellationTokenSource.Token);
 
         _cancellationTokenSource.Token.WaitHandle.WaitOne();
@@ -136,14 +145,14 @@ public class ApplicationWorker
     {
         var deliveryAreasRequest = _subscribeRequestBuilder.CreateDeliveryAreas();
         var subscription = await client.SubscribeAsync<DeliveryAreaRow>(deliveryAreasRequest, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribeConfigurationsAsync(IClient client, CancellationToken cancellationToken)
     {
         var configurationsSubscription = _subscribeRequestBuilder.CreateConfiguration();
         var subscription = await client.SubscribeAsync<ConfigurationRow>(configurationsSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribeOrderExecutionReportAsync(IClient client, PublishingMode publishingMode,
@@ -152,7 +161,7 @@ public class ApplicationWorker
         var orderExecutionReportSubscription = _subscribeRequestBuilder.CreateOrderExecutionReport(publishingMode);
         var subscription =
             await client.SubscribeAsync<OrderExecutionReport>(orderExecutionReportSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribeContractsAsync(IClient client, PublishingMode publishingMode,
@@ -160,7 +169,7 @@ public class ApplicationWorker
     {
         var contractsSubscription = _subscribeRequestBuilder.CreateContracts(publishingMode);
         var subscription = await client.SubscribeAsync<ContractRow>(contractsSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribeLocalViewsAsync(IClient client, PublishingMode publishingMode,
@@ -168,7 +177,7 @@ public class ApplicationWorker
     {
         var localViewsSubscription = _subscribeRequestBuilder.CreateLocalViews(publishingMode, _demoArea);
         var subscription = await client.SubscribeAsync<LocalViewRow>(localViewsSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribePrivateTradesAsync(IClient client, PublishingMode publishingMode,
@@ -176,7 +185,7 @@ public class ApplicationWorker
     {
         var privateTradesSubscription = _subscribeRequestBuilder.CreatePrivateTrades(publishingMode);
         var subscription = await client.SubscribeAsync<PrivateTradeRow>(privateTradesSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribeTickersAsync(IClient client, PublishingMode publishingMode,
@@ -184,7 +193,7 @@ public class ApplicationWorker
     {
         var tickersSubscription = _subscribeRequestBuilder.CreateTicker(publishingMode);
         var subscription = await client.SubscribeAsync<PublicTradeRow>(tickersSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribeMyTickersAsync(IClient client, PublishingMode publishingMode,
@@ -192,7 +201,7 @@ public class ApplicationWorker
     {
         var myTickersSubscription = _subscribeRequestBuilder.CreateMyTicker(publishingMode);
         var subscription = await client.SubscribeAsync<PublicTradeRow>(myTickersSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribePublicStatisticsAsync(IClient client, PublishingMode publishingMode,
@@ -201,7 +210,7 @@ public class ApplicationWorker
         var publicStatisticsSubscription = _subscribeRequestBuilder.CreatePublicStatistics(publishingMode, _demoArea);
         var subscription =
             await client.SubscribeAsync<PublicStatisticRow>(publicStatisticsSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
     private async Task SubscribeThrottlingLimitsAsync(IClient client, PublishingMode publishingMode,
@@ -210,7 +219,14 @@ public class ApplicationWorker
         var throttlingLimitsSubscription = _subscribeRequestBuilder.CreateThrottlingLimits(publishingMode);
         var subscription =
             await client.SubscribeAsync<ThrottlingLimitMessage>(throttlingLimitsSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
+        
+        // Set automatic unsubscription of throttling limit topic after 10s
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(10000, cancellationToken);
+            await client.UnsubscribeAsync(subscription.Id, cancellationToken);
+        }, cancellationToken);
     }
 
     private async Task SubscribeCapacitiesAsync(IClient client, PublishingMode publishingMode,
@@ -218,10 +234,10 @@ public class ApplicationWorker
     {
         var contractsSubscription = _subscribeRequestBuilder.CreateCapacities(publishingMode, _demoArea);
         var subscription = await client.SubscribeAsync<CapacityRow>(contractsSubscription, cancellationToken);
-        await ReadSubscriptionChannel(client, client.ClientTarget, subscription, cancellationToken);
+        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
 
-    private async Task SendOrderRequestAsync(IClient client, CancellationToken cancellationToken)
+    private async Task SendOrderEntryRequestAsync(IClient client, CancellationToken cancellationToken)
     {
         var exampleData = GetExampleContractPortfolioAndArea(client);
         if (exampleData is null)
@@ -261,7 +277,7 @@ public class ApplicationWorker
         await client.SendAsync(orderRequest, DestinationHelper.ComposeDestination(_version,"orderEntryRequest"), cancellationToken);
     }
 
-    private async Task SendOrderModificatonRequest(IClient client, CancellationToken cancellationToken)
+    private async Task SendOrderModificationRequestAsync(IClient client, CancellationToken cancellationToken)
     {
         // Get last created order for update purpose
         var lastOrder = _simpleCacheStorage.GetFromCache<OrderEntryRequest>()
@@ -317,7 +333,7 @@ public class ApplicationWorker
         await client.SendAsync(orderModificationRequest, DestinationHelper.ComposeDestination(_version,"orderModificationRequest"), cancellationToken);
     }
 
-    private async Task SendInvalidOrderRequestAsync(IClient client,
+    private async Task SendInvalidOrderEntryRequestAsync(IClient client,
         CancellationToken cancellationToken)
     {
         var exampleData = GetExampleContractPortfolioAndArea(client);
@@ -345,7 +361,7 @@ public class ApplicationWorker
         await client.SendAsync(invalidOrderRequest, DestinationHelper.ComposeDestination(_version,"orderEntryRequest"), cancellationToken);
     }
 
-    private async Task SendInvalidOrderModificatonRequest(IClient client,
+    private async Task SendInvalidOrderModificationRequestAsync(IClient client,
         CancellationToken cancellationToken)
     {
         var invalidOrderModificationRequest = new OrderModificationRequest()
@@ -408,7 +424,7 @@ public class ApplicationWorker
         return (exampleRandomContract.ContractId, exampleRandomPortfolioForContract.Id, deliveryAreaPortfolio.AreaId);
     }
     
-    private async Task ReadSubscriptionChannel<TValue>(IClient client, WebSocketClientTarget clientTarget,
+    private void ReadSubscriptionChannel<TValue>(WebSocketClientTarget clientTarget,
         ISubscription<TValue> subscription, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
@@ -422,7 +438,7 @@ public class ApplicationWorker
                 }
 
                 _simpleCacheStorage.SetCache(message.Data.ToList());
-                var responseString = JsonConvert.SerializeObject(message);
+                var responseString = JsonSerializer.Serialize(message);
 
                 // Trimming response content
                 responseString = responseString.Length > 250
