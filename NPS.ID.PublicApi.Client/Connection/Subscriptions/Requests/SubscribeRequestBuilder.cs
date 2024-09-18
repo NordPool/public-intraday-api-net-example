@@ -80,16 +80,6 @@ public class SubscribeRequestBuilder
         return SubscribeRequest.Capacities(GetSubId(), _user, _version, publishingMode, deliveryAreaId, additionalDeliveryAreas);
     }
 
-    public SubscribeRequest CreateHeartBeat()
-    {
-        return SubscribeRequest.Heartbeat(GetSubId(), _user, _version);
-    }
-
-    public SubscribeRequest CreateMarketInfo(PublishingMode publishingMode, int deliveryAreaId)
-    {
-        return SubscribeRequest.MarketInfo(GetSubId(), _user, _version, publishingMode, deliveryAreaId);
-    }
-
     private static string GetSubId()
     {
         return $"sub-{Interlocked.Increment(ref _subCounter)}";

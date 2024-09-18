@@ -71,14 +71,4 @@ public class SubscribeRequest
         var additionalAreasPart = additionalDeliveryAreas.Any() ? $"/{string.Join("-", additionalDeliveryAreas)}" : string.Empty;
         return new SubscribeRequest(subscriptionId, "capacities", DestinationHelper.ComposeDestination(user, version, mode, $"capacities/{deliveryAreaId}{additionalAreasPart}"));
     }
-
-    public static SubscribeRequest Heartbeat(string subscriptionId, string user, string version)
-    {
-        return new SubscribeRequest(subscriptionId, "heartbeat", DestinationHelper.ComposeDestination(user, version, "heartbeatping"));
-    }
-
-    public static SubscribeRequest MarketInfo(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId)
-    {
-        return new SubscribeRequest(subscriptionId, "market_info", DestinationHelper.ComposeDestination(user, version, mode, $"marketinfo/{deliveryAreaId}"));
-    }
 }
