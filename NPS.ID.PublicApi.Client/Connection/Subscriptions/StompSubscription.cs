@@ -57,7 +57,7 @@ public class StompSubscription<TValue> : Subscription, ISubscription<TValue>
                 return;
             }
             
-            _logger.LogWarning("[SubscriptionId:{SubscriptionId}][Destination:{Destination}Channel for the subscription has reached its maximum capacity", Id, Destination);
+            _logger.LogWarning("[SubscriptionId:{SubscriptionId}][Destination:{Destination}] Channel for the subscription has reached its maximum capacity", Id, Destination);
             
             _channel.Writer.WriteAsync(message).AsTask()
                 .GetAwaiter()

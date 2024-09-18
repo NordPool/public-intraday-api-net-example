@@ -37,7 +37,7 @@ public class StompClientFactory
             _ => throw new ArgumentOutOfRangeException(nameof(clientTarget))
         };
         
-        var client = new StompClient(
+        IClient client = new StompClient(
             _loggerFactory.CreateLogger<StompClient>(),
             _loggerFactory,
             _webSocketConnectorFactory,

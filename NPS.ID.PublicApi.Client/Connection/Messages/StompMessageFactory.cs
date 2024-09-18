@@ -9,18 +9,19 @@ public static class StompMessageFactory
     {
         return CreateFrame(Commands.Client.Connect, new Dictionary<string, string>
         {
-            {Headers.Client.AcceptVersion, "1.2,1.1,1.0"},
-            {Headers.Client.AuthorizationToken, authToken},
-            {Headers.Heartbeat, $"0,{heartbeatOutgoingInterval}"}
+            { Headers.Client.AcceptVersion, "1.2,1.1,1.0" },
+            { Headers.Client.AuthorizationToken, authToken },
+            { Headers.Heartbeat, $"0,{heartbeatOutgoingInterval}" }
         });
     }
 
-    public static StompFrame SendFrame(string payload, string destination, string contentType = "application/json;charset=UTF-8")
+    public static StompFrame SendFrame(string payload, string destination,
+        string contentType = "application/json;charset=UTF-8")
     {
         return CreateFrame(Commands.Client.Send, new Dictionary<string, string>
         {
             { Headers.ContentType, contentType },
-            { Headers.Destination, destination },
+            { Headers.Destination, destination }
         }, payload);
     }
 
@@ -28,8 +29,8 @@ public static class StompMessageFactory
     {
         return CreateFrame(Commands.Client.Subscribe, new Dictionary<string, string>
         {
-            {Headers.Destination, destination},
-            {Headers.Client.SubscriptionId, id}
+            { Headers.Destination, destination },
+            { Headers.Client.SubscriptionId, id }
         });
     }
 
@@ -37,7 +38,7 @@ public static class StompMessageFactory
     {
         return CreateFrame(Commands.Client.Unsubscribe, new Dictionary<string, string>
         {
-            {Headers.Client.SubscriptionId, id}
+            { Headers.Client.SubscriptionId, id }
         });
     }
 
@@ -53,7 +54,7 @@ public static class StompMessageFactory
         if (payload != null)
         {
             var contentBytes = Encoding.UTF8.GetBytes(payload);
-            
+
             frame.Content = contentBytes;
             frame.SetProperty(Headers.ContentLength, contentBytes.Length);
         }
