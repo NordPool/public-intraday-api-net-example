@@ -1,5 +1,4 @@
 using System.Text;
-using NPS.ID.PublicApi.Client.Utils;
 using Stomp.Net.Stomp.Protocol;
 
 namespace NPS.ID.PublicApi.Client.Connection.Messages;
@@ -42,8 +41,7 @@ public static class StompMessageFactory
         });
     }
 
-    private static StompFrame CreateFrame(string command, Dictionary<string, string> headers, string payload = null,
-        bool useGzip = false)
+    private static StompFrame CreateFrame(string command, Dictionary<string, string> headers, string payload = null)
     {
         var frame = new StompFrame(true) { Command = command };
 
@@ -55,18 +53,9 @@ public static class StompMessageFactory
         if (payload != null)
         {
             var contentBytes = Encoding.UTF8.GetBytes(payload);
-
-            if (!useGzip)
-            {
-                frame.Content = contentBytes;
-                frame.SetProperty(Headers.ContentLength, contentBytes.Length);
-            }
-            else
-            {
-                var compressedContent = GzipCompressor.Compress(contentBytes);
-                frame.Content = compressedContent;
-                frame.SetProperty(Headers.ContentLength, compressedContent.Length);
-            }
+            
+            frame.Content = contentBytes;
+            frame.SetProperty(Headers.ContentLength, contentBytes.Length);
         }
 
         return frame;
