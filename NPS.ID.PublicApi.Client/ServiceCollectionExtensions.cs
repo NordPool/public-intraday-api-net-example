@@ -62,19 +62,14 @@ public static class SsoClientServiceCollectionExtensions
 
         return services;
     }
-
-    public static IServiceCollection AddGenericClientFactory(this IServiceCollection services)
-    {
-        return services.AddSingleton<IGenericClientFactory, GenericClientFactory>();
-    }
     
     public static IServiceCollection AddStompClient(this IServiceCollection services)
     {
-        return services.AddTransient<IClientFactory, StompClientFactory>();
+        return services.AddTransient<StompClientFactory>();
     }
     
     public static IServiceCollection AddWebSocketConnector(this IServiceCollection services)
     {
-        return services.AddTransient<IWebSocketConnectorFactory, WebSocketConnectorFactory>();
+        return services.AddTransient<WebSocketConnectorFactory>();
     }
 }

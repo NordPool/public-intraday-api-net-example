@@ -22,20 +22,7 @@ public class WebSocketConnector : IAsyncDisposable
     private bool _isConnected;
     public bool IsConnected => _isConnected && _webSocket.State == WebSocketState.Open;
 
-    public delegate void ConnectionEstablishedEventHandler(object sender, EventArgs e);
-
-    public delegate void ConnectionClosedEventHandler(object sender, EventArgs e);
-
-    public delegate Task MessageReceivedEventHandler(object sender, MessageReceivedEventArgs e,
-        CancellationToken cancellationToken);
-
-    public delegate void ErrorEventHandler(object sender, ErrorEventArgs e);
-
     public string ConnectionUri { get; private set; }
-    public event ConnectionEstablishedEventHandler StompConnectionEstablished;
-    public event ConnectionClosedEventHandler StompConnectionClosed;
-    public event MessageReceivedEventHandler MessageReceived;
-    public event ErrorEventHandler StompError;
 
     private readonly ILogger<WebSocketConnector> _logger;
     
@@ -45,6 +32,11 @@ public class WebSocketConnector : IAsyncDisposable
     private readonly ClientWebSocket _webSocket = new();
     private readonly WebSocketOptions _webSocketOptions;
     private readonly CredentialsOptions _credentialsOptions;
+    
+    private readonly Func<Task> _connectionEstablishedCallbackAsync;
+    private readonly Func<Task> _connectionClosedCallbackAsync;
+    private readonly Func<MessageReceivedEventArgs, CancellationToken, Task> _messageReceivedCallbackAsync;
+    private readonly Func<Exception, Task> _stompErrorCallbackAsync;
 
     private readonly CancellationTokenSource _connectorCancellationTokenSource = new();
     private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler = new();
@@ -53,12 +45,22 @@ public class WebSocketConnector : IAsyncDisposable
     public WebSocketConnector(ILogger<WebSocketConnector> logger,
         ISsoService ssoService,
         WebSocketOptions webSocketOptions,
-        CredentialsOptions credentialsOptions)
+        CredentialsOptions credentialsOptions, 
+        Func<MessageReceivedEventArgs, CancellationToken, Task> messageReceivedCallbackAsync,
+        Func<Task> connectionEstablishedCallbackAsync = null,
+        Func<Task> connectionClosedCallbackAsync = null,
+        Func<Exception, Task> stompErrorCallbackAsync = null)
     {
         _logger = logger;
         _ssoService = ssoService;
         _webSocketOptions = webSocketOptions;
         _credentialsOptions = credentialsOptions;
+        
+        _messageReceivedCallbackAsync = messageReceivedCallbackAsync;
+        _connectionEstablishedCallbackAsync = connectionEstablishedCallbackAsync;
+        _connectionClosedCallbackAsync = connectionClosedCallbackAsync;
+        _stompErrorCallbackAsync = stompErrorCallbackAsync;
+        
         _serverId = ConstructServerId();
     }
 
@@ -80,7 +82,7 @@ public class WebSocketConnector : IAsyncDisposable
         var uri =
             $"{(_webSocketOptions.UseSsl ? SecureWebSocketProtocol : UnsecureWebSocketProtocol)}://{_webSocketOptions.Host}:{_webSocketOptions.UsedPort}{_webSocketOptions.Uri}/{_serverId}/{sessionId}/websocket";
 
-        _logger.LogInformation("Connecting to: {uri}", uri);
+        _logger.LogDebug("Connecting to: {uri}", uri);
         ConnectionUri = uri;
         return new Uri(uri);
     }
@@ -147,7 +149,7 @@ public class WebSocketConnector : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            OnWebSocketError(ex);
+            await OnWebSocketErrorAsync(ex);
             await CloseConnectionAsync(CancellationToken.None);
         }
         finally
@@ -183,7 +185,7 @@ public class WebSocketConnector : IAsyncDisposable
             if (message.IsConnectedCommand())
             {
                 _isConnected = true;
-                OnWebSocketConnected();
+                await OnWebSocketConnectedAsync();
             }
             else
             {
@@ -192,20 +194,20 @@ public class WebSocketConnector : IAsyncDisposable
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, "An error on web socket message processing");
+            _logger.LogWarning(e, "An error on web socket message callback");
         }
     }
 
-    private void OnWebSocketError(Exception exception)
+    private async Task OnWebSocketErrorAsync(Exception exception)
     {
         try
         {
-            var stompErrorHandler = StompError;
-            stompErrorHandler?.Invoke(this, new ErrorEventArgs(exception));
+            if (_stompErrorCallbackAsync is not null)
+                await _stompErrorCallbackAsync.Invoke(exception);
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, "Issue on web socket error processing");
+            _logger.LogWarning(e, "An error on web socket error callback");
         }
     }
     
@@ -235,23 +237,31 @@ public class WebSocketConnector : IAsyncDisposable
 
         await _connectorCancellationTokenSource.CancelAsync();
 
-        OnWebSocketClosed();
+        await OnWebSocketClosedAsync();
     }
 
     private Task SendDisconnectAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Sending Disconnect \"1000\"");
+        _logger.LogDebug("Sending Disconnect \"1000\"");
         return SendAsync(WebSocketMessages.DisconnectCode, cancellationToken);
     }
     
-    private void OnWebSocketConnected()
+    private async Task OnWebSocketConnectedAsync()
     {
         _ = Task.Run(() => PeriodicallyRefreshTokenAsync(_connectorCancellationTokenSource.Token));
         _ = Task.Run(() => PeriodicallySendHeartBeatMessagesAsync(_connectorCancellationTokenSource.Token));
 
-        var stompConnectionEstablishedHandler = StompConnectionEstablished;
-        stompConnectionEstablishedHandler?.Invoke(this, EventArgs.Empty);
-        _logger.LogInformation("WebSocket Connection established");
+        try
+        {
+            if (_connectionEstablishedCallbackAsync is not null)
+                await _connectionEstablishedCallbackAsync.Invoke();
+        
+            _logger.LogDebug("WebSocket Connection established");
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "An error on web socket connected callback");
+        }
     }
     
     private async Task PeriodicallyRefreshTokenAsync(CancellationToken cancellationToken)
@@ -290,6 +300,8 @@ public class WebSocketConnector : IAsyncDisposable
         
         var stompFrame = StompMessageFactory.SendFrame(refreshTokenCommandPayload, "/v1/command");
 
+        _logger.LogDebug("Sending token refresh frame");
+
         await SendAsync(stompFrame.ConvertToMessageBytes(), cancellationToken);
     }
 
@@ -316,27 +328,31 @@ public class WebSocketConnector : IAsyncDisposable
         }
     }
 
-    private void OnWebSocketClosed()
+    private async Task OnWebSocketClosedAsync()
     {
         try
         {
-            var stompConnectionClosedHandler = StompConnectionClosed;
-            stompConnectionClosedHandler?.Invoke(this, EventArgs.Empty);
+            if (_connectionClosedCallbackAsync is not null)
+                await _connectionClosedCallbackAsync.Invoke();
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, "Error on web socket closed event processing");
+            _logger.LogWarning(e, "Error on web socket closed callback");
         }
     }
 
-    private async Task OnMessageReceivedAsync(MessageReceivedEventArgs e, CancellationToken cancellationToken)
+    private async Task OnMessageReceivedAsync(MessageReceivedEventArgs eventArgs, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Received new message: {Message}", e.Message);
+        _logger.LogDebug("Received new message: {Message}", eventArgs.Message);
 
-        var messageReceivedHandler = MessageReceived;
-        if (messageReceivedHandler is not null)
+        try
         {
-            await messageReceivedHandler.Invoke(this, e, cancellationToken);
+            if (_messageReceivedCallbackAsync is not null)
+                await _messageReceivedCallbackAsync.Invoke(eventArgs, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "Error on web socket message received callback");
         }
     }
     

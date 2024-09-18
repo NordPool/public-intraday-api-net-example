@@ -19,7 +19,6 @@ builder.Services
     .AddStompClient();
 
 builder.Services
-    .AddGenericClientFactory()
     .AddWebSocketConnector()
     .AddApplicationWorker();
 

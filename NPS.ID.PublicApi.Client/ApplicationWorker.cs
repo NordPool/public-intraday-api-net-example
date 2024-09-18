@@ -27,7 +27,7 @@ public class ApplicationWorker
     
     private readonly string _clientId = $"{Guid.NewGuid()}-dotnet-demo-client";
 
-    private readonly IGenericClientFactory _genericClientFactory;
+    private readonly StompClientFactory _clientFactory;
     private readonly SubscribeRequestBuilder _subscribeRequestBuilder;
 
     private readonly CancellationTokenSource _cancellationTokenSource;
@@ -37,11 +37,11 @@ public class ApplicationWorker
     public ApplicationWorker(
         ILogger<ApplicationWorker> logger,
         IOptions<CredentialsOptions> credentialsOptions,
-        IGenericClientFactory genericClientFactory)
+        StompClientFactory clientFactory)
     {
         _logger = logger;
         _cancellationTokenSource = new CancellationTokenSource();
-        _genericClientFactory = genericClientFactory;
+        _clientFactory = clientFactory;
         _subscribeRequestBuilder = SubscribeRequestBuilder.CreateBuilder(credentialsOptions.Value.UserName, Version);
 
         Console.CancelKeyPress += (_, eArgs) =>
@@ -54,10 +54,10 @@ public class ApplicationWorker
 
     public async Task RunAsync()
     {
-        var marketDataClient =
-            await CreateClientAsync(WebSocketClientTarget.MARKET_DATA, _cancellationTokenSource.Token);
-        var tradingClient =
-            await CreateClientAsync(WebSocketClientTarget.TRADING, _cancellationTokenSource.Token);
+        var marketDataClient = await
+            _clientFactory.CreateAsync(WebSocketClientTarget.MARKET_DATA, _clientId, _cancellationTokenSource.Token);
+        var tradingClient = await
+            _clientFactory.CreateAsync(WebSocketClientTarget.TRADING, _clientId, _cancellationTokenSource.Token);
 
         // Set clients disconnection behaviour while closing app with CTRL + C keys
         _cancellationTokenSource.Token
@@ -132,13 +132,6 @@ public class ApplicationWorker
              _cancellationTokenSource.Token);
 
         _cancellationTokenSource.Token.WaitHandle.WaitOne();
-    }
-
-    private async Task<IClient> CreateClientAsync(WebSocketClientTarget clientTarget,
-        CancellationToken cancellationToken)
-    {
-        return await
-            _genericClientFactory.CreateAsync(_clientId, clientTarget, cancellationToken);
     }
 
     private async Task SubscribeDeliveryAreasAsync(IClient client,
@@ -274,7 +267,7 @@ public class ApplicationWorker
         // Store created order in simple cache storage for order modification request
         _memoryCacheProxy.SetCache([orderRequest]);
 
-        _logger.LogInformation("[{clientTarget}]Attempting to send correct order request.", client.ClientTarget);
+        _logger.LogInformation("[{clientTarget}] Attempting to send correct order request.", client.ClientTarget);
         await client.SendAsync(orderRequest, DestinationHelper.ComposeDestination(Version,"orderEntryRequest"), cancellationToken);
     }
 
@@ -285,7 +278,7 @@ public class ApplicationWorker
             .LastOrDefault();
         if (lastOrder is null)
         {
-            _logger.LogInformation("[{clientTarget}]No valid order to be used for order modification has been found!",
+            _logger.LogInformation("[{clientTarget}] No valid order to be used for order modification has been found!",
                 client.ClientTarget);
             return;
         }
@@ -296,7 +289,7 @@ public class ApplicationWorker
             .LastOrDefault(oer => oer.Orders.Count == 1 && oer.Orders.Single().ClientOrderId == lastOrder.Orders.Single().ClientOrderId);
         if (lastOrderExecutionReport is null || lastOrderExecutionReport.Orders.IsNullOrEmpty())
         {
-            _logger.LogInformation("[{clientTarget}]No valid order execution report to be used for order modification has been found!",
+            _logger.LogInformation("[{clientTarget}] No valid order execution report to be used for order modification has been found!",
                 client.ClientTarget);
             return;
         }
@@ -329,7 +322,7 @@ public class ApplicationWorker
             ]
         };
 
-        _logger.LogInformation("[{clientTarget}]Attempting to send an correct order modification request.",
+        _logger.LogInformation("[{clientTarget}] Attempting to send an correct order modification request.",
             client.ClientTarget);
         await client.SendAsync(orderModificationRequest, DestinationHelper.ComposeDestination(Version,"orderModificationRequest"), cancellationToken);
     }
@@ -358,7 +351,7 @@ public class ApplicationWorker
             ]
         };
 
-        _logger.LogInformation("[{clientTarget}]Attempting to send incorrect order request.", client.ClientTarget);
+        _logger.LogInformation("[{clientTarget}] Attempting to send incorrect order request.", client.ClientTarget);
         await client.SendAsync(invalidOrderRequest, DestinationHelper.ComposeDestination(Version,"orderEntryRequest"), cancellationToken);
     }
 
@@ -378,7 +371,7 @@ public class ApplicationWorker
             ]
         };
 
-        _logger.LogInformation("[{clientTarget}]Attempting to send an incorrect order modification request.",
+        _logger.LogInformation("[{clientTarget}] Attempting to send an incorrect order modification request.",
             client.ClientTarget);
         await client.SendAsync(invalidOrderModificationRequest, DestinationHelper.ComposeDestination(Version,"orderModificationRequest"), cancellationToken);
     }
@@ -392,7 +385,7 @@ public class ApplicationWorker
         if (exampleContracts.IsNullOrEmpty())
         {
             _logger.LogWarning(
-                "[{clientTarget}]No valid contract to be used for order creation has been found in cache!",
+                "[{clientTarget}] No valid contract to be used for order creation has been found in cache!",
                 client.ClientTarget);
             return default;
         }
@@ -414,7 +407,7 @@ public class ApplicationWorker
         if (exampleRandomPortfolioForContract is null)
         {
             _logger.LogWarning(
-                "[{clientTarget}]No valid portfolio to be used for order creation has been found in cache!.",
+                "[{clientTarget}] No valid portfolio to be used for order creation has been found in cache!.",
                 client.ClientTarget);
             return default;
         }
@@ -447,7 +440,7 @@ public class ApplicationWorker
                     : responseString;
 
                 _logger.LogInformation(
-                    "[{clientTarget}][Frame({SubscriptionId}):Response] : {ResponseString}", clientTarget,
+                    "[{clientTarget}][Frame({SubscriptionId}):Response] {ResponseString}", clientTarget,
                     subscription.Id, responseString);
             }
         }, cancellationToken);

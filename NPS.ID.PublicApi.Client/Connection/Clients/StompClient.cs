@@ -10,6 +10,8 @@ using NPS.ID.PublicApi.Client.Connection.Subscriptions;
 using NPS.ID.PublicApi.Client.Connection.Subscriptions.Exceptions;
 using NPS.ID.PublicApi.Client.Connection.Subscriptions.Requests;
 using NPS.ID.PublicApi.Client.Connection.Extensions;
+using NPS.ID.PublicApi.Client.Connection.Options;
+using NPS.ID.PublicApi.Client.Security.Options;
 using Stomp.Net.Stomp.Protocol;
 
 namespace NPS.ID.PublicApi.Client.Connection.Clients;
@@ -35,47 +37,51 @@ public class StompClient : IClient
     public StompClient(
         ILogger<StompClient> logger,
         ILoggerFactory loggerFactory,
-        WebSocketConnector webSocketConnector,
+        WebSocketConnectorFactory webSocketConnectorFactory,
         WebSocketClientTarget target,
-        string clientId)
+        string clientId,
+        WebSocketOptions webSocketOptions,
+        CredentialsOptions credentialsOptions)
     {
         _logger = logger;
         _loggerFactory = loggerFactory;
-        _webSocketConnector = webSocketConnector;
-        _webSocketConnector.StompConnectionEstablished += OnConnectionEstablished;
-        _webSocketConnector.StompConnectionClosed += OnConnectionClosed;
-        _webSocketConnector.MessageReceived += OnMessageReceivedAsync;
+        _webSocketConnector = webSocketConnectorFactory
+            .Create(webSocketOptions, credentialsOptions, OnMessageReceivedAsync, OnConnectionEstablishedAsync, OnConnectionClosedAsync, OnStompErrorAsync);
         ClientTarget = target;
         ClientId = clientId;
     }
 
-    private void OnConnectionEstablished(object sender, EventArgs e)
+    private Task OnConnectionEstablishedAsync()
     {
         _connectionEstablished = true;
         _connectionEstablishedEvent.Set();
-        _logger.LogInformation("[{clientTarget}]Connection established for client {ClientId}", ClientTarget, ClientId);
+        _logger.LogInformation("[{clientTarget}] Connection established for client {ClientId}", ClientTarget, ClientId);
+        
+        return Task.CompletedTask;
     }
 
-    private void OnConnectionClosed(object sender, EventArgs e)
+    private Task OnConnectionClosedAsync()
     {
         _connectionClosedEvent.Set();
 
         if (_connectionClosed)
         {
-            _logger.LogInformation("[{clientTarget}]Connection closing for client {ClientId}", ClientTarget, ClientId);
+            _logger.LogInformation("[{clientTarget}] Connection closing for client {ClientId}", ClientTarget, ClientId);
         }
         else
         {
-            _logger.LogError("[{clientTarget}]Connection closed unexpectedly for client {ClientId}", ClientTarget, ClientId);
+            _logger.LogError("[{clientTarget}] Connection closed unexpectedly for client {ClientId}", ClientTarget, ClientId);
         }
 
         foreach (var subscription in _subscriptions.Values)
         {
             subscription.Close();
         }
+        
+        return Task.CompletedTask;
     }
 
-    private Task OnMessageReceivedAsync(object sender, MessageReceivedEventArgs e, CancellationToken cancellationToken)
+    private Task OnMessageReceivedAsync(MessageReceivedEventArgs e, CancellationToken cancellationToken)
     {
         var isMessage = e.Message.IsMessageCommand();
         if (!isMessage)
@@ -87,7 +93,7 @@ public class StompClient : IClient
 
         if (stompFrame.Properties.TryGetValue(Headers.Server.Subscription, out var subscriptionId))
         {
-            _logger.LogInformation("[{clientTarget}][Frame({SubscriptionId}):Metadata] : destination={Destination}, sentAt={SentAt}, snapshot={Snapshot}, publishingMode={PublishingMode}, sequenceNo={SequenceNo}", 
+            _logger.LogInformation("[{clientTarget}][Frame({SubscriptionId}):Metadata] destination={Destination}, sentAt={SentAt}, snapshot={Snapshot}, publishingMode={PublishingMode}, sequenceNo={SequenceNo}", 
                 ClientTarget, 
                 subscriptionId,
                 stompFrame.GetDestination(),
@@ -102,18 +108,18 @@ public class StompClient : IClient
             }
             else
             {
-                _logger.LogWarning("[{clientTarget}][Frame({SubscriptionId})]Received message for subscription that is not assigned to current client", ClientTarget, subscriptionId);
+                _logger.LogWarning("[{clientTarget}][Frame({SubscriptionId})] Received message for subscription that is not assigned to current client", ClientTarget, subscriptionId);
             }
         }
         else
         {
             if (stompFrame.Command == Commands.Server.Error && stompFrame.Properties.TryGetValue(Headers.Server.Message, out var errorMessage))
             {
-                _logger.LogError("[{clientTarget}]Error message received from {StompConnectionUri}. Error: {Message}", ClientTarget, _webSocketConnector.ConnectionUri, errorMessage);
+                _logger.LogError("[{clientTarget}] Error message received from {StompConnectionUri}. Error: {Message}", ClientTarget, _webSocketConnector.ConnectionUri, errorMessage);
             }
             else
             {
-                _logger.LogWarning("[{clientTarget}]Unrecognized message received from {StompConnectionUri}. Command:{Command}\nHeaders:\n{Headers}\n{Content}",
+                _logger.LogWarning("[{clientTarget}] Unrecognized message received from {StompConnectionUri}. Command:{Command}\nHeaders:\n{Headers}\n{Content}",
                     ClientTarget,
                     _webSocketConnector.ConnectionUri,
                     stompFrame.Command,
@@ -121,6 +127,13 @@ public class StompClient : IClient
                     Encoding.UTF8.GetString(stompFrame.Content));
             }
         }
+
+        return Task.CompletedTask;
+    }
+    
+    private Task OnStompErrorAsync(Exception exception)
+    {
+        _logger.LogWarning(exception, "[{clientTarget}] An error on web socket message processing", ClientTarget);
 
         return Task.CompletedTask;
     }
@@ -156,7 +169,7 @@ public class StompClient : IClient
         if (!_webSocketConnector.IsConnected)
         {
             throw new SubscriptionFailedException(
-                $"[{ClientTarget}][Destination:{request.Destination}]Failed to subscribe because no connection is established! Connect first!");
+                $"[{ClientTarget}][Destination:{request.Destination}] Failed to subscribe because no connection is established! Connect first!");
         }
 
         var subscription = new StompSubscription<TValue>(
@@ -192,7 +205,7 @@ public class StompClient : IClient
         {
             subscription.Close();
 
-            _logger.LogInformation("[{clientTarget}][SubscriptionId:{Subscription}]Unsubscribed", ClientTarget, subscription.Id);
+            _logger.LogInformation("[{clientTarget}][SubscriptionId:{Subscription}] Unsubscribed", ClientTarget, subscription.Id);
         }
     }
 
