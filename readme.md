@@ -39,7 +39,7 @@ These credentials shall be obtained from [idapi@nordpoolgroup.com](mailto:idapi@
 Additionally, make sure that all the other variables in the [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json) file point to correct addresses.
 Finally, build the solution with Visual Studio or with dotnet CLI and run it with startup project: **NPS.ID.PublicApi.DotNet.Client**.
 
-The program will create two parallel connections that targets both: new **PMD** web service and old **Middleware** web service. 
+The program will create two parallel connections that targets both: **Market Data** web service and **Trading** web service. 
 Each connection subscribes to several example topics. It also provides examples on sending order messages to Intraday platform.
 
 Every communication step, its results or exceptions are printed in console output window.
@@ -51,7 +51,7 @@ The sequence of actions are located in [ApplicationWorker.cs](NPS.ID.PublicApi.D
 The current program is using the native .NET ClientWebSocket library and Stomp.Net library to create a WebSocketConnector that can operate through web sockets and handle all SockJS related details. In addition, sending heartbeat task created after connection established and refreshing access token are also defined in the WebSocketConnector. That connector can be found from [WebSocketConnector.cs](NPS.ID.PublicApi.DotNet.Client/Connection/WebSocketConnector.cs). 
 Heartbeat interval configuration can be found in [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json) **HeartbeatOutgoingInterval** property.
 
-The example uses ports 8083/443(secured) for establishing the web socket connection with **Middleware** web service and ports 80/443(secured) for establishing web socket connection with **PMD** web service. 
+The example uses ports 8083/443(secured) for establishing the web socket connection with **Trading** web service and ports 80/443(secured) for establishing web socket connection with **Market Data** web service. 
 If the example doesn't connect to the API, check that the above ports has been opened from your firewall.
 
 ## Questions, comments and error reporting ##
@@ -64,10 +64,10 @@ Change  useSsl property value from false to true.
 ```
 #!
 "Endpoints": {
-    "Middleware": {
+    "Trading": {
       "UseSsl": true
     },
-    "PMD": {
+    "MarketData": {
       "UseSsl": true
     },
 }
