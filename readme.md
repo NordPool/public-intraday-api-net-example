@@ -1,20 +1,21 @@
-﻿# Nord Pool Intraday API .NET Example Code #
+# Nord Pool Intraday API .NET Example Code #
 
-This repository contains a .NET 6 Windows Forms example application for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
+This repository contains a .NET 8 Console example application for interaction with Nord Pool Intraday Trading platform. The respective documentation is located at [our Development Portal](https://developers.nordpoolgroup.com/v1.0/docs/id-introduction). 
+
 This sample application uses .NET data objects published in [.NET API library](https://github.com/NordPool/public-intraday-net-api)
+
+There is also sample Java application available at [https://github.com/NordPool/public-intraday-api](https://github.com/NordPool/public-intraday-api). 
 
 ## Disclaimer ##
 
 We offer the client code examples to aid the development against Nord Pool's API at no warranty whatsoever. Clients are solely responsible for separately testing and ensuring that interaction with Nord Pool works according to their own standards.
 
-## Update 02/2022 ##
+Example application requires .NET 8. If you have not support for .NET 8. in your Visual Studio, install developer SDK from (https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
 
-* Please note that former console-based example application is now deprecated. From now you should use **WinFormsExample** as described below.
-* Example Application now requires .NET 6. If you have not support for .NET 6. in your Visual Studio, install developer SDK from (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
-## Using the example ##
+## Building ##
 
-Example application can be opened with solution file: **NPS.ID.PublicApi.Client.WinFormsExample.sln** which is found in repository root.
+Example application can be opened with solution file: [NPS.ID.PublicApi.DotNet.Client.sln](NPS.ID.PublicApi.DotNet.Client.sln) which is found in repository root.
 
 Example application requires, that you have cloned [.NET API library](https://github.com/NordPool/public-intraday-net-api) to your filesystem besides to this example app. Your local repository configuration can be for example:
 ```
@@ -23,29 +24,51 @@ C:\[path]\public-intraday-net-api
 C:\[path]\public-intraday-api-net-example
 ```
 
-.NET Example client solution contains Api library -project including source code from public-intraday-net-api repository. .NET API library reference is always to the same version of the library than exists in disk.
+.NET Example client solution contains Api library-project including source code from public-intraday-net-api repository. .NET API library reference is always to the same version of the library than exists in disk.
 
-All the relevant variables for connecting are located in App.config. Before running the example, user credentials should be updated to App.config:
+All the relevant variables for connecting are located in [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json). Before running the example, user credentials should be updated to [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json):
 ```
 #!
-<add key="sso-user" value="your_username" />
-<add key="sso-password" value="your_password" />
+"Credentials": {
+    "Username": "your_user",
+    "Password": "your_password"
+}
 ```
 These credentials shall be obtained from [idapi@nordpoolgroup.com](mailto:idapi@nordpoolgroup.com) prior to running the example.
 
-Additionally, make sure that all the other variabels in the App.config point to correct addresses.
-Finally, build the solution with Visual Studio or with dotnet CLI and run it with startup project: **NPS.ID.PublicApi.Client.WinFormsExample**.
+Additionally, make sure that all the other variables in the [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json) file point to correct addresses.
+Finally, build the solution with Visual Studio or with dotnet CLI and run it with startup project: **NPS.ID.PublicApi.DotNet.Client**.
 
-The program will connect to the platform and subscribe to several topics. It also provides examples on sending order messages to Intraday platform.
+The program will create two parallel connections that targets both: **Market Data** web service and **Trading** web service. 
+Each connection subscribes to several example topics. It also provides examples on sending order messages to Intraday platform.
 
-The sequence of actions are located in **MainForm.cs** source code.
+Every communication step, its results or exceptions are printed in console output window.
 
-#Important considerations#
+The sequence of actions are located in [ApplicationWorker.cs](NPS.ID.PublicApi.DotNet.Client/ApplicationWorker.cs) source code which is triggered once the program has started.
 
-The current program is using the WebSocket4Net and Stomp.Net library to create a StompConnector that can operate through web sockets and handle all SockJS related details. In addition, sending heartbeat job scheduled by Quartz.NET after connection established is also defined in the StompConnector. That connector can be found from **NPS.ID.PublicApi.Client/Connection/StompConnector.cs**. Heartbeat interval configuration can be found in App.config **ws-heartbeat-outgoing**
+## Important considerations ##
 
-The example uses port 8083 for establishing the web socket connection. For some organizations, it maybe so that only ports (80,443) used for HTTP and HTTPS protocols are opened by default. If the example doesn't connect to the API, check that the port 8083 has been opened from your firewall.
+The current program is using the native .NET ClientWebSocket library and Stomp.Net library to create a WebSocketConnector that can operate through web sockets and handle all SockJS related details. In addition, sending heartbeat task created after connection established and refreshing access token are also defined in the WebSocketConnector. That connector can be found from [WebSocketConnector.cs](NPS.ID.PublicApi.DotNet.Client/Connection/WebSocketConnector.cs). 
+Heartbeat interval configuration can be found in [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json) **HeartbeatOutgoingInterval** property.
+
+The example uses ports 8083/443(secured) for establishing the web socket connection with **Trading** web service and ports 80/443(secured) for establishing web socket connection with **Market Data** web service. 
+If the example doesn't connect to the API, check that the above ports has been opened from your firewall.
 
 ## Questions, comments and error reporting ##
 
 Please send questions and bug reports to [idapi@nordpoolgroup.com](mailto:idapi@nordpoolgroup.com).
+
+## SSL configuration: 
+
+Change  useSsl property value from false to true.
+```
+#!
+"Endpoints": {
+    "Trading": {
+      "UseSsl": true
+    },
+    "MarketData": {
+      "UseSsl": true
+    },
+}
+```
