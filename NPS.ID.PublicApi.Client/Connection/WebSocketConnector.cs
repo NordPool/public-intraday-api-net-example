@@ -6,6 +6,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Nordpool.ID.PublicApi.v1.Command;
 using NPS.ID.PublicApi.Client.Connection.Events;
+using NPS.ID.PublicApi.Client.Connection.Exceptions;
 using NPS.ID.PublicApi.Client.Connection.Messages;
 using NPS.ID.PublicApi.Client.Connection.Options;
 using NPS.ID.PublicApi.Client.Security;
@@ -17,7 +18,6 @@ namespace NPS.ID.PublicApi.Client.Connection;
 public class WebSocketConnector : IAsyncDisposable
 {
     private const string SecureWebSocketProtocol = "wss";
-    private const string UnsecureWebSocketProtocol = "ws";
 
     private bool _isConnected;
     public bool IsConnected => _isConnected && _webSocket.State == WebSocketState.Open;
@@ -36,7 +36,7 @@ public class WebSocketConnector : IAsyncDisposable
     private readonly Func<Task> _connectionEstablishedCallbackAsync;
     private readonly Func<Task> _connectionClosedCallbackAsync;
     private readonly Func<MessageReceivedEventArgs, CancellationToken, Task> _messageReceivedCallbackAsync;
-    private readonly Func<Exception, Task> _stompErrorCallbackAsync;
+    private readonly Func<StompConnectionException, Task> _stompErrorCallbackAsync;
 
     private readonly CancellationTokenSource _connectorCancellationTokenSource = new();
     private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler = new();
@@ -49,7 +49,7 @@ public class WebSocketConnector : IAsyncDisposable
         Func<MessageReceivedEventArgs, CancellationToken, Task> messageReceivedCallbackAsync,
         Func<Task> connectionEstablishedCallbackAsync = null,
         Func<Task> connectionClosedCallbackAsync = null,
-        Func<Exception, Task> stompErrorCallbackAsync = null)
+        Func<StompConnectionException, Task> stompErrorCallbackAsync = null)
     {
         _logger = logger;
         _ssoService = ssoService;
@@ -71,6 +71,7 @@ public class WebSocketConnector : IAsyncDisposable
         
         var uri = ConstructUri();
         await _webSocket.ConnectAsync(uri, cancellationToken);
+        
         _logger.LogDebug("Web socket opened");
 
         _ = Task.Run(() => StartReceivingMessagesAsync(_connectorCancellationTokenSource.Token), cancellationToken);
@@ -80,7 +81,7 @@ public class WebSocketConnector : IAsyncDisposable
     {
         var sessionId = Guid.NewGuid().ToString("N");
         var uri =
-            $"{(_webSocketOptions.UseSsl ? SecureWebSocketProtocol : UnsecureWebSocketProtocol)}://{_webSocketOptions.Host}:{_webSocketOptions.UsedPort}{_webSocketOptions.Uri}/{_serverId}/{sessionId}/websocket";
+            $"{SecureWebSocketProtocol}://{_webSocketOptions.Host}:{_webSocketOptions.SslPort}{_webSocketOptions.Uri}/{_serverId}/{sessionId}/websocket";
 
         _logger.LogDebug("Connecting to: {uri}", uri);
         ConnectionUri = uri;
@@ -149,8 +150,8 @@ public class WebSocketConnector : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            await OnWebSocketErrorAsync(ex);
             await CloseConnectionAsync(CancellationToken.None);
+            _logger.LogWarning(ex, "An error on web socket message receiving");
         }
         finally
         {
@@ -169,6 +170,12 @@ public class WebSocketConnector : IAsyncDisposable
             {
                 var connectCommand = StompMessageFactory.ConnectionFrame(_currentAuthToken, _webSocketOptions.HeartbeatOutgoingInterval);
                 await SendAsync(connectCommand.ConvertToMessageBytes(), cancellationToken);
+                return;
+            }
+
+            if (message.IsError())
+            {
+                await OnWebSocketErrorAsync(message);
                 return;
             }
 
@@ -198,12 +205,13 @@ public class WebSocketConnector : IAsyncDisposable
         }
     }
 
-    private async Task OnWebSocketErrorAsync(Exception exception)
+    private async Task OnWebSocketErrorAsync(ReceivedMessage message)
     {
         try
         {
-            if (_stompErrorCallbackAsync is not null)
-                await _stompErrorCallbackAsync.Invoke(exception);
+            var stompFrame = message.ConvertToStompFrame();
+            if (stompFrame.Properties.TryGetValue(Headers.Server.Message, out var errorMessage) && _stompErrorCallbackAsync is not null)
+                await _stompErrorCallbackAsync.Invoke(new StompConnectionException(errorMessage));
         }
         catch (Exception e)
         {

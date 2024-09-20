@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NPS.ID.PublicApi.Client.Connection.Events;
+using NPS.ID.PublicApi.Client.Connection.Exceptions;
 using NPS.ID.PublicApi.Client.Connection.Options;
 using NPS.ID.PublicApi.Client.Security;
 using NPS.ID.PublicApi.Client.Security.Options;
@@ -25,7 +26,7 @@ public class WebSocketConnectorFactory
         Func<MessageReceivedEventArgs, CancellationToken, Task> messageReceivedCallbackAsync,
         Func<Task> connectionEstablishedCallbackAsync = null,
         Func<Task> connectionClosedCallbackAsync = null,
-        Func<Exception, Task> stompErrorCallbackAsync = null)
+        Func<StompConnectionException, Task> stompErrorCallbackAsync = null)
     {
         return new WebSocketConnector(
             _loggerFactory.CreateLogger<WebSocketConnector>(), 

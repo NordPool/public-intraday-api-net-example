@@ -51,24 +51,9 @@ The sequence of actions are located in [ApplicationWorker.cs](NPS.ID.PublicApi.D
 The current program is using the native .NET ClientWebSocket library and Stomp.Net library to create a WebSocketConnector that can operate through web sockets and handle all SockJS related details. In addition, sending heartbeat task created after connection established and refreshing access token are also defined in the WebSocketConnector. That connector can be found from [WebSocketConnector.cs](NPS.ID.PublicApi.DotNet.Client/Connection/WebSocketConnector.cs). 
 Heartbeat interval configuration can be found in [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json) **HeartbeatOutgoingInterval** property.
 
-The example uses ports 8083/443(secured) for establishing the web socket connection with **Trading** web service and ports 80/443(secured) for establishing web socket connection with **Market Data** web service. 
+The example uses port 443(secured) for establishing the web socket connection with **Trading** and **Market Data** web services. 
 If the example doesn't connect to the API, check that the above ports has been opened from your firewall.
 
 ## Questions, comments and error reporting ##
 
 Please send questions and bug reports to [idapi@nordpoolgroup.com](mailto:idapi@nordpoolgroup.com).
-
-## SSL configuration: 
-
-Change  useSsl property value from false to true.
-```
-#!
-"Endpoints": {
-    "Trading": {
-      "UseSsl": true
-    },
-    "MarketData": {
-      "UseSsl": true
-    },
-}
-```

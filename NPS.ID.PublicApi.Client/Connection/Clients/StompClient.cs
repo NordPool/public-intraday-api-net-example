@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
 using NPS.ID.PublicApi.Client.Connection.Enums;
 using NPS.ID.PublicApi.Client.Connection.Events;
+using NPS.ID.PublicApi.Client.Connection.Exceptions;
 using NPS.ID.PublicApi.Client.Connection.Messages;
 using NPS.ID.PublicApi.Client.Connection.Subscriptions;
 using NPS.ID.PublicApi.Client.Connection.Subscriptions.Exceptions;
@@ -12,7 +13,6 @@ using NPS.ID.PublicApi.Client.Connection.Subscriptions.Requests;
 using NPS.ID.PublicApi.Client.Connection.Extensions;
 using NPS.ID.PublicApi.Client.Connection.Options;
 using NPS.ID.PublicApi.Client.Security.Options;
-using Stomp.Net.Stomp.Protocol;
 
 namespace NPS.ID.PublicApi.Client.Connection.Clients;
 
@@ -83,13 +83,13 @@ public class StompClient : IClient
 
     private Task OnMessageReceivedAsync(MessageReceivedEventArgs e, CancellationToken cancellationToken)
     {
-        var isMessage = e.Message.IsMessageCommand();
+        var isMessage = e.Message.IsMessageCommand(); 
         if (!isMessage)
         {
             return Task.CompletedTask;
         }
         
-        var stompFrame = ConvertToStompFrame(e.Message);
+        var stompFrame = e.Message.ConvertToStompFrame();
 
         if (stompFrame.Properties.TryGetValue(Headers.Server.Subscription, out var subscriptionId))
         {
@@ -113,49 +113,24 @@ public class StompClient : IClient
         }
         else
         {
-            if (stompFrame.Command == Commands.Server.Error && stompFrame.Properties.TryGetValue(Headers.Server.Message, out var errorMessage))
-            {
-                _logger.LogError("[{clientTarget}] Error message received from {StompConnectionUri}. Error: {Message}", ClientTarget, _webSocketConnector.ConnectionUri, errorMessage);
-            }
-            else
-            {
-                _logger.LogWarning("[{clientTarget}] Unrecognized message received from {StompConnectionUri}. Command:{Command}\nHeaders:\n{Headers}\n{Content}",
-                    ClientTarget,
-                    _webSocketConnector.ConnectionUri,
-                    stompFrame.Command,
-                    string.Join("\n", stompFrame.Properties.Select(header => $"{header.Key}:{header.Value}")),
-                    Encoding.UTF8.GetString(stompFrame.Content));
-            }
+            _logger.LogWarning("[{clientTarget}] Unrecognized message received from {StompConnectionUri}. Command:{Command}\nHeaders:\n{Headers}\n{Content}",
+                ClientTarget,
+                _webSocketConnector.ConnectionUri,
+                stompFrame.Command,
+                string.Join("\n", stompFrame.Properties.Select(header => $"{header.Key}:{header.Value}")),
+                Encoding.UTF8.GetString(stompFrame.Content));
         }
 
         return Task.CompletedTask;
     }
     
-    private Task OnStompErrorAsync(Exception exception)
+    private Task OnStompErrorAsync(StompConnectionException exception)
     {
-        _logger.LogWarning(exception, "[{clientTarget}] An error on web socket message processing", ClientTarget);
+        _logger.LogError(exception, "[{clientTarget}] An error on web socket message processing", ClientTarget);
 
         return Task.CompletedTask;
     }
     
-    private static StompFrame ConvertToStompFrame(ReceivedMessage message)
-    {
-        var messageStream = message.GetStream();
-        //Remove the first char 'a' to get the json array
-        messageStream.Seek(1, SeekOrigin.Begin);
-
-        using var streamReader = new StreamReader(messageStream);
-        var stompMessage = JsonSerializer.Deserialize<string[]>(streamReader.ReadToEnd()).ElementAt(0);
-        
-        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(stompMessage));
-        using var binaryReader = new BinaryReader(memoryStream, Encoding.UTF8);
-
-        var frame = new StompFrame(true);
-        frame.FromStream(binaryReader);
-
-        return frame;
-    }
-
     public async Task<bool> OpenAsync(CancellationToken cancellationToken)
     {
         await _webSocketConnector.ConnectAsync(cancellationToken);

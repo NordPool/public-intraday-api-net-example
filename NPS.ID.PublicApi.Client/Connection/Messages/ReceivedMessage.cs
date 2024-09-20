@@ -27,6 +27,7 @@ public sealed class ReceivedMessage : IDisposable
     public bool IsDisconnectCode() => Is(WebSocketMessages.DisconnectCode);
     public bool IsConnectedCommand() => Is(WebSocketMessages.ConnectedPrefix, compareLength: false);
     public bool IsMessageCommand() => Is(WebSocketMessages.MessagePrefix, compareLength: false);
+    public bool IsError() => Is(WebSocketMessages.ErrorPrefix, compareLength: false);
 
     private bool Is(byte[] other, bool compareLength = true)
     {
