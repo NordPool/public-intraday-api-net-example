@@ -69,4 +69,22 @@ public static class StompFrameExtensions
 
         return ms.ToArray();
     }
+    
+    public static StompFrame ConvertToStompFrame(this ReceivedMessage message)
+    {
+        var messageStream = message.GetStream();
+        //Remove the first char 'a' to get the json array
+        messageStream.Seek(1, SeekOrigin.Begin);
+
+        using var streamReader = new StreamReader(messageStream);
+        var stompMessage = JsonSerializer.Deserialize<string[]>(streamReader.ReadToEnd()).ElementAt(0);
+        
+        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(stompMessage));
+        using var binaryReader = new BinaryReader(memoryStream, Encoding.UTF8);
+
+        var frame = new StompFrame(true);
+        frame.FromStream(binaryReader);
+
+        return frame;
+    }
 }

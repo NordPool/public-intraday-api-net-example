@@ -13,5 +13,6 @@ public static class WebSocketMessages
     public static readonly byte[] DisconnectCode = DefaultEncoding.GetBytes("[\"1000\"]");
     public static readonly byte[] ConnectedPrefix = DefaultEncoding.GetBytes("a[\"CONNECTED");
     public static readonly byte[] MessagePrefix = DefaultEncoding.GetBytes("a[\"MESSAGE");
+    public static readonly byte[] ErrorPrefix = DefaultEncoding.GetBytes("a[\"ERROR");
     public static readonly byte[] Logout = DefaultEncoding.GetBytes("[\"SEND\\ndestination:/v1/command\\ncontent-length:17\\n\\n{\\\"type\\\":\\\"LOGOUT\\\"}\\u0000\"]");
 }
