@@ -79,6 +79,11 @@ public class SubscribeRequestBuilder
     {
         return SubscribeRequest.Capacities(GetSubId(), _user, _version, publishingMode, deliveryAreaId, additionalDeliveryAreas);
     }
+    
+    public SubscribeRequest CreateAtcCapacities(PublishingMode publishingMode, int deliveryAreaId, IEnumerable<int> additionalDeliveryAreas)
+    {
+        return SubscribeRequest.AtcCapacities(GetSubId(), _user, _version, publishingMode, deliveryAreaId, additionalDeliveryAreas);
+    }
 
     private static string GetSubId()
     {
