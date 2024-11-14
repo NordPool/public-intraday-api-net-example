@@ -23,8 +23,8 @@ public class ApplicationWorker
     private readonly ILogger<ApplicationWorker> _logger;
 
     private const string Version = "v1";
-    private const int DemoArea = 2; // 3 = Finland
-    private static readonly IEnumerable<int> additionalAreas = [3, 5, 15];
+    private const int DemoArea = 3; // 3 = Finland
+    private static readonly IEnumerable<int> AdditionalAreas = [5, 6, 7, 10, 15];
     
     private readonly string _clientId = $"{Guid.NewGuid()}-dotnet-demo-client";
 
@@ -238,7 +238,7 @@ public class ApplicationWorker
     private async Task SubscribeAtcCapacitiesAsync(IClient client, PublishingMode publishingMode,
         CancellationToken cancellationToken)
     {
-        var contractsSubscription = _subscribeRequestBuilder.CreateAtcCapacities(publishingMode, DemoArea, additionalAreas);
+        var contractsSubscription = _subscribeRequestBuilder.CreateAtcCapacities(publishingMode, DemoArea, AdditionalAreas);
         var subscription = await client.SubscribeAsync<AtcCapacityRow>(contractsSubscription, cancellationToken);
         ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
     }
