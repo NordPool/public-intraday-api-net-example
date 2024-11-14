@@ -71,4 +71,10 @@ public class SubscribeRequest
         var additionalAreasPart = additionalDeliveryAreas.Any() ? $"/{string.Join("-", additionalDeliveryAreas)}" : string.Empty;
         return new SubscribeRequest(subscriptionId, "capacities", DestinationHelper.ComposeDestination(user, version, mode, $"capacities/{deliveryAreaId}{additionalAreasPart}"));
     }
+    
+    public static SubscribeRequest AtcCapacities(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId, IEnumerable<int> additionalDeliveryAreas)
+    {
+        var additionalAreasPart = additionalDeliveryAreas.Any() ? $"/{string.Join("-", additionalDeliveryAreas)}" : string.Empty;
+        return new SubscribeRequest(subscriptionId, "atcCapacities", DestinationHelper.ComposeDestination(user, version, mode, $"atcCapacities/{deliveryAreaId}{additionalAreasPart}"));
+    }
 }
