@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Nordpool.ID.PublicApi.v1.Command;
 using NPS.ID.PublicApi.Client.Connection.Events;
@@ -280,7 +281,7 @@ public class WebSocketConnector : IAsyncDisposable
         {
             var jwt = _jwtSecurityTokenHandler.ReadToken(_currentAuthToken);
             var expirationDate = new DateTimeOffset(jwt.ValidTo, TimeSpan.Zero);
-            var refreshPeriod = expirationDate.Subtract(DateTimeOffset.UtcNow.AddMinutes(5));
+            var refreshPeriod = expirationDate.Subtract(DateTimeOffset.UtcNow.AddMinutes(59));
 
             using var timer = new PeriodicTimer(refreshPeriod);
             await timer.WaitForNextTickAsync(cancellationToken);
@@ -301,10 +302,14 @@ public class WebSocketConnector : IAsyncDisposable
         var refreshTokenCommand = new TokenRefreshCommand
         {
             NewToken = _currentAuthToken,
-            OldToken = previousAuthToken
+            OldToken = previousAuthToken,
+            Type = CommandType.TOKEN_REFRESH
         };
+        
+        var options = new JsonSerializerOptions();
+        options.Converters.Add(new JsonStringEnumConverter());
 
-        var refreshTokenCommandPayload = JsonSerializer.Serialize(refreshTokenCommand);
+        var refreshTokenCommandPayload = JsonSerializer.Serialize(refreshTokenCommand, options);
         
         var stompFrame = StompMessageFactory.SendFrame(refreshTokenCommandPayload, "/v1/command");
 
