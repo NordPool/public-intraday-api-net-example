@@ -281,7 +281,7 @@ public class WebSocketConnector : IAsyncDisposable
         {
             var jwt = _jwtSecurityTokenHandler.ReadToken(_currentAuthToken);
             var expirationDate = new DateTimeOffset(jwt.ValidTo, TimeSpan.Zero);
-            var refreshPeriod = expirationDate.Subtract(DateTimeOffset.UtcNow.AddMinutes(59));
+            var refreshPeriod = expirationDate.Subtract(DateTimeOffset.UtcNow.AddMinutes(5));
 
             using var timer = new PeriodicTimer(refreshPeriod);
             await timer.WaitForNextTickAsync(cancellationToken);
