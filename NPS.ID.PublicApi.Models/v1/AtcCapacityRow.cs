@@ -14,10 +14,7 @@ namespace Nordpool.ID.PublicApi.v1
     {
         public long EventSequenceNo { get; set; }
 
-        /// <summary>true - capacity data produced by internal Nord Pool Matcher. false - capacity data came</summary>
-        public bool Internal { get; set; }
-
-        public DateTimeOffset PublicationTime { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; }
 
         public long DeliveryAreaFrom { get; set; }
 
