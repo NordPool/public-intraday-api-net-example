@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,6 +18,7 @@
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
         <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.10.48" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="NPS.ID.PublicApi.Models" Version="1.0.0" />
         <PackageReference Include="Stomp.Net" Version="2.4.0"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
         <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
@@ -32,9 +33,4 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\NPS.ID.PublicApi.Models\NPS.ID.PublicApi.Models.csproj" />
-    </ItemGroup>
-
 </Project>
