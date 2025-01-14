@@ -17,14 +17,7 @@ Example application requires .NET 8. If you have not support for .NET 8. in your
 
 Example application can be opened with solution file: [NPS.ID.PublicApi.DotNet.Client.sln](NPS.ID.PublicApi.DotNet.Client.sln) which is found in repository root.
 
-Example application requires, that you have cloned [.NET API library](https://github.com/NordPool/public-intraday-net-api) to your filesystem besides to this example app. Your local repository configuration can be for example:
-```
-#!
-C:\[path]\public-intraday-net-api
-C:\[path]\public-intraday-api-net-example
-```
-
-.NET Example client solution contains Api library-project including source code from public-intraday-net-api repository. .NET API library reference is always to the same version of the library than exists in disk.
+Example application requires, that you reference [.NET API library](https://github.com/NordPool/public-intraday-net-api)  project in your cspoj file and add github source credentials in nuget.cofig file.
 
 All the relevant variables for connecting are located in [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json). Before running the example, user credentials should be updated to [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json):
 ```
