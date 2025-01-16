@@ -85,7 +85,7 @@ public class ApplicationWorker
             _cancellationTokenSource.Token);
 
         // Local views 
-        await SubscribeLocalViewsAsync(marketDataClient, PublishingMode.CONFLATED,
+        await SubscribeLocalViewsAsync(marketDataClient, PublishingMode.STREAMING,
             _cancellationTokenSource.Token);
         
         // Private trades

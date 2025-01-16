@@ -17,7 +17,7 @@
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
         <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.10.48" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="NPS.ID.PublicApi.Models" Version="1.0.1" />
+        <PackageReference Include="NPS.ID.PublicApi.Models" Version="1.0.2" />
         <PackageReference Include="Stomp.Net" Version="2.4.0"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
         <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
