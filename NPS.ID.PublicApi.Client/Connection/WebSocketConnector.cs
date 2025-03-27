@@ -30,7 +30,7 @@ public class WebSocketConnector : IAsyncDisposable
     private readonly ISsoService _ssoService;
 
     private string _currentAuthToken;
-    private readonly ClientWebSocket _webSocket = new();
+    private readonly ClientWebSocket _webSocket;
     private readonly WebSocketOptions _webSocketOptions;
     private readonly CredentialsOptions _credentialsOptions;
     
@@ -54,9 +54,17 @@ public class WebSocketConnector : IAsyncDisposable
     {
         _logger = logger;
         _ssoService = ssoService;
+
         _webSocketOptions = webSocketOptions;
         _credentialsOptions = credentialsOptions;
         
+        _webSocket = new ClientWebSocket();
+        // NOTE: This is not dangerous option if we use JWT
+        if (_webSocketOptions.EnablePermessageDeflate)
+        {
+            _webSocket.Options.DangerousDeflateOptions = new WebSocketDeflateOptions();
+        }
+
         _messageReceivedCallbackAsync = messageReceivedCallbackAsync;
         _connectionEstablishedCallbackAsync = connectionEstablishedCallbackAsync;
         _connectionClosedCallbackAsync = connectionClosedCallbackAsync;
