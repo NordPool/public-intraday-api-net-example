@@ -26,8 +26,7 @@ All the relevant variables for connecting are located in [appsettings.json](NPS.
     "Username": "your_user",
     "Password": "your_password"
 }
-```
-These credentials shall be obtained from [idapi@nordpoolgroup.com](mailto:idapi@nordpoolgroup.com) prior to running the example.
+```=
 
 Additionally, make sure that all the other variables in the [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json) file point to correct addresses.
 Finally, build the solution with Visual Studio or with dotnet CLI and run it with startup project: **NPS.ID.PublicApi.DotNet.Client**.
