@@ -65,7 +65,12 @@ public class SubscribeRequest
     {
         return new SubscribeRequest(subscriptionId, "throttling_limits", DestinationHelper.ComposeDestination(user, version, mode, "throttlingLimits"));
     }
-    
+
+    public static SubscribeRequest CompanyThrottlingLimits(string subscriptionId, string user, string version, PublishingMode mode)
+    {
+        return new SubscribeRequest(subscriptionId, "company_throttling_limits", DestinationHelper.ComposeDestination(user, version, mode, "companyThrottlingLimits"));
+    }
+
     public static SubscribeRequest Capacities(string subscriptionId, string user, string version, PublishingMode mode, int deliveryAreaId, IEnumerable<int> additionalDeliveryAreas)
     {
         var additionalAreasPart = additionalDeliveryAreas.Any() ? $"/{string.Join("-", additionalDeliveryAreas)}" : string.Empty;
