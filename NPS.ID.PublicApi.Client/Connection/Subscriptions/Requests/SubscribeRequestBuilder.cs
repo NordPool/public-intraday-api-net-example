@@ -69,7 +69,12 @@ public class SubscribeRequestBuilder
     {
         return SubscribeRequest.ThrottlingLimits(GetSubId(), _user, _version, publishingMode);
     }
-    
+
+    public SubscribeRequest CreateCompanyThrottlingLimits(PublishingMode publishingMode)
+    {
+        return SubscribeRequest.CompanyThrottlingLimits(GetSubId(), _user, _version, publishingMode);
+    }
+
     public SubscribeRequest CreateCapacities(PublishingMode publishingMode, int deliveryAreaId)
     {
         return CreateCapacities(publishingMode, deliveryAreaId, Array.Empty<int>());
