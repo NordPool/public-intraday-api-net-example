@@ -17,16 +17,16 @@ Example application requires .NET 8. If you have not support for .NET 8. in your
 
 Example application can be opened with solution file: [NPS.ID.PublicApi.DotNet.Client.sln](NPS.ID.PublicApi.DotNet.Client.sln) which is found in repository root.
 
-Example application requires, that you reference [.NET API library](https://github.com/NordPool/public-intraday-net-api)  project in your cspoj file and add github source credentials in nuget.cofig file.
+It requires that you add your github token in nuget.cofig file. For more detailed instruction see **Authenticating to GitHub Packages** section of this document.
 
 All the relevant variables for connecting are located in [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json). Before running the example, user credentials should be updated to [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json):
+
 ```
-#!
 "Credentials": {
     "Username": "your_user",
     "Password": "your_password"
 }
-```=
+```
 
 Additionally, make sure that all the other variables in the [appsettings.json](NPS.ID.PublicApi.DotNet.Client/appsettings.json) file point to correct addresses.
 Finally, build the solution with Visual Studio or with dotnet CLI and run it with startup project: **NPS.ID.PublicApi.DotNet.Client**.
@@ -37,6 +37,24 @@ Each connection subscribes to several example topics. It also provides examples 
 Every communication step, its results or exceptions are printed in console output window.
 
 The sequence of actions are located in [ApplicationWorker.cs](NPS.ID.PublicApi.DotNet.Client/ApplicationWorker.cs) source code which is triggered once the program has started.
+
+## Authenticating to GitHub Packages ##
+
+See more information on [GitHub docs](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages)
+
+GitHub Packages only supports authentication using a personal access token (classic).
+
+You can use a personal access token (classic) to authenticate to GitHub Packages or the GitHub API. You will need `read:packages` scope to be enabled.
+
+Login and access token can be set in NuGet.config file:
+```
+<packageSourceCredentials>
+    <GitHub>
+        <add key="Username" value="github_username" />
+        <add key="ClearTextPassword" value="github_access_token" />
+    </GitHub>
+</packageSourceCredentials>
+```
 
 ## Important considerations ##
 
