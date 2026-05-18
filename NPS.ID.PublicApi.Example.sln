@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.ID.PublicApi.Client", "NPS.ID.PublicApi.Client\NPS.ID.PublicApi.Client.csproj", "{CE81F4DC-A99E-4B06-847E-928232016988}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPS.ID.PublicApi.BinaryApiClient", "NPS.ID.PublicApi.BinaryApiClient\NPS.ID.PublicApi.BinaryApiClient.csproj", "{D4C86B41-5279-4312-BF3E-1EA8DA0CEB3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{CE81F4DC-A99E-4B06-847E-928232016988}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE81F4DC-A99E-4B06-847E-928232016988}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE81F4DC-A99E-4B06-847E-928232016988}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4C86B41-5279-4312-BF3E-1EA8DA0CEB3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4C86B41-5279-4312-BF3E-1EA8DA0CEB3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4C86B41-5279-4312-BF3E-1EA8DA0CEB3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4C86B41-5279-4312-BF3E-1EA8DA0CEB3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
