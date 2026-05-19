@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.WebSockets;
 using Google.Protobuf;
-using NPS.Intraday.PMD.V2;
+using Nps.Intraday.Pmd.V2;
 
 namespace NPS.ID.PublicApi.BinaryApiClient;
 

@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package nps.intraday.pmd.v2;
 
-option csharp_namespace = "NPS.Intraday.PMD.V2";
-
 import "google/protobuf/wrappers.proto";
 
 // Server → Client
