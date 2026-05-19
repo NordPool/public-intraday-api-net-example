@@ -1,0 +1,290 @@
+syntax = "proto3";
+
+package nps.intraday.pmd.v2;
+
+import "google/protobuf/wrappers.proto";
+
+// Server → Client
+
+message ServerFrame {
+  oneof payload {
+    ConnectedPayload       connected        = 1;
+    ErrorPayload           error            = 2;
+    Heartbeat              heartbeat        = 3;
+    LocalViewPayload       local_view       = 4;
+    DeliveryAreaPayload    delivery_area    = 5;
+    ContractPayload        contract         = 6;
+    TickerPayload          ticker           = 7;
+    H2HCapacityPayload  h2h_capacity        = 8;
+    PublicStatisticPayload public_statistic = 9;
+    AtcCapacityPayload  atc_capacity        = 10;
+  }
+}
+
+message ConnectedPayload {
+  int32 heartbeat_interval_ms = 1;
+}
+
+message ErrorPayload {
+  string message = 1;
+}
+
+message Heartbeat {}
+
+message LocalViewPayload {
+  bool               is_snapshot      = 1;
+  int32              delivery_area_id = 2;
+  repeated LocalView local_views      = 3;
+}
+
+message LocalView {
+  MarketType market_type     = 1;
+  int64  contract_id         = 2;
+  int64  revision_no         = 3;
+  repeated Order buy_orders  = 4;
+  repeated Order sell_orders = 5;
+}
+
+message Order {
+  int64  order_id      = 1;
+  int64  price         = 2;
+  int32  quantity      = 3;   // 0 = deleted
+  int64  created_at_ms = 4;
+}
+
+enum MarketType {
+  MARKET_TYPE_NONE  = 0;
+
+  MARKET_TYPE_LOCAL = 1;
+  MARKET_TYPE_XBID  = 2;
+}
+
+message H2HCapacityPayload {
+  bool              is_snapshot            = 1;
+  int32             delivery_area_id       = 2;
+  repeated H2HCapacity h2h_capacities     = 3;
+}
+
+message H2HCapacity {
+  int64 published_at_ms    = 1;
+  int32 delivery_area_from = 2;
+  int32 delivery_area_to   = 3;
+  int64 delivery_start_ms  = 4;
+  int64 delivery_end_ms    = 5;
+  int64 in_capacity        = 6;
+  int64 out_capacity       = 7;
+}
+
+message DeliveryAreaPayload {
+  bool is_snapshot                    = 1;
+  repeated DeliveryArea delivery_areas = 2;
+}
+
+message DeliveryArea {
+  int32 delivery_area_id             = 1;
+  string eic_code                    = 2;
+  string currency_code               = 3;
+  string area_code                   = 4;
+  string time_zone                   = 5;
+  string country_iso_code            = 6;
+  repeated ProductType product_types = 7;
+}
+
+message ContractPayload {
+  bool is_snapshot             = 1;
+  repeated Contract contracts  = 2;
+}
+
+message Contract {
+  int64       contract_id                                  = 1;
+  string      contract_name                                = 2;
+  MarketType  market_type                                  = 3;
+  string      market_id                                    = 4;
+  ProductType product_type                                 = 5;
+  int64       delivery_start_ms                            = 6;
+  int64       delivery_end_ms                              = 7;
+  int32       duration_seconds                             = 8;
+  int32       resolution_seconds                           = 9;
+  bool        predefined                                   = 10;
+  int64       updated_at_ms                                = 11;
+  repeated ContractDeliveryAreaState delivery_area_states  = 12;
+}
+
+message ContractDeliveryAreaState {
+  int32         delivery_area_id = 1;
+  ContractState state            = 2;
+  int64         open_at_ms       = 3;
+  int64         closed_at_ms     = 4;
+}
+
+enum ContractState {
+  CONTRACT_STATE_NONE = 0;
+  CONTRACT_STATE_ACTI = 1;
+  CONTRACT_STATE_HIBE = 2;
+  CONTRACT_STATE_IACT = 3;
+  CONTRACT_STATE_FRZN = 4;
+}
+
+enum ProductType {
+  PRODUCT_TYPE_NONE         = 0;
+
+  PRODUCT_TYPE_P15_MIN      = 1;
+  PRODUCT_TYPE_P30_MIN      = 2;
+  PRODUCT_TYPE_P60_MIN      = 3;
+  PRODUCT_TYPE_BLOCK_2_H    = 4;
+  PRODUCT_TYPE_BLOCK_4_H    = 5;
+  PRODUCT_TYPE_DON          = 6;
+  PRODUCT_TYPE_DB34         = 7;
+  PRODUCT_TYPE_DP           = 8;
+  PRODUCT_TYPE_DEP          = 9;
+  PRODUCT_TYPE_DB           = 10;
+  PRODUCT_TYPE_CUSTOM_BLOCK = 11;
+}
+
+message TickerPayload {
+  bool is_snapshot                = 1;
+  repeated PublicTrade trades     = 2;
+}
+
+message PublicTrade {
+  MarketType market_type            = 1;
+  int64 trade_id                    = 2;
+  int64 trade_time_ms               = 3;
+  int64 updated_at_ms               = 4;
+  TradeState state                  = 5;
+  int64 revision_no                 = 6;
+  repeated PublicTradeLeg legs      = 7;
+}
+
+message PublicTradeLeg {
+  int64 contract_id       = 1;
+  TradeSide side          = 2;
+  int64 unit_price        = 3;
+  int64 quantity          = 4;
+  int32 delivery_area_id  = 5;
+}
+
+enum TradeState {
+  TRADE_STATE_NONE          = 0;
+
+  TRADE_STATE_COMPLETED     = 1;
+  TRADE_STATE_CANCELLED     = 2;
+  TRADE_STATE_DISPUTED      = 3;
+  TRADE_STATE_NOT_CANCELLED = 4;
+}
+
+enum TradeSide {
+  TRADE_SIDE_NONE = 0;
+
+  TRADE_SIDE_BUY  = 1;
+  TRADE_SIDE_SELL = 2;
+}
+
+message PublicStatisticPayload {
+  bool is_snapshot                           = 1;
+  repeated PublicStatistic public_statistics = 2;
+}
+
+message PublicStatistic {
+  int32 delivery_area_id                        = 1;
+  MarketType market_type                        = 2;
+  int64 contract_id                             = 3;
+  google.protobuf.Int64Value last_price         = 4;
+  google.protobuf.Int64Value last_quantity      = 5;
+  google.protobuf.Int64Value last_trade_time_ms = 6;
+  google.protobuf.Int64Value highest_price      = 7;
+  google.protobuf.Int64Value lowest_price       = 8;
+  google.protobuf.Int64Value vwap               = 9;
+  google.protobuf.Int64Value turnover           = 10;
+  google.protobuf.Int64Value day_ahead_price    = 11;
+  PublicStatisticTendency tendency              = 12;
+}
+
+enum PublicStatisticTendency {
+  PUBLIC_STATISTIC_TENDENCY_NONE = 0;
+
+  PUBLIC_STATISTIC_TENDENCY_UP = 1;
+  PUBLIC_STATISTIC_TENDENCY_DOWN = 2;
+  PUBLIC_STATISTIC_TENDENCY_EQUAL = 3;
+}
+
+message AtcCapacityPayload {
+  bool                 is_snapshot           = 1;
+  int32                delivery_area_id      = 2;
+  repeated AtcCapacity atc_capacities        = 3;
+}
+
+message AtcCapacity {
+  int32  from_delivery_area_id = 1;
+  int32  to_delivery_area_id   = 2;
+  int64  delivery_start_ms     = 3;
+  int64  delivery_end_ms       = 4;
+  int64  capacity              = 5;
+  int64  updated_at_ms         = 6;
+}
+
+// Client → Server
+
+message ClientFrame {
+  oneof payload {
+    TokenRefresh token_refresh = 1;
+    Heartbeat    heartbeat     = 2;
+    Subscribe    subscribe     = 3;
+    Unsubscribe  unsubscribe   = 4;
+  }
+}
+
+message TokenRefresh {
+  string token = 1;
+}
+
+message Subscribe {
+  oneof target {
+    LocalViewSubscription local_view             = 1;
+    DeliveryAreaSubscription delivery_area       = 2;
+    ContractSubscription contract                = 3;
+    TickerSubscription ticker                    = 4;
+    H2HCapacitySubscription  h2h_capacity        = 5;
+    PublicStatisticSubscription public_statistic = 6;
+    AtcCapacitiesSubscription atc_capacity       = 7;
+  }
+}
+
+message Unsubscribe {
+  oneof target {
+    LocalViewSubscription local_view             = 1;
+    DeliveryAreaSubscription delivery_area       = 2;
+    ContractSubscription contract                = 3;
+    TickerSubscription ticker                    = 4;
+    H2HCapacitySubscription  h2h_capacity        = 5;
+    PublicStatisticSubscription public_statistic = 6;
+    AtcCapacitiesSubscription atc_capacity       = 7;
+  }
+}
+
+message LocalViewSubscription {
+  repeated int32 delivery_areas = 1;
+}
+
+message DeliveryAreaSubscription {}
+
+message ContractSubscription {}
+
+message TickerSubscription {}
+
+message H2HCapacitySubscription {
+  repeated CapacityFlow flows = 1;
+}
+
+message AtcCapacitiesSubscription {
+  repeated CapacityFlow flows = 1;
+}
+
+message CapacityFlow {
+  int32          delivery_area            = 1;
+  repeated int32 connected_delivery_areas = 2; // if empty, means all delivery areas
+}
+
+message PublicStatisticSubscription {
+  repeated int32 delivery_areas = 1;
+}
