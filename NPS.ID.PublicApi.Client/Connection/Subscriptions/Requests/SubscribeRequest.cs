@@ -61,11 +61,6 @@ public class SubscribeRequest
         return new SubscribeRequest(subscriptionId, "public_statistics", DestinationHelper.ComposeDestination(user, version, mode, $"publicStatistics/{deliveryAreaId}"));
     }
 
-    public static SubscribeRequest ThrottlingLimits(string subscriptionId, string user, string version, PublishingMode mode)
-    {
-        return new SubscribeRequest(subscriptionId, "throttling_limits", DestinationHelper.ComposeDestination(user, version, mode, "throttlingLimits"));
-    }
-
     public static SubscribeRequest CompanyThrottlingLimits(string subscriptionId, string user, string version, PublishingMode mode)
     {
         return new SubscribeRequest(subscriptionId, "company_throttling_limits", DestinationHelper.ComposeDestination(user, version, mode, "companyThrottlingLimits"));

@@ -65,11 +65,6 @@ public class SubscribeRequestBuilder
         return SubscribeRequest.PublicStatistics(GetSubId(), _user, _version, publishingMode, deliveryAreaId);
     }
 
-    public SubscribeRequest CreateThrottlingLimits(PublishingMode publishingMode)
-    {
-        return SubscribeRequest.ThrottlingLimits(GetSubId(), _user, _version, publishingMode);
-    }
-
     public SubscribeRequest CreateCompanyThrottlingLimits(PublishingMode publishingMode)
     {
         return SubscribeRequest.CompanyThrottlingLimits(GetSubId(), _user, _version, publishingMode);
