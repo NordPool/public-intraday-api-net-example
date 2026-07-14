@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Extend;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,14 @@ namespace NPS.ID.PublicApi.Client;
 public class ApplicationWorker
 {
     private readonly ILogger<ApplicationWorker> _logger;
+    
+    private readonly JsonSerializerOptions _settings = new()
+    {
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
 
     private const string Version = "v1";
     private const int DemoArea = 3; // 3 = Finland
@@ -444,7 +453,7 @@ public class ApplicationWorker
                 }
 
                 _memoryCacheProxy.SetCache(message.Data.ToList());
-                var responseString = JsonSerializer.Serialize(message);
+                var responseString = JsonSerializer.Serialize(message, _settings);
 
                 // Trimming response content
                 responseString = responseString.Length > 250
