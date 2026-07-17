@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Extend;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,14 @@ namespace NPS.ID.PublicApi.Client;
 public class ApplicationWorker
 {
     private readonly ILogger<ApplicationWorker> _logger;
+    
+    private readonly JsonSerializerOptions _settings = new()
+    {
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
 
     private const string Version = "v1";
     private const int DemoArea = 3; // 3 = Finland
@@ -102,11 +111,6 @@ public class ApplicationWorker
         
         // Public statistics 
         await SubscribePublicStatisticsAsync(marketDataClient, PublishingMode.CONFLATED,
-            _cancellationTokenSource.Token);
-        
-        // Throttling limits
-        await SubscribeThrottlingLimitsAsync(tradingClient,
-            PublishingMode.CONFLATED,
             _cancellationTokenSource.Token);
 
         // Company throttling limits
@@ -214,22 +218,6 @@ public class ApplicationWorker
         var subscription =
             await client.SubscribeAsync<PublicStatisticRow>(publicStatisticsSubscription, cancellationToken);
         ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
-    }
-
-    private async Task SubscribeThrottlingLimitsAsync(IClient client, PublishingMode publishingMode,
-        CancellationToken cancellationToken)
-    {
-        var throttlingLimitsSubscription = _subscribeRequestBuilder.CreateThrottlingLimits(publishingMode);
-        var subscription =
-            await client.SubscribeAsync<ThrottlingLimitMessage>(throttlingLimitsSubscription, cancellationToken);
-        ReadSubscriptionChannel(client.ClientTarget, subscription, cancellationToken);
-        
-        // Set automatic unsubscription of throttling limit topic after 10s
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(10000, cancellationToken);
-            await client.UnsubscribeAsync(subscription.Id, cancellationToken);
-        }, cancellationToken);
     }
 
     private async Task SubscribeCompanyThrottlingLimitsAsync(IClient client, PublishingMode publishingMode,
@@ -465,7 +453,7 @@ public class ApplicationWorker
                 }
 
                 _memoryCacheProxy.SetCache(message.Data.ToList());
-                var responseString = JsonSerializer.Serialize(message);
+                var responseString = JsonSerializer.Serialize(message, _settings);
 
                 // Trimming response content
                 responseString = responseString.Length > 250

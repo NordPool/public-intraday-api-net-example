@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
@@ -33,6 +34,17 @@ public class StompClient : IClient
     private readonly Dictionary<string, Subscription> _subscriptions = new();
     public WebSocketClientTarget ClientTarget { get; }
     public string ClientId { get; }
+    
+    private readonly JsonSerializerOptions _settings = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        },
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true
+    };
 
     public StompClient(
         ILogger<StompClient> logger,
@@ -166,7 +178,7 @@ public class StompClient : IClient
     public async Task SendAsync<TRequest>(TRequest request, string destination, CancellationToken cancellationToken)
         where TRequest : class, new()
     {
-        var payload = JsonSerializer.Serialize(request);
+        var payload = JsonSerializer.Serialize(request, _settings);
         var payloadFrame = StompMessageFactory.SendFrame(payload, destination);
         await _webSocketConnector.SendStompFrameAsync(payloadFrame, cancellationToken);
     }

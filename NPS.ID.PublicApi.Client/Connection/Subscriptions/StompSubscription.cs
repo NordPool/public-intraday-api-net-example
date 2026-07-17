@@ -15,7 +15,7 @@ public class StompSubscription<TValue> : Subscription, ISubscription<TValue>
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         Converters =
         {
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            new JsonStringEnumConverter()
         },
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
@@ -65,7 +65,7 @@ public class StompSubscription<TValue> : Subscription, ISubscription<TValue>
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, "An error on web socket message handling");
+            _logger.LogWarning(e, "[SubscriptionId:{SubscriptionId}][Destination:{Destination}] An error on web socket message handling", Id, Destination);
             _channel.Writer.Complete(e);
         }
     }
