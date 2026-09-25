@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package nps.intraday.pmd.v2;
 
+option csharp_namespace = "NPS.Intraday.Edge.PMD.V2";
+
 import "google/protobuf/wrappers.proto";
 
 // Server → Client
@@ -53,7 +55,7 @@ message Order {
 }
 
 enum MarketType {
-  MARKET_TYPE_NONE  = 0;
+  MARKET_TYPE_UNSPECIFIED = 0;
 
   MARKET_TYPE_LOCAL = 1;
   MARKET_TYPE_XBID  = 2;
@@ -118,7 +120,7 @@ message ContractDeliveryAreaState {
 }
 
 enum ContractState {
-  CONTRACT_STATE_NONE = 0;
+  CONTRACT_STATE_UNSPECIFIED = 0;
   CONTRACT_STATE_ACTI = 1;
   CONTRACT_STATE_HIBE = 2;
   CONTRACT_STATE_IACT = 3;
@@ -126,7 +128,7 @@ enum ContractState {
 }
 
 enum ProductType {
-  PRODUCT_TYPE_NONE         = 0;
+  PRODUCT_TYPE_UNSPECIFIED  = 0;
 
   PRODUCT_TYPE_P15_MIN      = 1;
   PRODUCT_TYPE_P30_MIN      = 2;
@@ -165,7 +167,7 @@ message PublicTradeLeg {
 }
 
 enum TradeState {
-  TRADE_STATE_NONE          = 0;
+  TRADE_STATE_UNSPECIFIED   = 0;
 
   TRADE_STATE_COMPLETED     = 1;
   TRADE_STATE_CANCELLED     = 2;
@@ -174,7 +176,7 @@ enum TradeState {
 }
 
 enum TradeSide {
-  TRADE_SIDE_NONE = 0;
+  TRADE_SIDE_UNSPECIFIED = 0;
 
   TRADE_SIDE_BUY  = 1;
   TRADE_SIDE_SELL = 2;
@@ -201,7 +203,7 @@ message PublicStatistic {
 }
 
 enum PublicStatisticTendency {
-  PUBLIC_STATISTIC_TENDENCY_NONE = 0;
+  PUBLIC_STATISTIC_TENDENCY_UNSPECIFIED = 0;
 
   PUBLIC_STATISTIC_TENDENCY_UP = 1;
   PUBLIC_STATISTIC_TENDENCY_DOWN = 2;
