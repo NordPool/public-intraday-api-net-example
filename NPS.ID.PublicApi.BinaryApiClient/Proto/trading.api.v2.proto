@@ -1,0 +1,477 @@
+﻿syntax = "proto3";
+
+package nps.intraday.trading.v2;
+
+option csharp_namespace = "NPS.Intraday.Edge.Trading.V2";
+option java_multiple_files = true;
+option java_package = "com.nps.intraday.tradingapi.v2.protos";
+option java_outer_classname = "TradingApiV2Protos";
+
+
+enum MarketType {
+  MARKET_TYPE_UNSPECIFIED = 0;
+  MARKET_TYPE_LOCAL = 1;
+  MARKET_TYPE_XBID = 2;
+}
+
+// Server → Client
+
+message ServerFrame {
+  optional string request_id = 1;
+  
+  oneof payload {
+    ConnectedPayload            connected              = 2;
+    ErrorPayload                error                  = 3;
+    TradingAckPayload           trading_ack            = 4;
+    Heartbeat                   heartbeat              = 5;
+    OrderExecutionReportPayload order_execution_report = 6;
+    PrivateTradePayload         private_trade          = 7;
+    StatisticPayload            statistic              = 8;
+    ThrottlingLimitPayload      throttling_limit       = 9;
+    ConfigurationPayload        configuration          = 10;
+  }
+}
+
+message ConnectedPayload {
+  int32 heartbeat_interval_ms   = 1;
+  optional bool auto_hibe       = 2;
+  optional bool abort_existing  = 3;
+}
+
+message ErrorPayload {
+  optional string message         = 1;
+  optional SessionErrorCode code  = 2;
+  optional bool is_fatal          = 3;
+}
+
+enum SessionErrorCode {
+  SESSION_ERROR_CODE_NONE = 0;
+  SESSION_ERROR_CODE_UNAUTHORIZED = 1;
+  SESSION_ERROR_CODE_TOKEN_EXPIRED = 2;
+  SESSION_ERROR_CODE_UNDECODABLE_FRAME = 3;
+  SESSION_ERROR_CODE_DUPLICATED_SESSION_ID = 4;
+  SESSION_ERROR_CODE_MULTIPLE_SESSIONS_NOT_ALLOWED = 5;
+  SESSION_ERROR_CODE_DISCONNECTED_BY_OPERATOR = 6;
+  SESSION_ERROR_CODE_DISCONNECTED_BY_OTHER_SESSION = 7;
+  SESSION_ERROR_CODE_SUBSCRIPTION_INVALID = 8;
+  SESSION_ERROR_CODE_SUBSCRIPTION_ALREADY_EXISTS = 9;
+  SESSION_ERROR_CODE_SUBSCRIPTION_THROTTLING_EXCEEDED = 10;
+  SESSION_ERROR_CODE_SLOW_CONSUMER = 11;
+  SESSION_ERROR_CODE_INTERNAL_SERVER_ERROR = 12;
+}
+
+message TradingAckPayload {
+  repeated Error request_errors = 1;
+  repeated OrderAck acks        = 2;
+}
+
+message OrderAck {
+  optional string client_order_id = 1;
+  optional int64 order_id         = 2;
+  OrderAckState state             = 3;
+  repeated Error errors           = 4;
+  MarketType market_type          = 5;
+}
+
+enum OrderAckState {
+  ORDER_ACK_STATE_UNSPECIFIED = 0;
+  ORDER_ACK_STATE_PENDING  = 1;
+  ORDER_ACK_STATE_REJECTED = 2;
+}
+
+message Error {
+  OrderErrorCode code          = 1;
+  optional string message = 2;
+}
+
+enum OrderErrorCode {
+  ORDER_ERROR_CODE_UNSPECIFIED = 0;
+
+  ORDER_ERROR_CODE_MISSING_REQUIRED_FIELD                 = 1;
+  ORDER_ERROR_CODE_ILLEGAL_FIELD                          = 2;
+  ORDER_ERROR_CODE_FIELD_OUT_OF_RANGE                     = 3;
+  ORDER_ERROR_CODE_FIELD_FORMAT_INVALID                   = 4;
+  ORDER_ERROR_CODE_FIELD_LENGTH_INVALID                   = 5;
+  ORDER_ERROR_CODE_NON_ASCII_CHARACTERS_NOT_ALLOWED       = 6;
+  ORDER_ERROR_CODE_ITEM_NOT_FOUND                         = 7;
+  ORDER_ERROR_CODE_ACCESS_MODE_VIOLATION                  = 8;
+  ORDER_ERROR_CODE_THIRD_PARTY                            = 9;
+  ORDER_ERROR_CODE_INVALID_AREA                           = 10;
+  ORDER_ERROR_CODE_INVALID_TIME_IN_FORCE_FOR_BASKET_ORDER = 11;
+  ORDER_ERROR_CODE_INVALID_CONTRACT_FOR_BASKET_ORDER      = 12;
+  ORDER_ERROR_CODE_REQUEST_OVER_THROTTLING                = 13;
+  ORDER_ERROR_CODE_INTERNAL_SERVER_ERROR                  = 14;
+  ORDER_ERROR_CODE_TRADING_IS_NOT_AVAILABLE               = 15;
+  ORDER_ERROR_CODE_EXPOSURE_LIMIT_VALIDATION_ERROR        = 16;
+  ORDER_ERROR_CODE_COLLATERAL_LIMIT_VALIDATION_ERROR      = 17;
+  ORDER_ERROR_CODE_ORDER_ALREADY_INACTIVE                 = 18;
+}
+
+message Heartbeat {}
+
+message PrivateTradePayload {
+  bool is_snapshot                        = 1;
+  repeated PrivateTradeRow private_trades = 2;
+}
+
+message OrderExecutionReportPayload {
+  bool is_snapshot                                      = 1;
+  repeated OrderExecutionReport order_execution_reports = 2;
+}
+
+enum OrderTimeInForce {
+  ORDER_TIME_IN_FORCE_UNSPECIFIED = 0;
+  ORDER_TIME_IN_FORCE_IOC  = 1;
+  ORDER_TIME_IN_FORCE_FOK  = 2;
+  ORDER_TIME_IN_FORCE_GTD  = 3;
+  ORDER_TIME_IN_FORCE_GFS  = 4;
+}
+
+enum OrderState {
+  ORDER_STATE_UNSPECIFIED = 0;
+  ORDER_STATE_ACTI = 1;
+  ORDER_STATE_HIBE = 2;
+  ORDER_STATE_IACT = 3;
+}
+
+enum OrderAction {
+  ORDER_ACTION_UNSPECIFIED         = 0;
+  ORDER_ACTION_USER_ADDED          = 1;
+  ORDER_ACTION_USER_HIBERNATED     = 2;
+  ORDER_ACTION_USER_MODIFIED       = 3;
+  ORDER_ACTION_USER_DELETED        = 4;
+  ORDER_ACTION_SYSTEM_HIBERNATED   = 5;
+  ORDER_ACTION_SYSTEM_MODIFIED     = 6;
+  ORDER_ACTION_SYSTEM_DELETED      = 7;
+  ORDER_ACTION_PARTIAL_EXECUTION   = 8;
+  ORDER_ACTION_FULL_EXECUTION      = 9;
+  ORDER_ACTION_ICEBERG_SLICE_ADDED = 10;
+  ORDER_ACTION_SYSTEM_EXPIRED      = 11;
+}
+
+enum OrderActionIssuer {
+  ORDER_ACTION_ISSUER_UNSPECIFIED = 0;
+  ORDER_ACTION_ISSUER_USER   = 1;
+  ORDER_ACTION_ISSUER_SYSTEM = 2;
+}
+
+message OrderExecutionReport {
+  int64 event_sequence_no                                  = 1;
+  MarketType market_type                                   = 2;
+  string user_id                                           = 3;
+  int64 order_id                                           = 4;
+  int64 revision_no                                        = 5;
+  optional int64 previous_order_id                         = 6;
+  int64 original_order_id                                  = 7;
+  int64 created_at_ms                                      = 8;
+  int64 updated_at_ms                                      = 9;
+  string client_order_id                                   = 10;
+  string portfolio_id                                      = 11;
+  int64 contract_id                                        = 12;
+  int32 delivery_area_id                                   = 13;
+  OrderSide side                                           = 14;
+  OrderType order_type                                     = 15;
+  int64 unit_price                                         = 16;
+  int64 quantity                                           = 17;
+  optional int64 clip_size                                 = 18;
+  optional int64 clip_price_change                         = 19;
+  optional int64 remaining_quantity                        = 20;
+  optional int64 expire_time_ms                            = 21;
+  OrderTimeInForce time_in_force                           = 22;
+  OrderState state                                         = 23;
+  OrderAction action                                       = 24;
+  OrderActionIssuer action_issuer                          = 25;
+  optional string text                                     = 26;
+}
+
+message PrivateTradeRow {
+  MarketType market_type              = 1;
+  optional int64 trade_id             = 2;
+  optional int64 event_sequence_no    = 3;
+  optional int64 revision_no          = 4;
+  optional int64 trade_time_ms        = 5;
+  optional int64 updated_at_ms        = 6;
+  TradeState state                    = 7;
+  TradeContractPhase contract_phase   = 8;
+  optional bool company_trade         = 9;
+  repeated PrivateTradeLeg legs       = 10;
+}
+
+message PrivateTradeLeg {
+  optional int64 contract_id        = 1;
+  optional int64 ref_order_id       = 2;
+  optional string client_order_id   = 3;
+  optional string user_id           = 4;
+  optional string portfolio_id      = 5;
+  OrderSide side                    = 6;
+  OrderType order_type              = 7;
+  optional int64 unit_price         = 8;
+  optional int64 quantity           = 9;
+  optional int32 delivery_area_id   = 10;
+  optional bool  aggressor          = 11;
+  optional int64 delivery_start_ms  = 12;
+  optional int64 delivery_end_ms    = 13;
+  optional string text              = 14;
+}
+
+enum TradeState {
+  TRADE_STATE_UNSPECIFIED = 0;
+  TRADE_STATE_COMPLETED = 1;
+  TRADE_STATE_DISPUTED = 2;
+  TRADE_STATE_NOT_CANCELLED = 3;
+  TRADE_STATE_CANCELLED = 4;
+}
+
+enum TradeContractPhase {
+  TRADE_CONTRACT_PHASE_UNSPECIFIED = 0;
+  TRADE_CONTRACT_PHASE_CONT = 1;
+  TRADE_CONTRACT_PHASE_AUCT = 2;
+}
+
+enum OrderSide {
+  ORDER_SIDE_UNSPECIFIED = 0;
+  ORDER_SIDE_BUY = 1;
+  ORDER_SIDE_SELL = 2;
+}
+
+message StatisticPayload {
+  bool is_snapshot = 1;
+  repeated Statistic statistics = 2;
+}
+
+message Statistic {
+  optional int64 sequence_no = 1;
+  optional string portfolio_id = 2;
+  optional int32  delivery_area_id = 3;
+  MarketType market_type = 4;
+  optional int64 contract_id = 5;
+  optional int64 own_buy_quantity = 6;
+  optional int64 own_sell_quantity = 7;
+  optional int64 own_buy_average_price = 8;
+  optional int64 own_sell_average_price = 9;
+  optional int64 net_quantity = 10;
+  optional int64 net_position = 11;
+  optional int64 last_trade_time = 12;
+}
+
+message ConfigurationPayload {
+  bool is_snapshot = 1;
+  repeated ConfigurationRow configurations = 2;
+}
+
+message ConfigurationRow {
+  repeated Portfolio portfolios                     = 1;
+  map<string, string> company_users                 = 2;
+  repeated MarketConfiguration market_configuration = 3;
+}
+
+message Portfolio {
+  optional string id                 = 1;
+  optional string name               = 2;
+  optional string short_name         = 3;
+  optional string company_id         = 4;
+  PortfolioPermission permission     = 5;
+  optional int64 valid_from_ms       = 6;
+  optional int64 valid_to_ms         = 7;
+  optional bool deleted              = 8;
+  PortfolioState state               = 9;
+  optional string currency           = 10;
+  repeated DeliveryAreaPortfolio areas = 11;
+  repeated MarketPortfolio markets   = 12;
+}
+
+message DeliveryAreaPortfolio {
+  optional int32 area_id       = 1;
+  optional int64 valid_from_ms = 2;
+  optional int64 valid_to_ms   = 3;
+}
+
+message MarketPortfolio {
+  string market_id = 1;
+}
+
+enum PortfolioPermission {
+  PORTFOLIO_PERMISSION_UNSPECIFIED = 0;
+  PORTFOLIO_PERMISSION_READ  = 1;
+  PORTFOLIO_PERMISSION_WRITE = 2;
+}
+
+enum PortfolioState {
+  PORTFOLIO_STATE_UNSPECIFIED = 0;
+  PORTFOLIO_STATE_ACTI  = 1;
+  PORTFOLIO_STATE_IACT  = 2;
+  PORTFOLIO_STATE_HIBE  = 3;
+}
+
+message MarketConfiguration {
+  MarketType market_type   = 1;
+  optional int64 tick_size = 2;
+  optional int64 lot_size  = 3;
+}
+
+message ThrottlingLimitPayload {
+  repeated MarketOrderLimit order_limits = 1;
+}
+
+message MarketOrderLimit {
+  MarketType market_type = 1;
+  int64 orders_10s       = 2;
+  int64 orders_10s_limit = 3;
+  int64 orders_1h        = 4;
+  int64 orders_1h_limit  = 5;
+}
+
+// Client → Server
+
+message ClientFrame {
+  optional string request_id = 1;
+  
+  oneof payload {
+    TradingRequest trading_request = 2;
+    TokenRefresh token_refresh     = 3;
+    Heartbeat heartbeat            = 4;
+    Subscribe subscribe            = 5;
+    Unsubscribe unsubscribe        = 6;
+  }
+}
+
+message TradingRequest {
+  oneof request {
+    OrderEntry        entry        = 1;
+    OrderModification modification = 2;
+    BulkCommand       command      = 3;
+  }
+}
+
+message OrderEntry {
+  MarketType market_type         = 1;
+  optional bool reject_partially = 2;
+  optional bool linked_basket    = 3;
+  repeated Order orders          = 4;
+}
+
+message OrderModification {
+  MarketType market_type = 1;
+  oneof op {
+    Modify     modify     = 2;
+    Activate   activate   = 3;
+    Deactivate deactivate = 4;
+    Delete     delete     = 5;
+  }
+}
+
+message Modify     { repeated ModifyItem items = 1; }
+message Activate   { repeated OrderRef refs = 1; }
+message ModifyItem { OrderRef ref = 1; ModifyOrder payload = 2; }
+message Deactivate { repeated OrderRef refs = 1; }
+message Delete     { repeated OrderRef refs = 1; }
+
+message ModifyOrder {
+  optional int64 contract_id                      = 1;
+  OrderType type                                  = 2;
+  optional int64 quantity                         = 3;
+  optional int64 unit_price                       = 4;
+  OrderTimeInForce time_in_force                  = 5;
+  optional int64 clip_size                        = 6;
+  optional int64 clip_price_change                = 7;
+  optional int64 expire_time_ms                   = 8;
+  optional string text                            = 9;
+}
+
+message OrderRef {
+  oneof id {
+    int64  order_id        = 1;
+    string client_order_id = 2;
+  }
+  optional string portfolio_id = 3;
+  optional int64 revision      = 4;
+}
+
+message Order {
+  optional string portfolio_id                    = 1;
+  optional string client_order_id                 = 2;
+  optional int32  delivery_area_id                = 3;
+  repeated int64 contract_ids                     = 4;
+  OrderType type                                  = 5;
+  OrderSide side                                  = 6;
+  optional int64 quantity                         = 7;
+  optional int64 unit_price                       = 8;
+  OrderEntryState state                           = 9;
+  OrderTimeInForce time_in_force                  = 10;
+  optional int64 clip_size                        = 11;
+  optional int64 clip_price_change                = 12;
+  optional int64 expire_time_ms                   = 13;
+  optional string text                            = 14;
+}
+
+enum OrderType {
+  ORDER_TYPE_UNSPECIFIED        = 0;
+  ORDER_TYPE_LIMIT              = 1;
+  ORDER_TYPE_ICEBERG            = 2;
+  ORDER_TYPE_USER_DEFINED_BLOCK = 3;
+}
+
+enum OrderEntryState {
+  ORDER_ENTRY_STATE_UNSPECIFIED = 0;
+  ORDER_ENTRY_STATE_ACTI = 1;
+  ORDER_ENTRY_STATE_HIBE = 2;
+}
+
+message BulkCommand {
+  BulkCommandType type = 1;
+}
+
+enum BulkCommandType {
+  BULK_COMMAND_TYPE_UNSPECIFIED = 0;
+
+  BULK_COMMAND_TYPE_DEAC_USER_ORDERS      = 1;
+  BULK_COMMAND_TYPE_DEAC_COMPANY_ORDERS   = 2;
+  BULK_COMMAND_TYPE_ACTI_USER_ORDERS      = 3;
+  BULK_COMMAND_TYPE_ACTI_COMPANY_ORDERS   = 4;
+  BULK_COMMAND_TYPE_DELETE_USER_ORDERS    = 5;
+  BULK_COMMAND_TYPE_DELETE_COMPANY_ORDERS = 6;
+}
+
+message TokenRefresh {
+  string token = 1;
+}
+
+message Subscribe {
+  oneof target {
+    OrderExecutionReportSubscription order_execution_report = 1;
+    PrivateTradeSubscription private_trade                  = 2;
+    StatisticsSubscription statistic                        = 3;
+    ThrottlingLimitsSubscription throttling_limit           = 4;
+    ConfigurationSubscription configuration                 = 5;
+  }
+}
+
+message Unsubscribe {
+  oneof target {
+    OrderExecutionReportSubscription order_execution_report = 1;
+    PrivateTradeSubscription private_trade                  = 2;
+    StatisticsSubscription statistic                        = 3;
+    ThrottlingLimitsSubscription throttling_limit           = 4;
+    ConfigurationSubscription configuration                 = 5;
+  }
+}
+
+message PrivateTradeSubscription {
+  optional int32 snapshot_size = 1;
+}
+
+message OrderExecutionReportSubscription {
+  optional int32 snapshot_size = 1;
+}
+
+message ConfigurationSubscription {
+  // Configuration is scoped to the currently authenticated user, no parameters needed.
+}
+
+message StatisticsSubscription {
+  string portfolio_id = 1;
+}
+
+message ThrottlingLimitsSubscription {
+  // The subscription is for the company of the user that is sending this message. The server will use the token to determine the company.
+}

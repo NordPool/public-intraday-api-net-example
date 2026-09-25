@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace NPS.ID.PublicApi.BinaryApiClient;
+namespace NPS.ID.PublicApi.BinaryApiClient.Cli;
 
 /// <summary>
 /// Synchronised console I/O that keeps the user's input prompt visually
@@ -27,6 +27,22 @@ public static class ConsoleIO
         {
             ClearPromptLine();
             Console.WriteLine(text);
+            RedrawPrompt();
+        }
+    }
+
+    /// <summary>Same as <see cref="Write"/> but rendered in red.</summary>
+    public static void WriteError(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return;
+
+        lock (Lock)
+        {
+            ClearPromptLine();
+            var previous = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(text);
+            Console.ForegroundColor = previous;
             RedrawPrompt();
         }
     }

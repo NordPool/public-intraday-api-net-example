@@ -22,6 +22,7 @@
   <ItemGroup>
     <!-- Generate C# classes from proto; GrpcServices=None = proto-only, no gRPC stubs -->
     <Protobuf Include="Proto\pmd.api.v2.proto" GrpcServices="None" />
+    <Protobuf Include="Proto\trading.api.v2.proto" GrpcServices="None" />
   </ItemGroup>
 
   <ItemGroup>
