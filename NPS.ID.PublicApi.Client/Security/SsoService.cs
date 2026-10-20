@@ -16,7 +16,7 @@ public class SsoService : ISsoService
     {
         _httpClient = clientFactory.CreateClient("SsoClient");
         _grantType = "password";
-        _scope = "global";
+        _scope = "intraday_api";
     }
 
     public async Task<string> GetAuthTokenAsync(string userName, string password, CancellationToken cancellationToken)

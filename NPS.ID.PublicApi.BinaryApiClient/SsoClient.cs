@@ -23,7 +23,7 @@ public class SsoClient
         var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
         {
             new("grant_type", "password"),
-            new("scope", "global"),
+            new("scope", "intraday_api"),
             new("username", _settings.Username),
             new("password", _settings.Password)
         });
